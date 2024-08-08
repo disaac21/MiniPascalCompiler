@@ -1,9 +1,17 @@
-{ This is a comment }
-program HelloWorld;
+program FactorialExample;
 
-{el const falla}
-const
-    msg: string = 'Hello, world!';
+var
+  n: integer;
+
+function Factorial(x: integer): integer;
 begin
-    write(msg);
+  if x <= 1 then
+    Factorial := 1
+  else
+    Factorial := x * Factorial(x - 1);
+end;
+
+begin
+  n := 5;  { You can change this value to calculate the factorial of a different number }
+  writeln('Factorial of ', n, ' is: ', Factorial(n)); { falla el parentesis del param del Factorial }
 end.
