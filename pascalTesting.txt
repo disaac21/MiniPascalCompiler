@@ -1,0 +1,113 @@
+program RandomExample;
+
+var
+  a, b, c: integer;
+
+begin
+  a := 5;
+  b := 10;
+  c := a + b;
+
+  if c > 10 then
+    writeln('The sum is greater than 10')
+  else
+    writeln('The sum is 10 or less');
+end.
+
+--------------------------------------------------------
+
+program ConstStrExample;
+
+{el const falla}
+const
+    Greeting = 'Hello, Mini-Pascal!';
+
+begin
+    writeln(Greeting);
+end.
+
+-------------------------------------------------------
+
+{ This is a comment }
+program HelloWorld;
+
+{el const falla}
+const
+    msg: string = 'Hello, world!';
+begin
+    write(msg);
+end.
+
+-----------------------------------------------------------
+
+program ConstStrExample;
+
+{el const falla}
+const
+    conststr Greeting = 'Hello, Mini-Pascal!';
+
+begin
+    writeln(Greeting);
+end.
+
+-------------------------------------------------------
+
+{ This is a comment }
+program HelloWorld;
+var
+    msg: string;
+begin
+    msg := 'Hello, world!';
+    write(msg);
+end.
+
+--------------------------------------------------------
+
+program FactorialExample;
+
+var
+  n: integer;
+
+function Factorial(x: integer): integer;
+begin
+  if x <= 1 then
+    Factorial := 1
+  else
+    Factorial := x * Factorial(x - 1);
+end;
+
+begin
+  n := 5;  { You can change this value to calculate the factorial of a different number }
+  writeln('Factorial of ', n, ' is: ', Factorial(n)); { falla el parentesis del param del Factorial }
+end.
+
+---------------------------------------------------------
+
+program ForToExample;
+
+var
+  i: integer;
+
+begin
+  for i := 1 to 5 do
+  begin
+    writeln('Value of i: ', i);
+  end;
+end.
+
+-------------------------------------------------------
+
+program ForDowntoExample;
+
+var
+  i: integer;
+
+begin
+  for i := 5 downto 1 do
+  begin
+    writeln('Value of i: ', i);
+  end;
+end.
+
+
+------------------------------------------------------

@@ -1,0 +1,9 @@
+{ This is a comment }
+program HelloWorld;
+
+{el const falla}
+const
+    msg: string = 'Hello, world!';
+begin
+    write(msg);
+end.
