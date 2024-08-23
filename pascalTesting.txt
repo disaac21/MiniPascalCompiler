@@ -18,7 +18,7 @@ end.
 
 program ConstStrExample;
 
-{el const falla}
+{ya no falla el const}
 const
     Greeting = 'Hello, Mini-Pascal!';
 
@@ -31,7 +31,7 @@ end.
 { This is a comment }
 program HelloWorld;
 
-{el const falla}
+{el : despues de msg falla, creo que eso si deberia de fallar}
 const
     msg: string = 'Hello, world!';
 begin
@@ -42,7 +42,7 @@ end.
 
 program ConstStrExample;
 
-{el const falla}
+{el Greeting falla, porque lleva un const conststr y ese no esta definido}
 const
     conststr Greeting = 'Hello, Mini-Pascal!';
 
@@ -78,7 +78,8 @@ end;
 
 begin
   n := 5;  { You can change this value to calculate the factorial of a different number }
-  writeln('Factorial of ', n, ' is: ', Factorial(n)); { falla el parentesis del param del Factorial }
+  writeln('Factorial of ', n, ' is: ', Factorial(n));
+  { falla el parentesis del param del Factorial }
 end.
 
 ---------------------------------------------------------
@@ -111,3 +112,4 @@ end.
 
 
 ------------------------------------------------------
+
