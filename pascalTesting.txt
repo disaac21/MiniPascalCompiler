@@ -116,7 +116,7 @@ end.
 program SumArrayFunctionExample;
 
 { Declaración de la función }
-function SumArray(arr: array of Integer): Integer; {falla con el array of integer}
+function SumArray(arr: array of Integer): Integer; {ya no falla con el array "of" integer}
 var
   i, sum: Integer;
 begin
@@ -130,7 +130,7 @@ begin
 end;
 
 var
-  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50);
+  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50); {ahora falla en la asignacion de los valores del array}
   total: Integer;
 begin
   total := SumArray(numbers);

@@ -54,14 +54,20 @@ constant
 
 varType
     : arrayType
+    | arrayOfType
     | stringR_
     | charR_
     | integerR_
     ;
 
 arrayType
- : ARRAY L_BRACK indexRanges R_BRACK OF varType
+   : ARRAY L_BRACK indexRanges R_BRACK OF varType
    ;
+
+arrayOfType
+   : ARRAY OF varType
+   ;
+
 
 arrayValue
    : identifier L_BRACK (integer | identifier) R_BRACK
