@@ -113,3 +113,29 @@ end.
 
 ------------------------------------------------------
 
+program SumArrayFunctionExample;
+
+{ Declaración de la función }
+function SumArray(arr: array of Integer): Integer; {falla con el array of integer}
+var
+  i, sum: Integer;
+begin
+  sum := 0;
+
+  { Sumar todos los elementos del array }
+  for i := 0 to High(arr) do
+    sum := sum + arr[i];
+
+  SumArray := sum;
+end;
+
+var
+  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50);
+  total: Integer;
+begin
+  total := SumArray(numbers);
+
+  WriteLn('The sum of the array elements is: ', total);
+end.
+
+-------------------------------------------------------
