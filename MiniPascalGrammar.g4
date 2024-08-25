@@ -195,7 +195,7 @@ variableDeclarationPart
    ;
 
 variableDeclaration
-   : identifierList COLON type_
+   : identifierList COLON type_ (EQUAL initialValue)?
    ;
 
 procedureAndFunctionDeclarationPart
@@ -431,8 +431,14 @@ forList
    ;
 
 initialValue
-   : expression
+   : arrayInitialization
+   | constant
    ;
+
+arrayInitialization
+   : L_PAREN constList R_PAREN
+   ;
+
 
 finalValue
    : expression
