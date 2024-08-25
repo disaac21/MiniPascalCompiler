@@ -1,0 +1,16 @@
+program ParOImpar;
+
+var
+  numero: integer;
+
+begin
+  writeln('Introduce un número:');
+  readln(numero);
+
+  if (numero mod 2 = 0) then
+    writeln('El número es par.')
+  else
+    writeln('El número es impar.');
+end.
+
+{aca probando un comentario}
