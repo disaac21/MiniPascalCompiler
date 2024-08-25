@@ -50,6 +50,8 @@ constant
    | sign identifier
    | string
    | constantChr
+   | char
+   | boolean
    ;
 
 varType
@@ -58,6 +60,7 @@ varType
     | stringR_
     | charR_
     | integerR_
+    | booleanR_
     ;
 
 arrayType
@@ -84,6 +87,7 @@ indexRange
 stringR_: STRING_;
 charR_: CHAR_;
 integerR_: INTEGER_;
+booleanR_: BOOLEAN_;
 
 unsignedNumber
    : unsignedInteger
@@ -99,8 +103,7 @@ sign
    ;
 
 bool_
-   : TRUE
-   | FALSE
+   : BOOLEAN_
    ;
 
 string
@@ -520,7 +523,7 @@ IMPLEMENTATION: 'IMPLEMENTATION';
 LABEL: 'LABEL';
 CONST: 'CONST';
 
-ID: [a-zA-Z][a-zA-Z0-9_]*;
+ID: [a-zA-Z] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
 
 CHR: 'CHR';
 TYPE: 'TYPE';
