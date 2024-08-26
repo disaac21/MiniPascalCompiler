@@ -1,0 +1,26 @@
+program SumArrayFunctionExample;
+
+{ Declaración de la función }
+function SumArray(arr: array of Integer): Integer; {ya no falla con el array "of" integer}
+var
+  i, sum: Integer;
+begin
+  sum := 0;
+
+  { Sumar todos los elementos del array }
+  for i := 0 to High(arr) do
+    sum := sum + arr[i];
+
+  SumArray := sum;
+end;
+
+var
+  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50); {ya no falla en la asignacion de los valores del array}
+  letters: array[1..5] of char = ('a', 'b', 'c', 'c', 'd');
+  boolArray: array[1..3] of boolean = (true, false, true);
+  total: Integer;
+begin
+  total := SumArray(numbers);
+
+  WriteLn('The sum of the array elements is: ', total);
+end.

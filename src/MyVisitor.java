@@ -2,8 +2,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
-        System.out.println("Archivo Vacío");
-        System.out.println(ctx.getText());
         return visitChildren(ctx);
     }
 
@@ -14,7 +12,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitIdentifier(MiniPascalGrammarParser.IdentifierContext ctx) {
-//        System.out.println("Error Here");
         return visitChildren(ctx);
     }
 
@@ -390,7 +387,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) {
-        System.out.println("Missing un Parentesis");
         return visitChildren(ctx);
     }
 

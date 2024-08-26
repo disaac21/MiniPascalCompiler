@@ -1,4 +1,4 @@
-// Generated from C:/Users/danie/Desktop/MiniPascal/MiniPascalGrammar.g4 by ANTLR 4.13.1
+// Generated from C:/Users/danie/Desktop/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -23,8 +23,8 @@ public class MiniPascalGrammarLexer extends Lexer {
 		DOT=31, DOUBLE_DOT=32, PROGRAM=33, FUNCTION=34, IF=35, THEN=36, ELSE=37, 
 		UNTIL=38, WHILE=39, FOR=40, REPEAT=41, TO=42, DO=43, DOWNTO=44, VAR=45, 
 		ARRAY=46, OF=47, INTEGER_=48, BOOLEAN_=49, CHAR_=50, STRING_=51, READLN=52, 
-		READ=53, WRITELN=54, WRITE=55, ID=56, NIL=57, INTERFACE=58, UNIT=59, IMPLEMENTATION=60, 
-		LABEL=61, CONST=62, CHR=63, TYPE=64, USES=65, AT=66;
+		READ=53, WRITELN=54, WRITE=55, NIL=56, INTERFACE=57, UNIT=58, IMPLEMENTATION=59, 
+		LABEL=60, CONST=61, ID=62, CHR=63, TYPE=64, USES=65, AT=66;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -41,8 +41,9 @@ public class MiniPascalGrammarLexer extends Lexer {
 			"R_BRACK", "COMMA", "SEMICOLON", "COLON", "DOT", "DOUBLE_DOT", "PROGRAM", 
 			"FUNCTION", "IF", "THEN", "ELSE", "UNTIL", "WHILE", "FOR", "REPEAT", 
 			"TO", "DO", "DOWNTO", "VAR", "ARRAY", "OF", "INTEGER_", "BOOLEAN_", "CHAR_", 
-			"STRING_", "READLN", "READ", "WRITELN", "WRITE", "ID", "NIL", "INTERFACE", 
-			"UNIT", "IMPLEMENTATION", "LABEL", "CONST", "CHR", "TYPE", "USES", "AT"
+			"STRING_", "READLN", "READ", "WRITELN", "WRITE", "NIL", "INTERFACE", 
+			"UNIT", "IMPLEMENTATION", "LABEL", "CONST", "ID", "CHR", "TYPE", "USES", 
+			"AT"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -55,9 +56,9 @@ public class MiniPascalGrammarLexer extends Lexer {
 			"';'", "':'", "'.'", "'..'", "'program'", "'function'", "'if'", "'then'", 
 			"'else'", "'until'", "'while'", "'for'", "'repeat'", "'to'", "'do'", 
 			"'downto'", "'var'", "'Array'", "'of'", "'INTEGER'", "'BOOLEAN'", "'CHAR'", 
-			"'STRING'", "'READLN'", "'READ'", "'WRITELN'", "'WRITE'", null, "'NIL'", 
-			"'INTERFACE'", "'UNIT'", "'IMPLEMENTATION'", "'LABEL'", "'CONST'", "'CHR'", 
-			"'TYPE'", "'USES'", "'AT'"
+			"'STRING'", "'READLN'", "'READ'", "'WRITELN'", "'WRITE'", "'NIL'", "'INTERFACE'", 
+			"'UNIT'", "'IMPLEMENTATION'", "'LABEL'", "'CONST'", null, "'CHR'", "'TYPE'", 
+			"'USES'", "'AT'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -69,9 +70,9 @@ public class MiniPascalGrammarLexer extends Lexer {
 			"L_BRACK", "R_BRACK", "COMMA", "SEMICOLON", "COLON", "DOT", "DOUBLE_DOT", 
 			"PROGRAM", "FUNCTION", "IF", "THEN", "ELSE", "UNTIL", "WHILE", "FOR", 
 			"REPEAT", "TO", "DO", "DOWNTO", "VAR", "ARRAY", "OF", "INTEGER_", "BOOLEAN_", 
-			"CHAR_", "STRING_", "READLN", "READ", "WRITELN", "WRITE", "ID", "NIL", 
-			"INTERFACE", "UNIT", "IMPLEMENTATION", "LABEL", "CONST", "CHR", "TYPE", 
-			"USES", "AT"
+			"CHAR_", "STRING_", "READLN", "READ", "WRITELN", "WRITE", "NIL", "INTERFACE", 
+			"UNIT", "IMPLEMENTATION", "LABEL", "CONST", "ID", "CHR", "TYPE", "USES", 
+			"AT"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -183,12 +184,12 @@ public class MiniPascalGrammarLexer extends Lexer {
 		"1\u00011\u00011\u00012\u00012\u00012\u00012\u00012\u00012\u00012\u0001"+
 		"3\u00013\u00013\u00013\u00013\u00013\u00013\u00014\u00014\u00014\u0001"+
 		"4\u00014\u00015\u00015\u00015\u00015\u00015\u00015\u00015\u00015\u0001"+
-		"6\u00016\u00016\u00016\u00016\u00016\u00017\u00017\u00057\u0189\b7\n7"+
-		"\f7\u018c\t7\u00018\u00018\u00018\u00018\u00019\u00019\u00019\u00019\u0001"+
-		"9\u00019\u00019\u00019\u00019\u00019\u0001:\u0001:\u0001:\u0001:\u0001"+
-		":\u0001;\u0001;\u0001;\u0001;\u0001;\u0001;\u0001;\u0001;\u0001;\u0001"+
+		"6\u00016\u00016\u00016\u00016\u00016\u00017\u00017\u00017\u00017\u0001"+
+		"8\u00018\u00018\u00018\u00018\u00018\u00018\u00018\u00018\u00018\u0001"+
+		"9\u00019\u00019\u00019\u00019\u0001:\u0001:\u0001:\u0001:\u0001:\u0001"+
+		":\u0001:\u0001:\u0001:\u0001:\u0001:\u0001:\u0001:\u0001:\u0001:\u0001"+
 		";\u0001;\u0001;\u0001;\u0001;\u0001;\u0001<\u0001<\u0001<\u0001<\u0001"+
-		"<\u0001<\u0001=\u0001=\u0001=\u0001=\u0001=\u0001=\u0001>\u0001>\u0001"+
+		"<\u0001<\u0001=\u0001=\u0005=\u01b7\b=\n=\f=\u01ba\t=\u0001>\u0001>\u0001"+
 		">\u0001>\u0001?\u0001?\u0001?\u0001?\u0001?\u0001@\u0001@\u0001@\u0001"+
 		"@\u0001@\u0001A\u0001A\u0001A\u0001\u0097\u0000B\u0001\u0001\u0003\u0002"+
 		"\u0005\u0003\u0007\u0004\t\u0005\u000b\u0006\r\u0007\u000f\b\u0011\t\u0013"+
@@ -256,9 +257,9 @@ public class MiniPascalGrammarLexer extends Lexer {
 		"\u0000a\u0158\u0001\u0000\u0000\u0000c\u0160\u0001\u0000\u0000\u0000e"+
 		"\u0165\u0001\u0000\u0000\u0000g\u016c\u0001\u0000\u0000\u0000i\u0173\u0001"+
 		"\u0000\u0000\u0000k\u0178\u0001\u0000\u0000\u0000m\u0180\u0001\u0000\u0000"+
-		"\u0000o\u0186\u0001\u0000\u0000\u0000q\u018d\u0001\u0000\u0000\u0000s"+
-		"\u0191\u0001\u0000\u0000\u0000u\u019b\u0001\u0000\u0000\u0000w\u01a0\u0001"+
-		"\u0000\u0000\u0000y\u01af\u0001\u0000\u0000\u0000{\u01b5\u0001\u0000\u0000"+
+		"\u0000o\u0186\u0001\u0000\u0000\u0000q\u018a\u0001\u0000\u0000\u0000s"+
+		"\u0194\u0001\u0000\u0000\u0000u\u0199\u0001\u0000\u0000\u0000w\u01a8\u0001"+
+		"\u0000\u0000\u0000y\u01ae\u0001\u0000\u0000\u0000{\u01b4\u0001\u0000\u0000"+
 		"\u0000}\u01bb\u0001\u0000\u0000\u0000\u007f\u01bf\u0001\u0000\u0000\u0000"+
 		"\u0081\u01c4\u0001\u0000\u0000\u0000\u0083\u01c9\u0001\u0000\u0000\u0000"+
 		"\u0085\u0086\u0007\u0000\u0000\u0000\u0086\u0087\u0007\u0001\u0000\u0000"+
@@ -385,32 +386,32 @@ public class MiniPascalGrammarLexer extends Lexer {
 		"\u0000\u0000\u0000\u0180\u0181\u0007\u0016\u0000\u0000\u0181\u0182\u0007"+
 		"\t\u0000\u0000\u0182\u0183\u0007\u0003\u0000\u0000\u0183\u0184\u0007\b"+
 		"\u0000\u0000\u0184\u0185\u0007\u0001\u0000\u0000\u0185n\u0001\u0000\u0000"+
-		"\u0000\u0186\u018a\u0007\u0018\u0000\u0000\u0187\u0189\u0007\u0019\u0000"+
-		"\u0000\u0188\u0187\u0001\u0000\u0000\u0000\u0189\u018c\u0001\u0000\u0000"+
-		"\u0000\u018a\u0188\u0001\u0000\u0000\u0000\u018a\u018b\u0001\u0000\u0000"+
-		"\u0000\u018bp\u0001\u0000\u0000\u0000\u018c\u018a\u0001\u0000\u0000\u0000"+
-		"\u018d\u018e\u0007\u0004\u0000\u0000\u018e\u018f\u0007\u0003\u0000\u0000"+
-		"\u018f\u0190\u0007\r\u0000\u0000\u0190r\u0001\u0000\u0000\u0000\u0191"+
-		"\u0192\u0007\u0003\u0000\u0000\u0192\u0193\u0007\u0004\u0000\u0000\u0193"+
-		"\u0194\u0007\b\u0000\u0000\u0194\u0195\u0007\u0001\u0000\u0000\u0195\u0196"+
-		"\u0007\t\u0000\u0000\u0196\u0197\u0007\u000b\u0000\u0000\u0197\u0198\u0007"+
-		"\f\u0000\u0000\u0198\u0199\u0007\u0014\u0000\u0000\u0199\u019a\u0007\u0001"+
-		"\u0000\u0000\u019at\u0001\u0000\u0000\u0000\u019b\u019c\u0007\n\u0000"+
-		"\u0000\u019c\u019d\u0007\u0004\u0000\u0000\u019d\u019e\u0007\u0003\u0000"+
-		"\u0000\u019e\u019f\u0007\b\u0000\u0000\u019fv\u0001\u0000\u0000\u0000"+
-		"\u01a0\u01a1\u0007\u0003\u0000\u0000\u01a1\u01a2\u0007\u0011\u0000\u0000"+
-		"\u01a2\u01a3\u0007\u0013\u0000\u0000\u01a3\u01a4\u0007\r\u0000\u0000\u01a4"+
-		"\u01a5\u0007\u0001\u0000\u0000\u01a5\u01a6\u0007\u0011\u0000\u0000\u01a6"+
-		"\u01a7\u0007\u0001\u0000\u0000\u01a7\u01a8\u0007\u0004\u0000\u0000\u01a8"+
-		"\u01a9\u0007\b\u0000\u0000\u01a9\u01aa\u0007\f\u0000\u0000\u01aa\u01ab"+
-		"\u0007\b\u0000\u0000\u01ab\u01ac\u0007\u0003\u0000\u0000\u01ac\u01ad\u0007"+
-		"\u0012\u0000\u0000\u01ad\u01ae\u0007\u0004\u0000\u0000\u01aex\u0001\u0000"+
-		"\u0000\u0000\u01af\u01b0\u0007\r\u0000\u0000\u01b0\u01b1\u0007\f\u0000"+
-		"\u0000\u01b1\u01b2\u0007\u0000\u0000\u0000\u01b2\u01b3\u0007\u0001\u0000"+
-		"\u0000\u01b3\u01b4\u0007\r\u0000\u0000\u01b4z\u0001\u0000\u0000\u0000"+
-		"\u01b5\u01b6\u0007\u0014\u0000\u0000\u01b6\u01b7\u0007\u0012\u0000\u0000"+
-		"\u01b7\u01b8\u0007\u0004\u0000\u0000\u01b8\u01b9\u0007\u000e\u0000\u0000"+
-		"\u01b9\u01ba\u0007\b\u0000\u0000\u01ba|\u0001\u0000\u0000\u0000\u01bb"+
+		"\u0000\u0186\u0187\u0007\u0004\u0000\u0000\u0187\u0188\u0007\u0003\u0000"+
+		"\u0000\u0188\u0189\u0007\r\u0000\u0000\u0189p\u0001\u0000\u0000\u0000"+
+		"\u018a\u018b\u0007\u0003\u0000\u0000\u018b\u018c\u0007\u0004\u0000\u0000"+
+		"\u018c\u018d\u0007\b\u0000\u0000\u018d\u018e\u0007\u0001\u0000\u0000\u018e"+
+		"\u018f\u0007\t\u0000\u0000\u018f\u0190\u0007\u000b\u0000\u0000\u0190\u0191"+
+		"\u0007\f\u0000\u0000\u0191\u0192\u0007\u0014\u0000\u0000\u0192\u0193\u0007"+
+		"\u0001\u0000\u0000\u0193r\u0001\u0000\u0000\u0000\u0194\u0195\u0007\n"+
+		"\u0000\u0000\u0195\u0196\u0007\u0004\u0000\u0000\u0196\u0197\u0007\u0003"+
+		"\u0000\u0000\u0197\u0198\u0007\b\u0000\u0000\u0198t\u0001\u0000\u0000"+
+		"\u0000\u0199\u019a\u0007\u0003\u0000\u0000\u019a\u019b\u0007\u0011\u0000"+
+		"\u0000\u019b\u019c\u0007\u0013\u0000\u0000\u019c\u019d\u0007\r\u0000\u0000"+
+		"\u019d\u019e\u0007\u0001\u0000\u0000\u019e\u019f\u0007\u0011\u0000\u0000"+
+		"\u019f\u01a0\u0007\u0001\u0000\u0000\u01a0\u01a1\u0007\u0004\u0000\u0000"+
+		"\u01a1\u01a2\u0007\b\u0000\u0000\u01a2\u01a3\u0007\f\u0000\u0000\u01a3"+
+		"\u01a4\u0007\b\u0000\u0000\u01a4\u01a5\u0007\u0003\u0000\u0000\u01a5\u01a6"+
+		"\u0007\u0012\u0000\u0000\u01a6\u01a7\u0007\u0004\u0000\u0000\u01a7v\u0001"+
+		"\u0000\u0000\u0000\u01a8\u01a9\u0007\r\u0000\u0000\u01a9\u01aa\u0007\f"+
+		"\u0000\u0000\u01aa\u01ab\u0007\u0000\u0000\u0000\u01ab\u01ac\u0007\u0001"+
+		"\u0000\u0000\u01ac\u01ad\u0007\r\u0000\u0000\u01adx\u0001\u0000\u0000"+
+		"\u0000\u01ae\u01af\u0007\u0014\u0000\u0000\u01af\u01b0\u0007\u0012\u0000"+
+		"\u0000\u01b0\u01b1\u0007\u0004\u0000\u0000\u01b1\u01b2\u0007\u000e\u0000"+
+		"\u0000\u01b2\u01b3\u0007\b\u0000\u0000\u01b3z\u0001\u0000\u0000\u0000"+
+		"\u01b4\u01b8\u0007\u0018\u0000\u0000\u01b5\u01b7\u0007\u0019\u0000\u0000"+
+		"\u01b6\u01b5\u0001\u0000\u0000\u0000\u01b7\u01ba\u0001\u0000\u0000\u0000"+
+		"\u01b8\u01b6\u0001\u0000\u0000\u0000\u01b8\u01b9\u0001\u0000\u0000\u0000"+
+		"\u01b9|\u0001\u0000\u0000\u0000\u01ba\u01b8\u0001\u0000\u0000\u0000\u01bb"+
 		"\u01bc\u0007\u0014\u0000\u0000\u01bc\u01bd\u0007\u0015\u0000\u0000\u01bd"+
 		"\u01be\u0007\t\u0000\u0000\u01be~\u0001\u0000\u0000\u0000\u01bf\u01c0"+
 		"\u0007\b\u0000\u0000\u01c0\u01c1\u0007\u0017\u0000\u0000\u01c1\u01c2\u0007"+
@@ -419,7 +420,7 @@ public class MiniPascalGrammarLexer extends Lexer {
 		"\u0000\u0000\u01c6\u01c7\u0007\u0001\u0000\u0000\u01c7\u01c8\u0007\u000e"+
 		"\u0000\u0000\u01c8\u0082\u0001\u0000\u0000\u0000\u01c9\u01ca\u0007\f\u0000"+
 		"\u0000\u01ca\u01cb\u0007\b\u0000\u0000\u01cb\u0084\u0001\u0000\u0000\u0000"+
-		"\t\u0000\u0097\u00a1\u00ac\u00b2\u00ba\u00bc\u00cc\u018a\u0001\u0006\u0000"+
+		"\t\u0000\u0097\u00a1\u00ac\u00b2\u00ba\u00bc\u00cc\u01b8\u0001\u0006\u0000"+
 		"\u0000";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());

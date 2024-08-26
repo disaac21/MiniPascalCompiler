@@ -6,7 +6,7 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/MiniPascalGrammar.g4" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="C:\Users\danie\Desktop\MiniPascal\src" />
+          <option name="outputDir" value="C:\Users\danie\Desktop\MiniPascalCompiler\src" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
           <option name="pkg" value="" />
