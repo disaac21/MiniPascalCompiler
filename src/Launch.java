@@ -45,6 +45,7 @@ public class Launch {
             // Close the JFrame
             String source = filePath;
             frame.dispose();
+
             CharStream cs = fromFileName(source);
             MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
             CommonTokenStream token = new CommonTokenStream(Lexer);

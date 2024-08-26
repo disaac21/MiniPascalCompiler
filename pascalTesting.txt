@@ -141,3 +141,32 @@ begin
 end.
 
 -------------------------------------------------------
+
+program ConstantsExample;
+
+const
+  PI = 3.14159;
+  MAX_VALUE = 100;
+  GREETING = 'Hello, World!';
+
+var
+  radius, area: real;
+  i: integer;
+
+begin
+  writeln(GREETING);
+
+  { Use the constant PI to calculate the area of a circle }
+  write('Enter the radius of the circle: ');
+  readln(radius);
+  area := PI * radius * radius;
+  writeln('The area of the circle is: ', area:0:2);
+
+  { Use the constant MAX_VALUE in a loop }
+  writeln('Counting to ', MAX_VALUE, ':');
+  for i := 1 to MAX_VALUE do
+  begin
+    write(i, ' ');
+  end;
+  writeln;
+end.
