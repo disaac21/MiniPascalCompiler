@@ -1,16 +1,28 @@
-program ParOImpar;
+program ConstantsExample;
+
+const
+  PI = 3.14159;
+  MAX_VALUE = 100;
+  GREETING = 'Hello, World!';
 
 var
-  numero: integer;
+  radius, area: real;
+  i: integer;
 
 begin
-  writeln('Introduce un número:');
-  readln(numero);
+  writeln(GREETING);
 
-  if (numero mod 2 = 0) then
-    writeln('El número es par.')
-  else
-    writeln('El número es impar.');
+  { Use the constant PI to calculate the area of a circle }
+  write('Enter the radius of the circle: ');
+  readln(radius);
+  area := PI * radius * radius;
+  writeln('The area of the circle is: ', area:0:2);
+
+  { Use the constant MAX_VALUE in a loop }
+  writeln('Counting to ', MAX_VALUE, ':');
+  for i := 1 to MAX_VALUE do
+  begin
+    write(i, ' ');
+  end;
+  writeln;
 end.
-
-{aca probando un comentario}
