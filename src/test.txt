@@ -1,15 +1,15 @@
 program ConstantsExample;
 
 const
-  MAX_VALUE = 100;
-  GREETING = 'Hello, World!';
+  max = 100;
+  greeting = 'Hello, World!';
 
 var
   radius, area: real;
   i: integer;
 
 begin
-  writeln(GREETING);
+  writeln(greeting);
 
   { Use a hardcoded value for PI to calculate the area of a circle }
   write('Enter the radius of the circle: ');
@@ -17,9 +17,9 @@ begin
   area := 3.14159 * radius * radius;
   writeln('The area of the circle is: ', area:0:2);
 
-  { Use the constant MAX_VALUE in a loop }
-  writeln('Counting to ', MAX_VALUE, ':');
-  for i := 1 to MAX_VALUE do
+  { Use the constant max in a loop }
+  writeln('Counting to ', max, ':');
+  for i := 1 to max do
   begin
     write(i, ' ');
   end;

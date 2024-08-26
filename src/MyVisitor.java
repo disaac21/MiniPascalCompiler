@@ -68,6 +68,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) {
+
+        System.out.println("declarando array: " + ctx.getParent().getParent().getChild(0).getText());
         return visitChildren(ctx);
     }
 
