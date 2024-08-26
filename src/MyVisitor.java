@@ -5,7 +5,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
-        System.out.println("Archivo Vacío");
+//        System.out.println("Archivo Vacío");
         System.out.println(ctx.getText());
         return visitChildren(ctx);
     }
