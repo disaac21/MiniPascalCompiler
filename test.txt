@@ -1,26 +1,53 @@
-program SumArrayFunctionExample;
 
-{ Declaración de la función }
-function SumArray(arr: array of Integer): Integer; {ya no falla con el array "of" integer}
-var
-  i, sum: Integer;
-begin
-  sum := 0;
 
-  { Sumar todos los elementos del array }
-  for i := 0 to High(arr) do
-    sum := sum + arr[i];
+program ciclos;
 
-  SumArray := sum;
-end;
+    {declaramos las variables}
 
-var
-  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50); {ya no falla en la asignacion de los valores del array}
-  letters: array[1..5] of char = ('a', 'b', 'c', 'c', 'd');
-  boolArray: array[1..3] of boolean = (true, false, true);
-  total: Integer;
-begin
-  total := SumArray(numbers);
+    var lenght,i,j,x,y,cont:Integer;
+    arreglo:Array[1..50] of Integer;
+    arreglo_bidi: Array[1..10,1..5] of Integer;
+    s:String;
 
-  WriteLn('The sum of the array elements is: ', total);
-end.
+    Function f():Integer;
+    Begin
+        f := 3;
+    end;
+
+    begin
+        {iniciamos las variables}
+
+        lenght := 50;
+        x := 10;
+        y := 5;
+        cont := 1;
+
+        {llenamos el arreglo bidimensional}
+        For i := x Downto 1 Do
+        Begin
+        For j := y Downto 1 Do
+        arreglo_bidi[i,j] := ( cont + ( x - y ) + 5) mod 15;
+        End;
+
+        {reiniciamos el contador}
+        cont := 1;
+
+        {llenamos el arreglo unidimensional}
+        For i := 1 To x Do
+        For j := 1 To y Do
+        Begin
+        arreglo[cont] := arreglo_bidi[i,j];
+        cont := ( cont + 1 ) ;
+        End;
+
+        {reiniciamos el contador}
+        cont := 1;
+
+        {imprimimos el arreglo unidimensional}
+        While ( cont <> lenght+1 ) Do
+        Begin
+        write('arreglo[%d] = ',cont);
+        writeln('%d',arreglo[cont]);
+        End;
+        writeln('Gracias por usar Pascal!');
+    end.

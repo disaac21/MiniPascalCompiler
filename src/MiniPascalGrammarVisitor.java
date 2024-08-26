@@ -202,6 +202,12 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#type_}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -339,6 +345,12 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#procedureDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
 	 * @param ctx the parse tree

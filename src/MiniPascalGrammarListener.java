@@ -327,6 +327,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#type_}.
 	 * @param ctx the parse tree
 	 */
@@ -556,6 +566,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#procedureDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#procedureDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
 	 * @param ctx the parse tree

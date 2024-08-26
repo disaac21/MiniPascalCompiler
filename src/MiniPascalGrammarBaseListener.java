@@ -400,6 +400,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterType_(MiniPascalGrammarParser.Type_Context ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -671,6 +683,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

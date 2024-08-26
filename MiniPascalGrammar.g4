@@ -9,6 +9,7 @@ program
 programHeading
    : PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
+   | PROCEDURE
    ;
 
 identifier
@@ -16,7 +17,7 @@ identifier
    ;
 
 block
-   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION)* compoundStatement
+   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
    ;
 
 usesUnitsPart
@@ -134,6 +135,10 @@ functionType
    : FUNCTION (formalParameterList)? COLON varType
    ;
 
+procedureType
+   : PROCEDURE (formalParameterList)? COLON varType
+   ;
+
 type_
    : simpleType
    | arrayType
@@ -207,6 +212,7 @@ procedureAndFunctionDeclarationPart
 
 procedureOrFunctionDeclaration
    : functionDeclaration
+   | procedureDeclaration
    ;
 
 formalParameterList
@@ -234,6 +240,10 @@ constList
 
 functionDeclaration
    : FUNCTION identifier formalParameterList COLON varType SEMICOLON block
+   ;
+
+procedureDeclaration
+   : PROCEDURE identifier formalParameterList SEMICOLON block
    ;
 
 resultType
@@ -348,6 +358,8 @@ factor
    | set_
    | NOT factor
    | bool_
+   | char
+   | boolean
    ;
 
 unsignedConstant
@@ -489,6 +501,7 @@ DOUBLE_DOT: '..';
 
 PROGRAM: 'program';
 FUNCTION: 'function';
+PROCEDURE: 'procedure';
 
 IF: 'if';
 THEN: 'then';
@@ -501,6 +514,7 @@ TO: 'to';
 DO: 'do';
 DOWNTO: 'downto';
 VAR: 'var';
+OVERLOAD: 'overload';
 
 ARRAY: 'Array';
 OF: 'of';
