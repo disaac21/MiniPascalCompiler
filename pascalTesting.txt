@@ -1,143 +1,20 @@
-program RandomExample;
+program ArrayOfArraysExample;
 
 var
-  a, b, c: integer;
+  Matrix: array[1..3, 1..3] of Integer;  { Corrected array definition }
+  i, j: Integer;
 
 begin
-  a := 5;
-  b := 10;
-  c := a + b;
+  { Initialize the matrix with values }
+  for i := 1 to 3 do
+    for j := 1 to 3 do
+      Matrix[i, j] := i * j;  { Corrected array indexing }
 
-  if c > 10 then
-    writeln('The sum is greater than 10')
-  else
-    writeln('The sum is 10 or less');
-end.
-
---------------------------------------------------------
-
-program ConstStrExample;
-
-{ya no falla el const}
-const
-    Greeting = 'Hello, Mini-Pascal!';
-
-begin
-    writeln(Greeting);
-end.
-
--------------------------------------------------------
-
-{ This is a comment }
-program HelloWorld;
-
-{el : despues de msg falla, creo que eso si deberia de fallar}
-const
-    msg: string = 'Hello, world!';
-begin
-    write(msg);
-end.
-
------------------------------------------------------------
-
-program ConstStrExample;
-
-{el Greeting falla, porque lleva un const conststr y ese no esta definido}
-const
-    conststr Greeting = 'Hello, Mini-Pascal!';
-
-begin
-    writeln(Greeting);
-end.
-
--------------------------------------------------------
-
-{ This is a comment }
-program HelloWorld;
-var
-    msg: string;
-begin
-    msg := 'Hello, world!';
-    write(msg);
-end.
-
---------------------------------------------------------
-
-program FactorialExample;
-
-var
-  n: integer;
-
-function Factorial(x: integer): integer;
-begin
-  if x <= 1 then
-    Factorial := 1
-  else
-    Factorial := x * Factorial(x - 1);
-end;
-
-begin
-  n := 5;  { You can change this value to calculate the factorial of a different number }
-  writeln('Factorial of ', n, ' is: ', Factorial(n));
-  { falla el parentesis del param del Factorial }
-end.
-
----------------------------------------------------------
-
-program ForToExample;
-
-var
-  i: integer;
-
-begin
-  for i := 1 to 5 do
+  { Print the matrix }
+  for i := 1 to 3 do
   begin
-    writeln('Value of i: ', i);
+    for j := 1 to 3 do
+      Write(Matrix[i, j]);  { Use Write instead of Writeln to print values on the same line }
+    Writeln();  { Move to the next line after printing a row }
   end;
 end.
-
--------------------------------------------------------
-
-program ForDowntoExample;
-
-var
-  i: integer;
-
-begin
-  for i := 5 downto 1 do
-  begin
-    writeln('Value of i: ', i);
-  end;
-end.
-
-
-------------------------------------------------------
-
-program SumArrayFunctionExample;
-
-{ Declaración de la función }
-function SumArray(arr: array of Integer): Integer; {ya no falla con el array "of" integer}
-var
-  i, sum: Integer;
-begin
-  sum := 0;
-
-  { Sumar todos los elementos del array }
-  for i := 0 to High(arr) do
-    sum := sum + arr[i];
-
-  SumArray := sum;
-end;
-
-var
-  numbers: array[1..5] of Integer = (10, 20, 30, 40, 50); {ya no falla en la asignacion de los valores del array}
-  letters: array[1..5] of char = ('a', 'b', 'c', 'c', 'd');
-  boolArray: array[1..3] of boolean = (true, false, true);
-  total: Integer;
-begin
-  total := SumArray(numbers);
-
-  WriteLn('The sum of the array elements is: ', total);
-end.
-
--------------------------------------------------------

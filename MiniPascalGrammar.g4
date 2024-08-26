@@ -73,7 +73,7 @@ arrayOfType
 
 
 arrayValue
-   : identifier L_BRACK (integer | identifier) R_BRACK
+   : identifier L_BRACK expressionList R_BRACK
    ;
 
 indexRanges
