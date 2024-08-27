@@ -8,6 +8,8 @@ program
 
 programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
+   | PROCEDURE
+//   | FUNCTION
    ;
 // program identifier ([ identifierList ]) ;
 
@@ -16,7 +18,7 @@ identifier
    ;
 
 block
-   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION)* compoundStatement
+   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
    ;
 
 usesUnitsPart
@@ -73,7 +75,7 @@ arrayOfType
 
 
 arrayValue
-   : identifier L_BRACK (integer | identifier) R_BRACK
+   : identifier L_BRACK expressionList R_BRACK
    ;
 
 indexRanges
@@ -128,6 +130,10 @@ typeDefinition
 
 functionType
    : FUNCTION (formalParameterList)? COLON varType
+   ;
+
+procedureType
+   : PROCEDURE (formalParameterList)? COLON varType
    ;
 
 type_
@@ -203,6 +209,7 @@ procedureAndFunctionDeclarationPart
 
 procedureOrFunctionDeclaration
    : functionDeclaration
+   | procedureDeclaration
    ;
 
 formalParameterList
@@ -213,6 +220,7 @@ formalParameterSection
    : parameterGroup
    | VAR parameterGroup
    | FUNCTION parameterGroup
+//    | PROCEDURE parameterGroup
    ;
 
 parameterGroup
@@ -232,6 +240,10 @@ functionDeclaration
    : FUNCTION identifier formalParameterList COLON varType SEMICOLON block
    ;
 
+procedureDeclaration
+   : PROCEDURE identifier formalParameterList SEMICOLON block
+   ;
+
 resultType
    : typeIdentifier
    ;
@@ -241,6 +253,7 @@ statement
    | writeStatement
    | readStatement
    | unlabelledStatement
+   | functionDesignator
    ;
 
 writeStatement
@@ -275,6 +288,7 @@ read: READ | READLN;
 readParam
     : varValue
     | identifier
+    | arrayValue
     ;
 
 unlabelledStatement
@@ -320,6 +334,7 @@ additiveoperator
    : PLUS
    | MINUS
    | OR
+   | AND
    ;
 
 term
@@ -344,6 +359,8 @@ factor
    | set_
    | NOT factor
    | bool_
+   | char
+   | boolean
    ;
 
 unsignedConstant
@@ -393,6 +410,7 @@ structuredStatement
 
 compoundStatement
    : BEGIN statements END
+   | procedureOrFunctionDeclaration
    ;
 
 statements
@@ -485,6 +503,7 @@ DOUBLE_DOT: '..';
 
 PROGRAM: 'program';
 FUNCTION: 'function';
+PROCEDURE: 'procedure';
 
 IF: 'if';
 THEN: 'then';
@@ -497,6 +516,7 @@ TO: 'to';
 DO: 'do';
 DOWNTO: 'downto';
 VAR: 'var';
+OVERLOAD: 'overload';
 
 ARRAY: 'Array';
 OF: 'of';
