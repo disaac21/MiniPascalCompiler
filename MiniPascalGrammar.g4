@@ -6,12 +6,12 @@ program
    : programHeading (INTERFACE)? block DOT EOF
    ;
 
-programHeading
-   : PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
+programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
    | PROCEDURE
 //   | FUNCTION
    ;
+// program identifier ([ identifierList ]) ;
 
 identifier
    : ID
@@ -91,13 +91,9 @@ charR_: CHAR_;
 integerR_: INTEGER_;
 booleanR_: BOOLEAN_;
 
-unsignedNumber
-   : unsignedInteger
-   ;
+unsignedNumber: unsignedInteger;
 
-unsignedInteger
-   : INTEGER
-   ;
+unsignedInteger: INTEGER;
 
 sign
    : PLUS
