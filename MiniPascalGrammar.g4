@@ -10,6 +10,7 @@ programHeading
    : PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
    | PROCEDURE
+//   | FUNCTION
    ;
 
 identifier
@@ -223,6 +224,7 @@ formalParameterSection
    : parameterGroup
    | VAR parameterGroup
    | FUNCTION parameterGroup
+//    | PROCEDURE parameterGroup
    ;
 
 parameterGroup
@@ -255,6 +257,7 @@ statement
    | writeStatement
    | readStatement
    | unlabelledStatement
+   | functionDesignator
    ;
 
 writeStatement
@@ -289,6 +292,7 @@ read: READ | READLN;
 readParam
     : varValue
     | identifier
+    | arrayValue
     ;
 
 unlabelledStatement
@@ -334,6 +338,7 @@ additiveoperator
    : PLUS
    | MINUS
    | OR
+   | AND
    ;
 
 term
@@ -409,6 +414,7 @@ structuredStatement
 
 compoundStatement
    : BEGIN statements END
+   | procedureOrFunctionDeclaration
    ;
 
 statements
