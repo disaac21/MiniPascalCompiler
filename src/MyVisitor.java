@@ -7,6 +7,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
 //        System.out.println("Archivo Vacío");
 //        System.out.println(ctx.getText());
+        System.out.println( "Se inicia el programa -> " + ctx.getChild(0).getChild(1).getText());
         return visitChildren(ctx);
     }
 
@@ -270,6 +271,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
+
+        System.out.println("Declarando Función: " + ctx.getChild(1).getText());
+
         return visitChildren(ctx);
     }
 

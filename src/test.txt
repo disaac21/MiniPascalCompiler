@@ -1,5 +1,5 @@
 program ConstantsExample;
-
+{
 const
   max = 100;
   greeting = 'Hello, World!';

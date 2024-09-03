@@ -3,7 +3,7 @@
 program ciclos;
 
     {declaramos las variables}
-
+    hola hahhahaa;
     var lenght,i,j,x,y,cont:Integer;
     arreglo:Array[1..50] of Integer;
     arreglo_bidi: Array[1..10,1..5] of Integer;
