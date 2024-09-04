@@ -1,15 +1,14 @@
-
-
-
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
+        System.out.println("\nComienzo del Programa");
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitProgramHeading(MiniPascalGrammarParser.ProgramHeadingContext ctx) {
+        System.out.println("\nNombre del Programa: " + ctx.getChild(1).getText());
         return visitChildren(ctx);
     }
 
@@ -20,100 +19,84 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
+        System.out.println("\n\nIniciando un Bloque del Programa");
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx) {
+        System.out.println("\nDeclaración de Labels");
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitLabel(MiniPascalGrammarParser.LabelContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitLabel(MiniPascalGrammarParser.LabelContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitConstantDefinitionPart(MiniPascalGrammarParser.ConstantDefinitionPartContext ctx) {
+        System.out.println("\nDefinicion de CONSTs");
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitConstantDefinition(MiniPascalGrammarParser.ConstantDefinitionContext ctx) {
+        System.out.println("Definiendo constante " + ctx.getChild(0).getText() + " con valor: " + ctx.getChild(2).getText());
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitConstantChr(MiniPascalGrammarParser.ConstantChrContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitConstantChr(MiniPascalGrammarParser.ConstantChrContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitConstant(MiniPascalGrammarParser.ConstantContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitConstant(MiniPascalGrammarParser.ConstantContext ctx) { return visitChildren(ctx);}
 
     @Override
-    public Object visitVarType(MiniPascalGrammarParser.VarTypeContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitVarType(MiniPascalGrammarParser.VarTypeContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) {
-
-        System.out.println("declarando array: " + ctx.getParent().getParent().getChild(0).getText());
-        return visitChildren(ctx);
-    }
+    public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitArrayValue(MiniPascalGrammarParser.ArrayValueContext ctx) {
+        System.out.println("Asignando valores al array");
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitIndexRanges(MiniPascalGrammarParser.IndexRangesContext ctx) {
-        return visitChildren(ctx);
-    }
+        if (ctx.getChildCount() > 1) {
+            System.out.print("Rango de Indices " + ctx.getChild(0).getText() + " a " + ctx.getChild(2).getText());
+        } else {
+            System.out.print("Rango de Indices " + ctx.getChild(0).getText());
+        }
+        return visitChildren(ctx); }
 
     @Override
-    public Object visitIndexRange(MiniPascalGrammarParser.IndexRangeContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitIndexRange(MiniPascalGrammarParser.IndexRangeContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitStringR_(MiniPascalGrammarParser.StringR_Context ctx) {
+        System.out.println("Cadena de texto: " + ctx.getText());
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitCharR_(MiniPascalGrammarParser.CharR_Context ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitCharR_(MiniPascalGrammarParser.CharR_Context ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitIntegerR_(MiniPascalGrammarParser.IntegerR_Context ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitIntegerR_(MiniPascalGrammarParser.IntegerR_Context ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitUnsignedNumber(MiniPascalGrammarParser.UnsignedNumberContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitUnsignedNumber(MiniPascalGrammarParser.UnsignedNumberContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitUnsignedInteger(MiniPascalGrammarParser.UnsignedIntegerContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitUnsignedInteger(MiniPascalGrammarParser.UnsignedIntegerContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitSign(MiniPascalGrammarParser.SignContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitSign(MiniPascalGrammarParser.SignContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitBool_(MiniPascalGrammarParser.Bool_Context ctx) {
@@ -141,9 +124,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitTypeDefinitionPart(MiniPascalGrammarParser.TypeDefinitionPartContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitTypeDefinitionPart(MiniPascalGrammarParser.TypeDefinitionPartContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitTypeDefinition(MiniPascalGrammarParser.TypeDefinitionContext ctx) {
@@ -222,33 +203,31 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx) {
+        System.out.println("\nDeclaración de Variables");
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitVariableDeclaration(MiniPascalGrammarParser.VariableDeclarationContext ctx) {
+        if (ctx.getChild(2).getChild(0).getText().contains("array") || ctx.getChild(2).getChild(0).getText().contains("Array")) {
+            System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo Array of " + ctx.getChild(2).getChild(0).getChild(5).getText() + " con ");
+        } else {
+            System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
+        }
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitProcedureAndFunctionDeclarationPart(MiniPascalGrammarParser.ProcedureAndFunctionDeclarationPartContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitProcedureAndFunctionDeclarationPart(MiniPascalGrammarParser.ProcedureAndFunctionDeclarationPartContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitProcedureOrFunctionDeclaration(MiniPascalGrammarParser.ProcedureOrFunctionDeclarationContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitProcedureOrFunctionDeclaration(MiniPascalGrammarParser.ProcedureOrFunctionDeclarationContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitFormalParameterList(MiniPascalGrammarParser.FormalParameterListContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitFormalParameterList(MiniPascalGrammarParser.FormalParameterListContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitFormalParameterSection(MiniPascalGrammarParser.FormalParameterSectionContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitFormalParameterSection(MiniPascalGrammarParser.FormalParameterSectionContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
@@ -266,9 +245,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitResultType(MiniPascalGrammarParser.ResultTypeContext ctx) {
@@ -321,19 +298,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitUnlabelledStatement(MiniPascalGrammarParser.UnlabelledStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitUnlabelledStatement(MiniPascalGrammarParser.UnlabelledStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitSimpleStatement(MiniPascalGrammarParser.SimpleStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitSimpleStatement(MiniPascalGrammarParser.SimpleStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitVariable(MiniPascalGrammarParser.VariableContext ctx) {
@@ -351,19 +322,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitRelationaloperator(MiniPascalGrammarParser.RelationaloperatorContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitRelationaloperator(MiniPascalGrammarParser.RelationaloperatorContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitSimpleExpression(MiniPascalGrammarParser.SimpleExpressionContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitSimpleExpression(MiniPascalGrammarParser.SimpleExpressionContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitAdditiveoperator(MiniPascalGrammarParser.AdditiveoperatorContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitAdditiveoperator(MiniPascalGrammarParser.AdditiveoperatorContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitTerm(MiniPascalGrammarParser.TermContext ctx) {
@@ -371,9 +336,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitMultiplicativeoperator(MiniPascalGrammarParser.MultiplicativeoperatorContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitMultiplicativeoperator(MiniPascalGrammarParser.MultiplicativeoperatorContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitSignedFactor(MiniPascalGrammarParser.SignedFactorContext ctx) {
@@ -386,14 +349,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitUnsignedConstant(MiniPascalGrammarParser.UnsignedConstantContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitUnsignedConstant(MiniPascalGrammarParser.UnsignedConstantContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitParameterList(MiniPascalGrammarParser.ParameterListContext ctx) {
@@ -416,9 +375,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx) {
@@ -426,19 +383,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitEmptyStatement_(MiniPascalGrammarParser.EmptyStatement_Context ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitEmptyStatement_(MiniPascalGrammarParser.EmptyStatement_Context ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitStructuredStatement(MiniPascalGrammarParser.StructuredStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitStructuredStatement(MiniPascalGrammarParser.StructuredStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitCompoundStatement(MiniPascalGrammarParser.CompoundStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitCompoundStatement(MiniPascalGrammarParser.CompoundStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitStatements(MiniPascalGrammarParser.StatementsContext ctx) {
@@ -446,9 +397,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitConditionalStatement(MiniPascalGrammarParser.ConditionalStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitConditionalStatement(MiniPascalGrammarParser.ConditionalStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitIfStatement(MiniPascalGrammarParser.IfStatementContext ctx) {
@@ -456,9 +405,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitRepetitiveStatement(MiniPascalGrammarParser.RepetitiveStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitRepetitiveStatement(MiniPascalGrammarParser.RepetitiveStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitWhileStatement(MiniPascalGrammarParser.WhileStatementContext ctx) {
@@ -466,9 +413,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitRepeatStatement(MiniPascalGrammarParser.RepeatStatementContext ctx) {
-        return visitChildren(ctx);
-    }
+    public Object visitRepeatStatement(MiniPascalGrammarParser.RepeatStatementContext ctx) { return visitChildren(ctx);}
 
     @Override
     public Object visitForStatement(MiniPascalGrammarParser.ForStatementContext ctx) {

@@ -9,7 +9,7 @@ program
 programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
    | PROCEDURE
-//   | FUNCTION
+   | FUNCTION
    ;
 // program identifier ([ identifierList ]) ;
 
