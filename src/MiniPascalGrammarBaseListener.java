@@ -1,4 +1,4 @@
-// Generated from C:/Users/danie/Desktop/MiniPascal/MiniPascalGrammar.g4 by ANTLR 4.13.1
+// Generated from C:/Users/danie/Desktop/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -172,6 +172,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArrayOfType(MiniPascalGrammarParser.ArrayOfTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArrayOfType(MiniPascalGrammarParser.ArrayOfTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArrayValue(MiniPascalGrammarParser.ArrayValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -239,6 +251,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIntegerR_(MiniPascalGrammarParser.IntegerR_Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBooleanR_(MiniPascalGrammarParser.BooleanR_Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBooleanR_(MiniPascalGrammarParser.BooleanR_Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -371,6 +395,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -652,6 +688,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterResultType(MiniPascalGrammarParser.ResultTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -695,18 +743,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWrite(MiniPascalGrammarParser.WriteContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1163,6 +1199,18 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInitialValue(MiniPascalGrammarParser.InitialValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArrayInitialization(MiniPascalGrammarParser.ArrayInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArrayInitialization(MiniPascalGrammarParser.ArrayInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

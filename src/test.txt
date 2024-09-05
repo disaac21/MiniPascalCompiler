@@ -1,27 +1,27 @@
-program ConstantsExample;
-{
-const
-  max = 100;
-  greeting = 'Hello, World!';
+program FactorialRecursivo;
+
+{ Este programa calcula el factorial de un número utilizando una función recursiva. }
+
+{ Función recursiva para calcular el factorial de un número }
+function Factorial(n: integer): integer;
+begin
+  if n = 0 then
+    Factorial := 1
+  else
+    Factorial := n * Factorial(n - 1);
+end;
 
 var
-  radius, area: real;
-  i: integer;
+  numero, resultado: integer;
 
 begin
-  writeln(greeting);
+  { Leer el número del usuario }
+  writeln('Ingrese un número para calcular su factorial: ');
+  readln(numero);
 
-  { Use a hardcoded value for PI to calculate the area of a circle }
-  write('Enter the radius of the circle: ');
-  readln(radius);
-  area := 3.14159 * radius * radius;
-  writeln('The area of the circle is: ', area:0:2);
+  { Calcular el factorial utilizando la función recursiva }
+  resultado := Factorial(numero);
 
-  { Use the constant max in a loop }
-  writeln('Counting to ', max, ':');
-  for i := 1 to max do
-  begin
-    write(i, ' ');
-  end;
-  writeln;
+  { Mostrar el resultado }
+  writeln('El factorial de ', numero, ' es: ', resultado);
 end.

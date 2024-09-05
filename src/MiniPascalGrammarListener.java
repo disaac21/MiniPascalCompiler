@@ -1,4 +1,4 @@
-// Generated from C:/Users/danie/Desktop/MiniPascal/MiniPascalGrammar.g4 by ANTLR 4.13.1
+// Generated from C:/Users/danie/Desktop/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -137,6 +137,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#arrayOfType}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayOfType(MiniPascalGrammarParser.ArrayOfTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#arrayOfType}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayOfType(MiniPascalGrammarParser.ArrayOfTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#arrayValue}.
 	 * @param ctx the parse tree
 	 */
@@ -196,6 +206,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIntegerR_(MiniPascalGrammarParser.IntegerR_Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#booleanR_}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanR_(MiniPascalGrammarParser.BooleanR_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#booleanR_}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanR_(MiniPascalGrammarParser.BooleanR_Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#unsignedNumber}.
 	 * @param ctx the parse tree
@@ -306,6 +326,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#type_}.
 	 * @param ctx the parse tree
@@ -537,6 +567,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#procedureDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#procedureDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
 	 * @param ctx the parse tree
 	 */
@@ -576,16 +616,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWrite(MiniPascalGrammarParser.WriteContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#writeParam2}.
-	 * @param ctx the parse tree
-	 */
-	void enterWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#writeParam2}.
-	 * @param ctx the parse tree
-	 */
-	void exitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#writeParam}.
 	 * @param ctx the parse tree
@@ -966,6 +996,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInitialValue(MiniPascalGrammarParser.InitialValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#arrayInitialization}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayInitialization(MiniPascalGrammarParser.ArrayInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#arrayInitialization}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayInitialization(MiniPascalGrammarParser.ArrayInitializationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#finalValue}.
 	 * @param ctx the parse tree
