@@ -3,16 +3,20 @@
 program ciclos;
 
     {declaramos las variables}
-    hola hahhahaa;
+    {hola hahhahaa;}
     var lenght,i,j,x,y,cont:Integer;
     arreglo:Array[1..50] of Integer;
+    {holsaaaa}
     arreglo_bidi: Array[1..10,1..5] of Integer;
     s:String;
+
 
     Function f():Integer;
     Begin
         f := 3;
     end;
+
+
 
     begin
         {iniciamos las variables}
