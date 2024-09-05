@@ -263,10 +263,6 @@ writeStatement
 
 write: WRITE | WRITELN;
 
-writeParam2
-    : string
-    ;
-
 writeParam
     : varValue
     | identifier

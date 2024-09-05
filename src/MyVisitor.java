@@ -19,7 +19,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
-        System.out.println("\n\nIniciando un Bloque del Programa");
+//        System.out.println("\n\nIniciando un Bloque del Programa");
         return visitChildren(ctx);
     }
 
@@ -78,10 +78,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitIndexRange(MiniPascalGrammarParser.IndexRangeContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitStringR_(MiniPascalGrammarParser.StringR_Context ctx) {
-        System.out.println("Cadena de texto: " + ctx.getText());
-        return visitChildren(ctx);
-    }
+    public Object visitStringR_(MiniPascalGrammarParser.StringR_Context ctx) { return visitChildren(ctx); }
 
     @Override
     public Object visitCharR_(MiniPascalGrammarParser.CharR_Context ctx) { return visitChildren(ctx); }
@@ -231,6 +228,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
+        System.out.println(ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
         return visitChildren(ctx);
     }
 
@@ -245,7 +243,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) { return visitChildren(ctx); }
+    public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
+        System.out.println("\nDeclaración de Función " + ctx.getChild(1).getText() + " de tipo " + ctx.getChild(4).getText() + " con parametros:");
+        return visitChildren(ctx);
+    }
+
+    public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
+        System.out.println("\nDeclaración de Procedimiento " + ctx.getChild(1).getText() + " con parametros:");
+        return visitChildren(ctx);
+    }
 
     @Override
     public Object visitResultType(MiniPascalGrammarParser.ResultTypeContext ctx) {
@@ -259,16 +265,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitWriteStatement(MiniPascalGrammarParser.WriteStatementContext ctx) {
+        if (ctx.getChildCount() <= 4) {
+            System.out.println("\nUsando Funcion Write para escribir " + ctx.getChild(2).getText());
+        } else {
+            System.out.print("\nUsando Funcion Write para escribir " + ctx.getChild(2).getText() + " y parametros");
+            for (int i = 4; i < ctx.getChildCount()-1; i++) {
+                System.out.print(" " + ctx.getChild(i).getText());
+            }
+        }
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitWrite(MiniPascalGrammarParser.WriteContext ctx) {
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Object visitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) {
         return visitChildren(ctx);
     }
 
@@ -284,6 +293,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitReadStatement(MiniPascalGrammarParser.ReadStatementContext ctx) {
+        System.out.println("\nUsando Funcion Read para leer la variable: " + ctx.getChild(2).getText());
         return visitChildren(ctx);
     }
 
@@ -304,7 +314,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitSimpleStatement(MiniPascalGrammarParser.SimpleStatementContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) { return visitChildren(ctx); }
+    public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) {
+        System.out.print("\nAsignando valor " + ctx.getChild(2).getText() + " a la variable " + ctx.getChild(0).getText());
+        return visitChildren(ctx);
+    }
 
     @Override
     public Object visitVariable(MiniPascalGrammarParser.VariableContext ctx) {
@@ -352,10 +365,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitUnsignedConstant(MiniPascalGrammarParser.UnsignedConstantContext ctx) { return visitChildren(ctx); }
 
     @Override
-    public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) { return visitChildren(ctx); }
+    public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) {
+        System.out.print("\nLlamando a la funcion " + ctx.getChild(0).getText() + " con parametros: ");
+        return visitChildren(ctx);
+    }
 
     @Override
     public Object visitParameterList(MiniPascalGrammarParser.ParameterListContext ctx) {
+        System.out.println(ctx.getText());
         return visitChildren(ctx);
     }
 
@@ -401,6 +418,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitIfStatement(MiniPascalGrammarParser.IfStatementContext ctx) {
+        System.out.println("\nCiclo If con condición " + ctx.getChild(1).getText());
+        System.out.print("Bloque de instrucciones: ");
+        System.out.println(ctx.getChild(3).getText());
+        if (ctx.getChildCount() > 4) {
+            System.out.print("Bloque de instrucciones Else: ");
+            System.out.println(ctx.getChild(5).getText());
+        }
         return visitChildren(ctx);
     }
 
@@ -409,25 +433,37 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitWhileStatement(MiniPascalGrammarParser.WhileStatementContext ctx) {
+        System.out.println("\nCiclo While con condición " + ctx.getChild(1).getText());
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitRepeatStatement(MiniPascalGrammarParser.RepeatStatementContext ctx) { return visitChildren(ctx);}
+    public Object visitRepeatStatement(MiniPascalGrammarParser.RepeatStatementContext ctx) {
+        System.out.println("\nCiclo Repeat con condición hasta " + ctx.getChild(3).getText());
+        return visitChildren(ctx);
+    }
 
     @Override
     public Object visitForStatement(MiniPascalGrammarParser.ForStatementContext ctx) {
+        System.out.print("\nCiclo For con variable " + ctx.getChild(1).getText());
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitForList(MiniPascalGrammarParser.ForListContext ctx) {
+        System.out.println(" desde " + ctx.getChild(0).getText() + " hasta " + ctx.getChild(2).getText());
         return visitChildren(ctx);
     }
 
     @Override
     public Object visitInitialValue(MiniPascalGrammarParser.InitialValueContext ctx) {
         return visitChildren(ctx);
+    }
+
+    @Override
+    public Object visitArrayInitialization(MiniPascalGrammarParser.ArrayInitializationContext ctx) {
+        System.out.println("\nInicializando Array con valores: " + ctx.getChild(1).getText());
+        return super.visitChildren(ctx);
     }
 
     @Override

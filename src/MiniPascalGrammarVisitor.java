@@ -376,12 +376,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWrite(MiniPascalGrammarParser.WriteContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#writeParam2}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#writeParam}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -1,75 +1,32 @@
-program EjemploVariablesYConstantes;
+program OperadoresPascal;
 
-{ Este programa muestra cómo definir variables de diferentes tipos en Pascal
-  y cómo utilizar constantes de caracteres y cadenas de texto. }
-
-{ Constantes de tipo char y string }
-const
-  SALUDO = 'Hola, Mundo!';  { Constante de tipo string }
-  INICIAL = 'A';            { Constante de tipo char }
+{ Este programa demuestra el uso de operadores de suma, multiplicación y asignación en Pascal. }
 
 var
-  { Variables de tipo básico }
-  numero: integer;          { Variable de tipo integer }
-  letra: char;              { Variable de tipo char }
-  nombre: string;           { Variable de tipo string }
-  esValido: boolean;        { Variable de tipo boolean }
-
-  { Arreglos de una dimensión }
-  numeros: array[1..5] of integer;  { Arreglo de enteros de una dimensión }
-  letras: array[1..3] of char;      { Arreglo de caracteres de una dimensión }
-  estados: array[1..4] of boolean;  { Arreglo de booleanos de una dimensión }
-
-  { Arreglos de dos dimensiones }
-  matrizNumeros: array[1..3, 1..3] of integer;  { Arreglo de enteros de dos dimensiones }
-  matrizLetras: array[1..2, 1..2] of char;      { Arreglo de caracteres de dos dimensiones }
-  matrizEstados: array[1..2, 1..2] of boolean;  { Arreglo de booleanos de dos dimensiones }
+  a, b, suma, resta, producto, divisionEntera, modulo: integer;
+  divisionReal: real;
 
 begin
-  { Asignación de valores a variables }
-  numero := 10;
-  letra := 'B';
-  nombre := 'Juan';
-  esValido := true;
+  { Asignación de valores a las variables }
+  a := 15;
+  b := 4;
 
-  { Asignación de valores a arreglos de una dimensión }
-  numeros[1] := 1;
-  numeros[2] := 2;
-  numeros[3] := 3;
-  numeros[4] := 4;
-  numeros[5] := 5;
+  { Uso de operadores de suma }
+  suma := a + b;
+  resta := a - b;
 
-  letras[1] := 'X';
-  letras[2] := 'Y';
-  letras[3] := 'Z';
+  { Uso de operadores de multiplicación }
+  producto := a * b;
+  divisionEntera := a div b;
+  divisionReal := a / b;
+  modulo := a mod b;
 
-  estados[1] := true;
-  estados[2] := false;
-  estados[3] := true;
-  estados[4] := false;
-
-  { Asignación de valores a arreglos de dos dimensiones }
-  matrizNumeros[1, 1] := 1;
-  matrizNumeros[1, 2] := 2;
-  matrizNumeros[1, 3] := 3;
-  matrizNumeros[2, 1] := 4;
-  matrizNumeros[2, 2] := 5;
-  matrizNumeros[2, 3] := 6;
-  matrizNumeros[3, 1] := 7;
-  matrizNumeros[3, 2] := 8;
-  matrizNumeros[3, 3] := 9;
-
-  matrizLetras[1, 1] := 'A';
-  matrizLetras[1, 2] := 'B';
-  matrizLetras[2, 1] := 'C';
-  matrizLetras[2, 2] := 'D';
-
-  matrizEstados[1, 1] := true;
-  matrizEstados[1, 2] := false;
-  matrizEstados[2, 1] := false;
-  matrizEstados[2, 2] := true;
-
-  { Ejemplo de uso de las constantes }
-  writeln(SALUDO);         { Imprime 'Hola, Mundo!' }
-  writeln('La inicial es: ', INICIAL);  { Imprime 'La inicial es: A' }
+  { Mostrar los resultados }
+  writeln('Operaciones con los números ', a, ' y ', b, ':');
+  writeln('Suma (a + b): ', suma);
+  writeln('Resta (a - b): ', resta);
+  writeln('Producto (a * b): ', producto);
+  writeln('División entera (a div b): ', divisionEntera);
+  writeln('División real (a / b): ', divisionReal);  { Mostrar con 2 decimales }
+  writeln('Módulo (a mod b): ', modulo);
 end.

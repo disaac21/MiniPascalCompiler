@@ -444,13 +444,6 @@ public class MiniPascalGrammarBaseVisitor<T> extends AbstractParseTreeVisitor<T>
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitWriteParam(MiniPascalGrammarParser.WriteParamContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

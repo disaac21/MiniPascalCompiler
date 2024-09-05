@@ -748,18 +748,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWriteParam2(MiniPascalGrammarParser.WriteParam2Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterWriteParam(MiniPascalGrammarParser.WriteParamContext ctx) { }
 	/**
 	 * {@inheritDoc}

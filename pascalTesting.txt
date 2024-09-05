@@ -65,9 +65,6 @@ end.
 
 program FactorialExample;
 
-var
-  n: integer;
-
 function Factorial(x: integer): integer;
 begin
   if x <= 1 then
@@ -75,6 +72,9 @@ begin
   else
     Factorial := x * Factorial(x - 1);
 end;
+
+var
+  n: integer;
 
 begin
   n := 5;  { You can change this value to calculate the factorial of a different number }
