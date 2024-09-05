@@ -1,32 +1,27 @@
-program OperadoresPascal;
+program FactorialRecursivo;
 
-{ Este programa demuestra el uso de operadores de suma, multiplicación y asignación en Pascal. }
+{ Este programa calcula el factorial de un número utilizando una función recursiva. }
+
+{ Función recursiva para calcular el factorial de un número }
+function Factorial(n: integer): integer;
+begin
+  if n = 0 then
+    Factorial := 1
+  else
+    Factorial := n * Factorial(n - 1);
+end;
 
 var
-  a, b, suma, resta, producto, divisionEntera, modulo: integer;
-  divisionReal: real;
+  numero, resultado: integer;
 
 begin
-  { Asignación de valores a las variables }
-  a := 15;
-  b := 4;
+  { Leer el número del usuario }
+  writeln('Ingrese un número para calcular su factorial: ');
+  readln(numero);
 
-  { Uso de operadores de suma }
-  suma := a + b;
-  resta := a - b;
+  { Calcular el factorial utilizando la función recursiva }
+  resultado := Factorial(numero);
 
-  { Uso de operadores de multiplicación }
-  producto := a * b;
-  divisionEntera := a div b;
-  divisionReal := a / b;
-  modulo := a mod b;
-
-  { Mostrar los resultados }
-  writeln('Operaciones con los números ', a, ' y ', b, ':');
-  writeln('Suma (a + b): ', suma);
-  writeln('Resta (a - b): ', resta);
-  writeln('Producto (a * b): ', producto);
-  writeln('División entera (a div b): ', divisionEntera);
-  writeln('División real (a / b): ', divisionReal);  { Mostrar con 2 decimales }
-  writeln('Módulo (a mod b): ', modulo);
+  { Mostrar el resultado }
+  writeln('El factorial de ', numero, ' es: ', resultado);
 end.

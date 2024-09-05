@@ -228,7 +228,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
-        System.out.println(ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
+        if (ctx.getChildCount() > 1) {
+            System.out.println(ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
+        } else {
+            System.out.println("Sin Parametros");
+        }
         return visitChildren(ctx);
     }
 
