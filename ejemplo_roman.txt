@@ -6,7 +6,7 @@ program ciclos;
     {hola hahhahaa;}
     var lenght,i,j,x,y,cont:Integer;
     arreglo:Array[1..50] of Integer;
-    {holsaaaa}
+    holsaaaa
     arreglo_bidi: Array[1..10,1..5] of Integer;
     s:String;
 
@@ -34,7 +34,7 @@ program ciclos;
         End;
 
         {reiniciamos el contador}
-        cont := 1;
+        cont := 1 + 2;
 
         {llenamos el arreglo unidimensional}
         For i := 1 To x Do

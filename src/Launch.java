@@ -59,7 +59,8 @@ public class Launch {
 
             MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
             parser.removeErrorListeners();
-            parser.addErrorListener(new Manejo_Errores());
+//            parser.addErrorListener(new Manejo_Errores());
+            parser.setErrorHandler(new CustomErrorStrategy());
             parser.getInterpreter()
                     .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
 
