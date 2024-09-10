@@ -1,4 +1,4 @@
-// Generated from C:/Users/serli/Compi 1 Serlio/Proyecto Daniel/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
+// Generated from C:/Users/danie/Desktop/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -46,36 +46,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBlock(MiniPascalGrammarParser.BlockContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#usesUnitsPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#usesUnitsPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#labelDeclarationPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#labelDeclarationPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabel(MiniPascalGrammarParser.LabelContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabel(MiniPascalGrammarParser.LabelContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#constantDefinitionPart}.
 	 * @param ctx the parse tree

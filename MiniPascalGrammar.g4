@@ -7,7 +7,7 @@ program
    ;
 
 programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
-   | UNIT identifier SEMICOLON
+//   | UNIT identifier SEMICOLON
    | PROCEDURE
    | FUNCTION
    ;
@@ -18,20 +18,21 @@ identifier
    ;
 
 block
-   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
+//   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
+   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
    ;
 
-usesUnitsPart
-   : USES identifierList SEMICOLON
-   ;
+//usesUnitsPart
+//   : USES identifierList SEMICOLON
+//   ;
 
-labelDeclarationPart
-   : LABEL label (COMMA label)* SEMICOLON
-   ;
-
-label
-   : unsignedInteger
-   ;
+//labelDeclarationPart
+//   : LABEL label (COMMA label)* SEMICOLON
+//   ;
+//
+//label
+//   : unsignedInteger
+//   ;
 
 constantDefinitionPart
    : CONST (constantDefinition SEMICOLON)+
@@ -142,8 +143,8 @@ type_
    ;
 
 simpleType
-   : scalarType
-   | subrangeType
+//   : scalarType
+   : subrangeType
    | typeIdentifier
    | stringtype
    | constant
@@ -249,8 +250,8 @@ resultType
    ;
 
 statement
-   : label COLON unlabelledStatement
-   | writeStatement
+//   : label COLON unlabelledStatement
+   : writeStatement
    | readStatement
    | unlabelledStatement
    | functionDesignator
@@ -446,6 +447,8 @@ forList
 initialValue
    : arrayInitialization
    | constant
+   | identifier
+//   | expression // puede ser cualquiera de los dos
    ;
 
 arrayInitialization
@@ -530,14 +533,14 @@ WRITE: 'WRITE';
 
 NIL: 'NIL';
 INTERFACE: 'INTERFACE';
-UNIT: 'UNIT';
+//UNIT: 'UNIT';
 IMPLEMENTATION: 'IMPLEMENTATION';
-LABEL: 'LABEL';
+//LABEL: 'LABEL';
 CONST: 'CONST';
 
 ID: [a-zA-Z] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
 
 CHR: 'CHR';
 TYPE: 'TYPE';
-USES: 'USES';
+//USES: 'USES';
 AT: 'AT';
