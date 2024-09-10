@@ -46,7 +46,7 @@ public class Launch {
             // Close the JFrame
 //            String source = filePath;
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_roman.txt";
-            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\ejemplo_roman.txt";
+            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 //            frame.dispose();
 
             CharStream cs = fromFileName(source);

@@ -19,7 +19,7 @@ identifier
 
 block
 //   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
-   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
+   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* (compoundStatement)*
    ;
 
 //usesUnitsPart
@@ -407,6 +407,7 @@ structuredStatement
 
 compoundStatement
    : BEGIN statements END
+//   | BEGIN (statement | compoundStatement) END
    | procedureOrFunctionDeclaration
    ;
 
