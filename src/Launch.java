@@ -1,7 +1,4 @@
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DiagnosticErrorListener;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -53,21 +50,34 @@ public class Launch {
 
             CharStream cs = fromFileName(source);
             MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
-//            Lexer.removeErrorListeners();
-//            Lexer.addErrorListener(new Manejo_Errores());
+            Lexer.removeErrorListeners();
+            Lexer.addErrorListener(new Manejo_Errores());
             CommonTokenStream token = new CommonTokenStream(Lexer);
 
             MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
             parser.removeErrorListeners();
-//            parser.addErrorListener(new Manejo_Errores());
-            parser.setErrorHandler(new CustomErrorStrategy());
-            parser.getInterpreter()
-                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+            parser.addErrorListener(new Manejo_Errores());
+//            parser.addErrorListener(new DiagnosticErrorListener());
+//            parser.setErrorHandler(new CustomErrorStrategy());
+            parser.setErrorHandler(new DefaultErrorStrategy());
+
+//            parser.getInterpreter()
+//                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+
 
             ParseTree tree = parser.program();
 
-            MyVisitor visitor = new MyVisitor();
-            visitor.visit(tree);
+            int errorCount = parser.getErrorListeners().stream()
+                    .filter(el -> el instanceof Manejo_Errores)
+                    .map(el -> (Manejo_Errores) el)
+                    .mapToInt(Manejo_Errores::getErrorCount)
+                    .sum();
+            System.out.println("Number of syntax errors: " + errorCount);
+
+            if (errorCount == 0){
+                MyVisitor visitor = new MyVisitor();
+                visitor.visit(tree);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

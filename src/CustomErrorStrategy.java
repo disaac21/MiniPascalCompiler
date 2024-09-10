@@ -12,7 +12,7 @@ public class CustomErrorStrategy extends DefaultErrorStrategy {
         // Personaliza la forma en que se reportan los errores de reconocimiento
         String message = "Error de reconocimiento: " + e.getMessage();
         // Puedes lanzar una excepción o manejar el error según tu preferencia
-        throw new RuntimeException(message, e);
+//        throw new RuntimeException(message, e);
     }
 
     @Override

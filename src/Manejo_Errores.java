@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class Manejo_Errores extends BaseErrorListener {
+
+    private int errorCount = 0;
+
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,
                             Object offendingSymbol,
@@ -12,6 +15,7 @@ public class Manejo_Errores extends BaseErrorListener {
                             String msg,
                             RecognitionException e)
     {
+        errorCount++;
 //        List<String> stack = ((Parser)recognizer).getRuleInvocationStack();
 //        Collections.reverse(stack);
 //        System.err.println("rule stack: "+stack);
@@ -35,6 +39,10 @@ public class Manejo_Errores extends BaseErrorListener {
             for (int i=start; i<=stop; i++) System.err.print("^");
         }
         System.err.println();
+    }
+
+    public int getErrorCount() {
+        return errorCount;
     }
 
 }

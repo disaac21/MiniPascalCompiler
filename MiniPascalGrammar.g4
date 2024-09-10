@@ -48,7 +48,7 @@ constantChr
 constant
    : unsignedNumber
    | sign unsignedNumber
-   | identifier
+//   | identifier
    | sign identifier
    | string
    | constantChr
@@ -158,8 +158,8 @@ subrangeType
    ;
 
 typeIdentifier
-   : identifier
-   | (CHAR_ | BOOLEAN_ | INTEGER_ | STRING_)
+//   : identifier
+   : (CHAR_ | BOOLEAN_ | INTEGER_ | STRING_)
    ;
 
 stringtype
