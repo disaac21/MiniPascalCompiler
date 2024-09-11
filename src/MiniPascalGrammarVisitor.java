@@ -1,4 +1,4 @@
-// Generated from C:/Users/serli/Compi 1 Serlio/Proyecto Daniel/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
+// Generated from C:/Users/danie/Desktop/MiniPascalCompiler/MiniPascalGrammar.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -33,24 +33,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBlock(MiniPascalGrammarParser.BlockContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#usesUnitsPart}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#labelDeclarationPart}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#label}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabel(MiniPascalGrammarParser.LabelContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#constantDefinitionPart}.
 	 * @param ctx the parse tree

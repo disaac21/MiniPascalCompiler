@@ -24,18 +24,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx) { return visitChildren(ctx); }
-
-    @Override
-    public Object visitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx) {
-        System.out.println("\nDeclaración de Labels");
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Object visitLabel(MiniPascalGrammarParser.LabelContext ctx) { return visitChildren(ctx); }
-
-    @Override
     public Object visitConstantDefinitionPart(MiniPascalGrammarParser.ConstantDefinitionPartContext ctx) {
         System.out.println("\nDefinicion de CONSTs");
         return visitChildren(ctx);

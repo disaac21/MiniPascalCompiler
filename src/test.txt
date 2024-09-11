@@ -1,27 +1,157 @@
-program FactorialRecursivo;
+program EstructurasDeControl;
 
-{ Este programa calcula el factorial de un número utilizando una función recursiva. }
-
-{ Función recursiva para calcular el factorial de un número }
-function Factorial(n: integer): integer;
-begin
-  if n = 0 then
-    Factorial := 1
-  else
-    Factorial := n * Factorial(n - 1);
-end;
+{ Este programa utiliza ciclos while, for, repeat y la instrucción if para
+  realizar operaciones sobre una lista de números. }
 
 var
-  numero, resultado: integer;
+  numeros: array[1..10] of integer;
+  i, suma, maximo, minimo: integer;
 
 begin
-  { Leer el número del usuario }
-  writeln('Ingrese un número para calcular su factorial: ');
-  readln(numero);
+  { Inicializar variables }
+  suma := 0;
+  maximo := -32768; { Valor mínimo posible para un entero }
+  minimo := 32767;  { Valor máximo posible para un entero }
 
-  { Calcular el factorial utilizando la función recursiva }
-  resultado := Factorial(numero);
+  { Leer 10 números }
+  writeln('Ingrese 10 números enteros:');
+  for i := 1 to 10 do
+  begin
+    write('Número ', i, ': ');
+    readln(numeros[i]);
+  end;
 
-  { Mostrar el resultado }
-  writeln('El factorial de ', numero, ' es: ', resultado);
+  { Usar ciclo for para calcular la suma de los números }
+  for i := 1 to 10 do
+    suma := suma + numeros[i];
+
+  writeln('La suma de los números es: ', suma);
+
+  { Usar ciclo while para encontrar el número máximo }
+  i := 1;
+  while i <= 10 do
+  begin
+    if numeros[i] > maximo then
+      maximo := numeros[i];
+    i := i + 1;
+  end;
+
+  writeln('El número máximo es: ', maximo);
+
+  { Usar ciclo repeat para encontrar el número mínimo }
+  i := 1;
+  repeat
+    if numeros[i] < minimo then
+      minimo := numeros[i];
+    i := i + 1;
+  until i > 10;
+
+  writeln('El número mínimo es: ', minimo);
+
+  { Usar la instrucción if para determinar si la suma es par o impar }
+  if suma mod 2 = 0 then
+    writeln('La suma de los números es par.')
+  else
+    writeln('La suma de los números es impar.');
+end.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+program ComplexExample;
+
+{ Declare variables }
+var
+    bidimensionalArray: array[1..10, 1..10] of Integer;
+    unidimensionalArray: array[1..100] of Integer;
+    rowCount, colCount, index, cont: Integer;
+    filename: String;
+    fileVar: String;
+
+{ Function to calculate factorial recursively }
+function Factorial(n: Integer): Integer;
+begin
+    if n = 0 then
+        Factorial := 1
+    else
+        Factorial := n * Factorial(n - 1);
+end;
+
+{ Procedure to fill the bidimensional array with a pattern }
+procedure FillBidimensionalArray(var arr: array of array of Integer; rows, cols: Integer);
+var
+    i, j: Integer;
+begin
+    for i := 1 to rows do
+        for j := 1 to cols do
+            arr[i,j] := (i * j + (i + j)) mod 20;
+end;
+
+{ Procedure to flatten the bidimensional array into a unidimensional array }
+procedure FlattenArray(var bidiArray: array of array of Integer; var uniArray: array of Integer; rows, cols: Integer);
+var
+    i, j, k: Integer;
+begin
+    k := 1;
+    for i := 1 to rows do
+    begin
+        for j := 1 to cols do
+        begin
+            uniArray[k] := bidiArray[i,j];
+            k := k + 1;
+        end;
+    end;
+end;
+
+{ Procedure to write the array data to a file }
+procedure WriteArrayToFile(var arr: array of Integer; length: Integer; filename: String);
+var
+    i: Integer;
+    outputFile: String;
+begin
+    Assign(outputFile, filename);
+    Rewrite(outputFile);
+    for i := 1 to length do
+    begin
+        writeln(outputFile, 'Element[', i, '] = ', arr[i]);
+    end;
+    Close(outputFile);
+end;
+
+{ Procedure to print an array to the console }
+procedure PrintArray(var arr: array of Integer; length: Integer);
+var
+    i: Integer;
+begin
+    for i := 1 to length do
+    begin
+        write('Element[', i, '] = ');
+        writeln(arr[i]);
+    end;
+end;
+
+begin
+    { Initialize variables }
+    rowCount := 10;
+    colCount := 10;
+    cont := 0;
+    filename := 'output.txt';
+
+    { Fill the bidimensional array }
+    FillBidimensionalArray(bidimensionalArray, rowCount, colCount);
+
+    { Flatten the bidimensional array into a unidimensional array }
+    FlattenArray(bidimensionalArray, unidimensionalArray, rowCount, colCount);
+
+    { Print the unidimensional array }
+    writeln('Flattened Array:');
+    PrintArray(unidimensionalArray, rowCount * colCount);
+
+    { Write the unidimensional array to a file }
+    writeln('Writing array to file: ', filename);
+    WriteArrayToFile(unidimensionalArray, rowCount * colCount, filename);
+
+    { Calculate and print the factorial of a number }
+    writeln('Factorial of 5');
+
+    writeln('Program completed successfully!');
 end.
