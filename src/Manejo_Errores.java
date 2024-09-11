@@ -19,9 +19,22 @@ public class Manejo_Errores extends BaseErrorListener {
 //        List<String> stack = ((Parser)recognizer).getRuleInvocationStack();
 //        Collections.reverse(stack);
 //        System.err.println("rule stack: "+stack);
-        System.err.println("linea "+line+" - " + "caracter " +charPositionInLine+" "+ msg);
+//        System.out.println(e);
+        String errorType = (e == null) ? "Léxico" : "Sintáctico";
+//        String translatedMsg = translateErrorMessage(msg);
+        System.err.println("Error de tipo: " + errorType);
+        System.err.println("linea "+line+" - " + "caracter " +charPositionInLine+" " + msg);
         underlineError(recognizer,(Token)offendingSymbol,
                 line, charPositionInLine);
+    }
+    private String translateErrorMessage(String msg) {
+        // Aquí puedes agregar más traducciones según sea necesario
+        if (msg.contains("mismatched input")) {
+            msg = msg.replace("mismatched input", "entrada no coincidente");
+            msg = msg.replace("expecting", "se esperaba");
+        }
+
+        return msg;
     }
     protected void underlineError(Recognizer recognizer,
                                   Token offendingToken, int line,
