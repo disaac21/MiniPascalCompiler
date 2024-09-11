@@ -74,7 +74,7 @@ public class Launch {
                     .map(el -> (Manejo_Errores) el)
                     .mapToInt(Manejo_Errores::getErrorCount)
                     .sum();
-            System.out.println("Numero de errores: " + errorCount);
+            System.err.println("Numero de errores: " + errorCount);
 
             if (errorCount == 0){
                 MyVisitor visitor = new MyVisitor();
