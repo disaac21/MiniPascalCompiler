@@ -63,6 +63,7 @@ ID=62
 CHR=63
 TYPE=64
 AT=65
+UNIT=66
 'begin'=1
 'end'=2
 ':='=9
