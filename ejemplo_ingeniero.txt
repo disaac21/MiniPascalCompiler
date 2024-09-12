@@ -4,11 +4,11 @@ program ciclos;
     {hola hahhahaa;}
     var lenght,i,j,x,y,cont:Integer;
     arreglo:Array[1..50] of Integer;
-    holsaaaa:COLO;
+    {holsaaaa:COLO;}
     arreglo_bidi: Array[1..10,1..5] of Integer;
     var s:STRING;
 
-    Function f ():Integer;
+    Function  ():Integer;
     Begin
         f := 3;
     end;
@@ -16,7 +16,7 @@ program ciclos;
     begin
         {iniciamos las variables}
 
-        := 50;
+        length;= 50;
         x := 10;
         y := 5;
         cont := 1;
