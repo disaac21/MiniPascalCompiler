@@ -6,20 +6,17 @@ program
    : programHeading (INTERFACE)? block DOT EOF
    ;
 
-programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
-//   | UNIT identifier SEMICOLON
-   | PROCEDURE
-   | FUNCTION
+programHeading
+   : PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
+   | UNIT identifier SEMICOLON
    ;
-// program identifier ([ identifierList ]) ;
 
 identifier
    : ID
    ;
 
 block
-//   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
-   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* (compoundStatement)*
+   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION )* compoundStatement
    ;
 
 //usesUnitsPart
@@ -53,6 +50,7 @@ constant
    | sign identifier
    | string
    | constantChr
+   | varType
    | char
    | boolean
    ;
@@ -250,11 +248,11 @@ resultType
    ;
 
 statement
-//   : label COLON unlabelledStatement
-   : writeStatement
+   : unsignedInteger COLON unlabelledStatement
+   | writeStatement
    | readStatement
    | unlabelledStatement
-   | functionDesignator
+//   | functionDesignator
    ;
 
 writeStatement
@@ -408,7 +406,7 @@ structuredStatement
 compoundStatement
    : BEGIN statements END
 //   | BEGIN (statement | compoundStatement) END
-   | procedureOrFunctionDeclaration
+//   | procedureOrFunctionDeclaration
    ;
 
 statements
