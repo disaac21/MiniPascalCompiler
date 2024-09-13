@@ -78,7 +78,7 @@ arrayValue
    ;
 
 indexRanges
-   : indexRange (COMMA indexRange)*
+   : indexRange (COMMA indexRange)?
    ;
 
 indexRange
@@ -257,9 +257,8 @@ statement
    ;
 
 writeStatement
-    : write L_PAREN (writeParam (COMMA writeParam)*)? R_PAREN
+    : write L_PAREN (string (COMMA identifier)?)? R_PAREN
     ;
-
 
 write: WRITE | WRITELN;
 
@@ -291,7 +290,7 @@ read: READ | READLN;
 readParam
     : readWriteVarValue
     | identifier
-    | arrayValue
+//    | arrayValue
     ;
 
 unlabelledStatement
@@ -522,7 +521,7 @@ TO: 'to';
 DO: 'do';
 DOWNTO: 'downto';
 VAR: 'var';
-OVERLOAD: 'overload';
+//OVERLOAD: 'overload';
 
 ARRAY: 'Array';
 OF: 'of';
@@ -538,8 +537,8 @@ WRITELN: 'WRITELN';
 WRITE: 'WRITE';
 
 
-NIL: 'NIL';
-INTERFACE: 'INTERFACE';
+//NIL: 'NIL';
+//INTERFACE: 'INTERFACE';
 //UNIT: 'UNIT';
 IMPLEMENTATION: 'IMPLEMENTATION';
 //LABEL: 'LABEL';
