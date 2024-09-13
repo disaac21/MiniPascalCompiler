@@ -1,0 +1,50 @@
+program IgnorarComentariosSimple;
+
+{ Este programa lee un texto simulando código Mini-Pascal
+  e ignora los comentarios y caracteres de espacio en blanco, 
+  tabulación y nueva línea, sin usar funciones nativas avanzadas. }
+
+var
+  texto: string;
+  i: integer;
+  dentroComentario: boolean;
+  c: char;
+
+begin
+  { Inicializamos la cadena de código con comentarios y espacios }
+  texto := 'begin { comentario } var a := 10; { otro comentario } end.';
+  
+  { Inicializamos las variables }
+  dentroComentario := false;
+  i := 1;
+  
+  { Recorremos cada carácter de la cadena manualmente }
+  while texto[i] <> '.' do  { El bucle termina con un punto final }
+  begin
+    c := texto[i]; { Tomamos el carácter actual }
+
+    { Detectamos si estamos entrando en un comentario }
+    if (c = '{') then
+      dentroComentario := true;
+
+    { Detectamos si estamos saliendo de un comentario }
+    if (c = '}') then
+    begin
+      dentroComentario := false;
+      i := i + 1; { Saltar al siguiente carácter después del cierre del comentario }
+    end;
+
+    { Si no estamos dentro de un comentario y no es un espacio en blanco }
+    if (not dentroComentario) and (c <> ' ') and (c <> 9) and (c <> 10) then
+    begin
+      { Mostrar el carácter }
+      write(c);
+    end;
+
+    { Avanzar al siguiente carácter }
+    i := i + 1;
+  end;
+
+  { Fin de la línea }
+  writeln();
+end.

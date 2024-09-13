@@ -1,0 +1,38 @@
+program MaximoComunDivisor;
+
+{ Este programa calcula el máximo común divisor (MCD) de dos números utilizando
+  el algoritmo de Euclides. El cálculo se realiza en un procedimiento anidado
+  y recursivo. }
+
+var
+  a, b: integer;
+
+begin
+  { Cuerpo principal (main) del programa }
+  writeln('Ingrese el primer número: ');
+  readln(a);
+  writeln('Ingrese el segundo número: ');
+  readln(b);
+
+  { Procedimiento anidado para calcular el MCD }
+  procedure CalcularMCD(x, y: integer);
+  var
+    resultado: integer;
+
+    { Procedimiento recursivo para el algoritmo de Euclides }
+    function Euclides(m, n: integer): integer;
+    begin
+      if n = 0 then
+        Euclides := m
+      else
+        Euclides := Euclides(n, m mod n);
+    end;
+
+  begin
+    resultado := Euclides(x, y);
+    writeln('El MCD de ', x, ' y ', y, ' es: ', resultado);
+  end;
+
+  { Llamada al procedimiento anidado para calcular el MCD }
+  CalcularMCD(a, b);
+end.

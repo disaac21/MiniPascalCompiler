@@ -1,0 +1,21 @@
+program ConstantesCharYString;
+
+{ Este programa utiliza constantes de tipo char y string }
+
+const
+  constchar = 'a';               { Constante de tipo char }
+  conststr = 'Número de cuenta';  { Constante de tipo string }
+
+var
+  letra: char;
+  mensaje: string;
+
+begin
+  { Asignamos las constantes a las variables }
+  letra := constchar;
+  mensaje := conststr;
+  
+  { Mostramos los valores de las constantes }
+  writeln('Constante de tipo char: ', letra);
+  writeln('Constante de tipo string: ', mensaje);
+end.

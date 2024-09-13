@@ -1,0 +1,26 @@
+program InlineReadWrite;
+
+{ Este programa realiza la lectura y escritura de variables inline
+  utilizando directamente variables de tipo integer, char y string. }
+
+var
+  numero: integer;
+  letra: char;
+  nombre: string;
+
+begin
+  { Lectura de valores }
+  writeln('Ingrese un número: ');
+  readln(numero);
+
+  writeln('Ingrese una letra: ');
+  readln(letra);
+
+  writeln('Ingrese su nombre: ');
+  readln(nombre);
+
+  { Escritura de valores }
+  writeln('El número ingresado es: ', numero);
+  writeln('La letra ingresada es: ', letra);
+  writeln('El nombre ingresado es: ', nombre);
+end.
