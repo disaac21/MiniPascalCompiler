@@ -607,6 +607,16 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitVarValue(MiniPascalGrammarParser.VarValueContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#readWriteVarValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#readWriteVarValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#readStatement}.
 	 * @param ctx the parse tree
 	 */

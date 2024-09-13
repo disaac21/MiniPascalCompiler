@@ -1,0 +1,43 @@
+program FuncionesParametrosPorValorYReferencia;
+
+{ Este programa implementa una función que recibe parámetros por valor y por referencia }
+
+{ Función que acepta múltiples parámetros y retorna un valor entero }
+function SumarValores(var num1: integer; num2: integer; var resultado: integer): integer;
+begin
+  resultado := num1 + num2;  { El parámetro resultado es pasado por referencia y se modifica }
+  SumarValores := resultado;  { La función retorna el resultado }
+end;
+
+{ Función que concatena una cadena con un carácter }
+function ConcatenarCharConString(cadena: string; letra: char): string;
+begin
+  ConcatenarCharConString := cadena + letra;  { Retorna una cadena con la letra concatenada }
+end;
+
+{ Función que convierte un entero a string }
+function EnteroAString(valor: integer): string;
+begin
+  Str(valor, EnteroAString);  { Convierte un entero a string usando Str() }
+end;
+
+var
+  numero1, numero2, suma: integer;
+  cadenaFinal: string;
+  caracter: char;
+begin
+  { Asignación de valores }
+  numero1 := 5;
+  numero2 := 10;
+  caracter := 'A';
+  cadenaFinal := 'Resultado: ';
+
+  { Llamada a la función SumarValores pasando num1 por referencia y num2 por valor }
+  writeln('Suma de ', numero1, ' y ', numero2, ': ', SumarValores(numero1, numero2, suma));
+
+  { Llamada a la función ConcatenarCharConString }
+  writeln('Cadena concatenada: ', ConcatenarCharConString(cadenaFinal, caracter));
+
+  { Llamada a la función EnteroAString }
+  writeln('Entero convertido a string: ', EnteroAString(numero1));
+end.

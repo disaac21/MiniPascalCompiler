@@ -1,0 +1,30 @@
+program EvaluacionBooleana;
+
+{ Este programa evalúa expresiones booleanas respetando la precedencia lógica
+  de operadores en Pascal. }
+
+var
+  a, b, c: integer;
+  x, y: boolean;
+  resultado: boolean;
+
+begin
+  { Asignamos valores a las variables }
+  a := 10;
+  b := 5;
+  c := 2;
+  x := true;
+  y := false;
+
+  { Ejemplo 1: Evaluamos una expresión booleana simple }
+  resultado := (a > b) and (b < c) or (x and not y);
+  
+  { Mostramos la expresión y el resultado }
+  writeln('La expresión (a > b) and (b < c) or (x and not y) se evalúa como: ', resultado);
+
+  { Ejemplo 2: Otra expresión con diferentes operadores }
+  resultado := (a = 10) or (b <> 5) and (c >= 2) and not (x or y);
+
+  { Mostramos la segunda expresión y el resultado }
+  writeln('La expresión (a = 10) or (b <> 5) and (c >= 2) and not (x or y) se evalúa como: ', resultado);
+end.

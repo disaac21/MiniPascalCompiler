@@ -1,0 +1,22 @@
+program ManejoDeStrings;
+
+{ Este programa demuestra el manejo básico de cadenas en Pascal sin definir una longitud explícita }
+
+var
+  cadena: string;  { Declaración de una cadena de longitud por defecto (máximo 255 caracteres) }
+  longitud: integer;  { Variable para almacenar la longitud de la cadena }
+
+begin
+  { Asignamos un valor a la cadena }
+  cadena := 'Pascal maneja cadenas de forma eficiente, con un límite de 255 caracteres.';
+  
+  { Obtenemos la longitud de la cadena }
+  longitud := length(cadena);  { length() devuelve la longitud actual de la cadena }
+
+  { Mostramos la cadena y su longitud }
+  writeln('Cadena: ', cadena);
+  writeln('Longitud de la cadena: ', longitud);
+  
+  { Demostramos que la cadena no requiere definir su longitud máxima manualmente }
+  writeln('El tipo string maneja hasta 255 caracteres por defecto en Pascal.');
+end.

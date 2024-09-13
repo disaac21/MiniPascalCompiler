@@ -1,0 +1,65 @@
+program ManejoDeArreglos;
+
+{ Este programa maneja arreglos de tipo integer, char, y boolean hasta de dos dimensiones }
+
+var
+  { Declaración de un arreglo unidimensional de enteros }
+  enteros: array[1..5] of integer;
+  
+  { Declaración de un arreglo bidimensional de caracteres }
+  caracteres: array[1..3, 1..3] of char;
+  
+  { Declaración de un arreglo bidimensional de booleanos }
+  booleanos: array[1..2, 1..2] of boolean;
+  
+  i, j: integer; { Variables para iteración }
+
+begin
+  { Inicializar el arreglo unidimensional de enteros }
+  enteros[1] := 10;
+  enteros[2] := 20;
+  enteros[3] := 30;
+  enteros[4] := 40;
+  enteros[5] := 50;
+
+  { Mostrar el arreglo unidimensional de enteros }
+  writeln('Arreglo de enteros:');
+  for i := 1 to 5 do
+    writeln('enteros[', i, '] = ', enteros[i]);
+
+  { Inicializar el arreglo bidimensional de caracteres }
+  caracteres[1,1] := 'A';
+  caracteres[1,2] := 'B';
+  caracteres[1,3] := 'C';
+  caracteres[2,1] := 'D';
+  caracteres[2,2] := 'E';
+  caracteres[2,3] := 'F';
+  caracteres[3,1] := 'G';
+  caracteres[3,2] := 'H';
+  caracteres[3,3] := 'I';
+
+  { Mostrar el arreglo bidimensional de caracteres }
+  writeln('Arreglo bidimensional de caracteres:');
+  for i := 1 to 3 do
+  begin
+    for j := 1 to 3 do
+      write(caracteres[i,j], ' ');
+    writeln();
+  end;
+
+  { Inicializar el arreglo bidimensional de booleanos }
+  booleanos[1,1] := true;
+  booleanos[1,2] := false;
+  booleanos[2,1] := true;
+  booleanos[2,2] := false;
+
+  { Mostrar el arreglo bidimensional de booleanos }
+  writeln('Arreglo bidimensional de booleanos:');
+  for i := 1 to 2 do
+  begin
+    for j := 1 to 2 do
+      write(booleanos[i,j], ' ');
+    writeln();
+  end;
+  
+end.

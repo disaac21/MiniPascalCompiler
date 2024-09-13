@@ -65,7 +65,7 @@ varType
     ;
 
 arrayType
-   : ARRAY L_BRACK indexRanges R_BRACK OF varType
+   : ARRAY L_BRACK indexRanges R_BRACK OF (integerR_ | booleanR_ | charR_ )
    ;
 
 arrayOfType
@@ -252,7 +252,8 @@ statement
    | writeStatement
    | readStatement
    | unlabelledStatement
-//   | functionDesignator
+   | functionDesignator
+   | procedureOrFunctionDeclaration
    ;
 
 writeStatement
@@ -263,14 +264,21 @@ writeStatement
 write: WRITE | WRITELN;
 
 writeParam
-    : varValue
+    : readWriteVarValue
     | identifier
     | arrayValue
+    | functionDesignator
     ;
 
 varValue
     : string
     | boolean
+    | char
+    | integer
+    ;
+
+readWriteVarValue
+    : string
     | char
     | integer
     ;
@@ -281,7 +289,7 @@ readStatement
 read: READ | READLN;
 
 readParam
-    : varValue
+    : readWriteVarValue
     | identifier
     | arrayValue
     ;
@@ -537,7 +545,7 @@ IMPLEMENTATION: 'IMPLEMENTATION';
 //LABEL: 'LABEL';
 CONST: 'CONST';
 
-ID: [a-zA-Z] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
+ID: [a-zA-Z_] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
 
 CHR: 'CHR';
 TYPE: 'TYPE';
