@@ -74,9 +74,13 @@ public class Launch {
                     .map(el -> (Manejo_Errores) el)
                     .mapToInt(Manejo_Errores::getErrorCount)
                     .sum();
-            System.err.println("Numero de errores: " + errorCount);
+//            System.err.println("Numero de errores: " + errorCount);
 
             if (errorCount == 0){
+                String verde = "\u001B[32m";
+                String reset = "\u001B[0m";
+
+                System.out.println(verde + "Compilado exitosamente" + reset);
                 MyVisitor visitor = new MyVisitor();
                 visitor.visit(tree);
             }

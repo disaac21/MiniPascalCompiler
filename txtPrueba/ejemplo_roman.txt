@@ -11,7 +11,7 @@ program ciclos;
     var s:STRING;
 
 
-    Function  ():Integer;s
+    Function f ():Integer;
     Begin
         f := 3;
     end;
@@ -51,7 +51,7 @@ program ciclos;
         While ( cont <> lenght+1 ) Do
         Begin
         write('arreglo[%d] = ',cont);
-        writeln('%d',arreglo[cont]);
+        {writeln('%d',arreglo[cont]);}
         End;
         writeln('Gracias por usar Pascal!');
     end.

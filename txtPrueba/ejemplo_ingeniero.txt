@@ -16,7 +16,7 @@ program ciclos;
     begin
         {iniciamos las variables}
 
-        length;= 50;
+        length:= 50;
         x := 10;
         y := 5;
         cont := 1;
@@ -46,7 +46,7 @@ program ciclos;
         While ( cont <> lenght+1 ) Do
         Begin
         write('arreglo[%d] = ',cont);
-        writeln('%d',arreglo[cont]);
+        writeln('%d');
         End;
         writeln('Gracias por usar Pascal!');
     end.
@@ -54,4 +54,4 @@ program ciclos;
     {invalid_keyword;  // This line will cause a NoViableAltException}
     { Esta línea provocará un FailedPredicateException si la predicación semántica falla }
     {if (x < 0) then writeln('Esto provocará un FailedPredicateException');}
-    {$invalid_token;  // Esta línea provocará un LexerNoViableAltException }
+    {$invalid_token;  // Esta línea provocará un LexerNoViableAltException}
