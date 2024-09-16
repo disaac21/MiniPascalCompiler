@@ -194,8 +194,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitVariableDeclaration(MiniPascalGrammarParser.VariableDeclarationContext ctx) {
+        String tipo;
         if (ctx.getChild(2).getChild(0).getText().contains("array") || ctx.getChild(2).getChild(0).getText().contains("Array")) {
-            System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo Array of " + ctx.getChild(2).getChild(0).getChild(5).getText() + " con ");
+//            System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo Array of " + ctx.getChild(2).getChild(0).getChild(5).getText() + " con ");
+            tipo = ctx.getChild(2).getChild(0).getText();
+            System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo Array de " + tipo.substring(tipo.indexOf(']')+3, tipo.length()) + " con ");
         } else {
             System.out.print("\nDeclarando variable " + ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
         }
