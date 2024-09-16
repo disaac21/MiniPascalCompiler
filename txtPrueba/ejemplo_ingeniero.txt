@@ -8,7 +8,7 @@ program ciclos;
     arreglo_bidi: Array[1..10,1..5] of Integer;
     var s:STRING;
 
-    Function  ():Integer;
+    Function d ():Integer;
     Begin
         f := 3;
     end;
