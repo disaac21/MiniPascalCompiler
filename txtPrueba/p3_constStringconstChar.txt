@@ -13,7 +13,7 @@ var
 begin
   { Asignamos las constantes a las variables }
   letra := constchar;
-  letra := "hola";
+  letra := ;
   mensaje := conststr;
   
   { Mostramos los valores de las constantes }

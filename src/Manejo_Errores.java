@@ -1,5 +1,6 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import java.util.Collections;
@@ -23,6 +24,16 @@ public class Manejo_Errores extends BaseErrorListener {
         if (msg.contains("Error léxico")) {
             errorType = "Léxico";
         }
+        else if (msg.contains("extraneous input")) {
+            String extraneousToken = ((Token) offendingSymbol).getText();
+            String expectedTokens = getExpectedTokens(recognizer);
+
+            // Personaliza el mensaje para errores de "extraneous input"
+            msg = "Error: Token inesperado '" + extraneousToken + "' en línea " + line +
+                    ", posición " + charPositionInLine + "." + '\n' +
+            "Se esperaba uno de los siguientes tokens: " + expectedTokens;
+
+        }
         // Verificar si es un error léxico
         else if (e instanceof LexerNoViableAltException) {
             errorType = "Léxico";
@@ -39,12 +50,13 @@ public class Manejo_Errores extends BaseErrorListener {
                     ime.getExpectedTokens().toString(recognizer.getVocabulary());
         } else if (e instanceof NoViableAltException) {
             errorType = "Sintáctico";
-            msg = "Error sintáctico: no hay alternativa viable en la entrada.";
+            msg = "Error sintáctico: no hay alternativa viable en la entrada. Se esperaba uno de los siguientes: " +
+                    ((NoViableAltException) e).getExpectedTokens().toString(recognizer.getVocabulary());
         } else if (e instanceof FailedPredicateException) {
             errorType = "Sintáctico";
             msg = "Error sintáctico: predicado fallido.";
         } else {
-//            errorType = "Sintáctico";
+            errorType = "Sintáctico";
 //            msg = "Error sintáctico no reconocido.";
         }
 
@@ -94,6 +106,29 @@ public class Manejo_Errores extends BaseErrorListener {
         }
     }
 
+    private String getExpectedTokens(Recognizer<?, ?> recognizer) {
+        if (recognizer instanceof Parser) {
+            Parser parser = (Parser) recognizer;
+            Vocabulary vocab = parser.getVocabulary();
+            IntervalSet expectedTokens = parser.getExpectedTokens();
+            StringBuilder tokens = new StringBuilder();
+            for (int token : expectedTokens.toList()) {
+                tokens.append(vocab.getDisplayName(token)).append(", ");
+            }
+            if (tokens.length() > 0) {
+                tokens.setLength(tokens.length() - 2);  // Elimina la coma extra
+            }
+            return tokens.toString();
+        }
+        return "";
+    }
+
+
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
 //    protected void underlineError(Recognizer recognizer, Token offendingToken, int line, int charPositionInLine) {
 //        if (recognizer.getInputStream() instanceof CommonTokenStream) {
 //            CommonTokenStream tokens = (CommonTokenStream) recognizer.getInputStream();
@@ -115,10 +150,4 @@ public class Manejo_Errores extends BaseErrorListener {
 //            System.err.println();
 //        }
 //    }
-
-
-    public int getErrorCount() {
-        return errorCount;
-    }
-
 }
