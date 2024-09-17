@@ -235,10 +235,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitIdentifierList(MiniPascalGrammarParser.IdentifierListContext ctx) {
-        for (MiniPascalGrammarParser.IdentifierContext ctx2: ctx.identifier()) {
-            System.out.println("    Identifier: " + ctx2.getText());
-        }
-        return null;
+//        for (MiniPascalGrammarParser.IdentifierContext ctx2: ctx.identifier()) {
+//            System.out.println("    Identifier: " + ctx2.getText());
+//        }
+        return visitChildren(ctx);
     }
 
     @Override
