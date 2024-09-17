@@ -3,18 +3,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
         System.out.println("\nComienzo del Programa");
-        return visitChildren(ctx);
+        visit(ctx.programHeading());
+        visit(ctx.block());
+        System.out.println("\nFin del Programa");
+        return null;
     }
 
     @Override
     public Object visitProgramHeading(MiniPascalGrammarParser.ProgramHeadingContext ctx) {
-        System.out.println("\nNombre del Programa: " + ctx.getChild(1).getText());
-        return visitChildren(ctx);
+        System.out.println("\nNombre del Programa: " + ctx.identifier().getText());
+        return null;
     }
 
     @Override
     public Object visitIdentifier(MiniPascalGrammarParser.IdentifierContext ctx) {
-        return visitChildren(ctx);
+        System.out.print(ctx.getText());
+        return null;
     }
 
     @Override
@@ -31,7 +35,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitConstantDefinition(MiniPascalGrammarParser.ConstantDefinitionContext ctx) {
-        System.out.println("Definiendo constante " + ctx.getChild(0).getText() + " con valor: " + ctx.getChild(2).getText());
+        MiniPascalGrammarParser.IdentifierContext id = ctx.identifier();
+        MiniPascalGrammarParser.ConstantContext value = ctx.constant();
+        System.out.println("Definiendo constante " + id.getText() + " con valor: " + value.getText());
         return visitChildren(ctx);
     }
 
@@ -220,16 +226,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
         if (ctx.getChildCount() > 1) {
-            System.out.println(ctx.getChild(0).getText() + " de tipo " + ctx.getChild(2).getText());
+            System.out.println(ctx.identifierList().identifier() + " de tipo " + ctx.getChild(2).getText());
         } else {
             System.out.println("Sin Parametros");
         }
-        return visitChildren(ctx);
+        return null;
     }
 
     @Override
     public Object visitIdentifierList(MiniPascalGrammarParser.IdentifierListContext ctx) {
-        return visitChildren(ctx);
+        for (MiniPascalGrammarParser.IdentifierContext ctx2: ctx.identifier()) {
+            System.out.println("    Identifier: " + ctx2.getText());
+        }
+        return null;
     }
 
     @Override
