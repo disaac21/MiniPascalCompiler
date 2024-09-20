@@ -412,7 +412,7 @@ structuredStatement
    ;
 
 compoundStatement
-   : BEGIN statements END
+   : BEGIN statements SEMICOLON END
 //   | BEGIN (statement | compoundStatement) END
 //   | procedureOrFunctionDeclaration
    ;
