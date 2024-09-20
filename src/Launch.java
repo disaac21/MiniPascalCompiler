@@ -62,7 +62,7 @@ public class Launch {
             parser.addErrorListener(errorListener);
 //            parser.addErrorListener(new DiagnosticErrorListener());
 //            parser.setErrorHandler(new CustomErrorStrategy());
-//            parser.setErrorHandler(new DefaultErrorStrategy());
+            parser.setErrorHandler(new DefaultErrorStrategy());
 
 //            parser.getInterpreter()
 //                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
