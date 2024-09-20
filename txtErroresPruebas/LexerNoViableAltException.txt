@@ -1,0 +1,5 @@
+program test;
+var x: INTEGER;
+begin
+    x := 10 $ 20;
+end.

@@ -41,6 +41,25 @@ public class Manejo_Errores extends BaseErrorListener {
             LexerNoViableAltException lne = (LexerNoViableAltException) e;
             String offendingText = lne.getInputStream().getText(Interval.of(lne.getStartIndex(), lne.getStartIndex()));
             msg = "Error léxico: el símbolo '" + offendingText + "' no es válido en esta posición. ";
+
+//            System.out.println(recognizer.getInputStream());
+//            CommonTokenStream tokens = (CommonTokenStream) recognizer.getInputStream();
+//            String input = tokens.getTokenSource().getInputStream().toString();
+//            String[] lines = input.split("\n");
+//
+//            String errorLine = lines[line - 1];
+//            System.err.println((line) + ": " + errorLine);
+//
+//            // Subrayar el error
+//            for (int i = 0; i < charPositionInLine+3; i++) System.err.print(" ");
+//            Token token = (Token) offendingSymbol;
+//            int start = token.getStartIndex();
+//            int stop = token.getStopIndex();
+//            if (start >= 0 && stop >= 0) {
+//                for (int i = start; i <= stop; i++) System.err.print("^");
+//            }
+//            System.err.println();
+//            System.err.println();
         }
         // Verificar si es un error sintáctico
         else if (e instanceof InputMismatchException) {
@@ -60,11 +79,13 @@ public class Manejo_Errores extends BaseErrorListener {
 //            msg = "Error sintáctico no reconocido.";
         }
 
+        System.err.println();
         System.err.println("Error de tipo: " + errorType);
         System.err.println("Línea " + line + " - carácter " + charPositionInLine + ": " + msg);
 
         underlineError(recognizer, (Token) offendingSymbol, line, charPositionInLine);
     }
+
 //    private String translateErrorMessage(String msg, RecognitionException e, Recognizer<?, ?> recognizer) {
 //        if (e instanceof NoViableAltException) {
 //            msg = "No hay una alternativa viable en la entrada.";
@@ -84,6 +105,13 @@ public class Manejo_Errores extends BaseErrorListener {
 //        return msg;
 //    }
 
+    public static int countDigits(int number) {
+        // Convert the number to a string
+        String numberStr = Integer.toString(number);
+        // Return the length of the string
+        return numberStr.length();
+    }
+
     protected void underlineError(Recognizer recognizer,
                                   Token offendingToken, int line,
                                   int charPositionInLine) {
@@ -92,8 +120,10 @@ public class Manejo_Errores extends BaseErrorListener {
             String input = tokens.getTokenSource().getInputStream().toString();
             String[] lines = input.split("\n");
             String errorLine = lines[line - 1];
-            System.err.println(errorLine);
-            for (int i = 0; i < charPositionInLine; i++) System.err.print(" ");
+            System.err.println();
+            System.err.println((line) + ": " + errorLine);
+
+            for (int i = 0; i < charPositionInLine + countDigits(line) + 2; i++) System.err.print(" ");
             int start = offendingToken.getStartIndex();
             int stop = offendingToken.getStopIndex();
             if (start >= 0 && stop >= 0) {
@@ -101,7 +131,7 @@ public class Manejo_Errores extends BaseErrorListener {
             }
             System.err.println();
         } else {
-            errorCount++;
+//            errorCount++;
 //            System.err.println("Error: El input stream no es una instancia de CommonTokenStream.");
         }
     }
@@ -135,18 +165,17 @@ public class Manejo_Errores extends BaseErrorListener {
 //            String input = tokens.getTokenSource().getInputStream().toString();
 //            String[] lines = input.split("\n");
 //
-//            int contextLines = 2;  // Mostrar 2 líneas antes y después del error
-//            for (int i = Math.max(0, line - contextLines - 1); i <= Math.min(lines.length - 1, line + contextLines - 1); i++) {
-//                System.err.println((i + 1) + ": " + lines[i]);
-//            }
+//            String errorLine = lines[line - 1];
+//            System.err.println((line) + ": " + errorLine);
 //
 //            // Subrayar el error
-//            for (int i = 0; i < charPositionInLine; i++) System.err.print(" ");
+//            for (int i = 0; i < charPositionInLine+3; i++) System.err.print(" ");
 //            int start = offendingToken.getStartIndex();
 //            int stop = offendingToken.getStopIndex();
 //            if (start >= 0 && stop >= 0) {
 //                for (int i = start; i <= stop; i++) System.err.print("^");
 //            }
+//            System.err.println();
 //            System.err.println();
 //        }
 //    }
