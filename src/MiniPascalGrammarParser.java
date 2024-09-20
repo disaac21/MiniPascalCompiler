@@ -2885,8 +2885,8 @@ public class MiniPascalGrammarParser extends Parser {
 			return getRuleContext(IdentifierListContext.class,0);
 		}
 		public TerminalNode COLON() { return getToken(MiniPascalGrammarParser.COLON, 0); }
-		public Type_Context type_() {
-			return getRuleContext(Type_Context.class,0);
+		public TypeIdentifierContext typeIdentifier() {
+			return getRuleContext(TypeIdentifierContext.class,0);
 		}
 		public TerminalNode EQUAL() { return getToken(MiniPascalGrammarParser.EQUAL, 0); }
 		public InitialValueContext initialValue() {
@@ -2923,7 +2923,7 @@ public class MiniPascalGrammarParser extends Parser {
 			setState(433);
 			match(COLON);
 			setState(434);
-			type_();
+			typeIdentifier();
 			setState(437);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -6814,7 +6814,7 @@ public class MiniPascalGrammarParser extends Parser {
 		"\u0001\u0000\u0000\u0000\u01ac\u01ae\u0001\u0000\u0000\u0000\u01ad\u01ab"+
 		"\u0001\u0000\u0000\u0000\u01ae\u01af\u0005\u001e\u0000\u0000\u01afW\u0001"+
 		"\u0000\u0000\u0000\u01b0\u01b1\u0003d2\u0000\u01b1\u01b2\u0005\u001f\u0000"+
-		"\u0000\u01b2\u01b5\u0003<\u001e\u0000\u01b3\u01b4\u0005\u0017\u0000\u0000"+
+		"\u0000\u01b2\u01b5\u0003D\"\u0000\u01b3\u01b4\u0005\u0017\u0000\u0000"+
 		"\u01b4\u01b6\u0003\u00c0`\u0000\u01b5\u01b3\u0001\u0000\u0000\u0000\u01b5"+
 		"\u01b6\u0001\u0000\u0000\u0000\u01b6Y\u0001\u0000\u0000\u0000\u01b7\u01b8"+
 		"\u0003\\.\u0000\u01b8\u01b9\u0005\u001e\u0000\u0000\u01b9[\u0001\u0000"+
