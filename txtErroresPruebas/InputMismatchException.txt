@@ -1,8 +1,5 @@
 program test;
-var x: INTEGER;
+var x: 123;
 begin
     x := 10;
-    if x 10 then
-        x := x + 1;
-    end;
 end.

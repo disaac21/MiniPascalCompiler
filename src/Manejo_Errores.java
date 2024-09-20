@@ -29,7 +29,7 @@ public class Manejo_Errores extends BaseErrorListener {
             String expectedTokens = getExpectedTokens(recognizer);
 
             // Personaliza el mensaje para errores de "extraneous input"
-            msg = "Error: Token inesperado '" + extraneousToken + "' en línea " + line +
+            msg = "Token inesperado '" + extraneousToken + "' en línea " + line +
                     ", posición " + charPositionInLine + "." + '\n' +
             "Se esperaba uno de los siguientes tokens: " + expectedTokens;
 
@@ -40,7 +40,7 @@ public class Manejo_Errores extends BaseErrorListener {
 //            msg = "Error léxico: el símbolo '" + offendingSymbol + "' no es válido en esta posición.";
             LexerNoViableAltException lne = (LexerNoViableAltException) e;
             String offendingText = lne.getInputStream().getText(Interval.of(lne.getStartIndex(), lne.getStartIndex()));
-            msg = "Error léxico: el símbolo '" + offendingText + "' no es válido en esta posición. ";
+            msg = "Error léxico: el símbolo '" + offendingText + "' no es válido en esa posición. ";
 
 //            System.out.println(recognizer.getInputStream());
 //            CommonTokenStream tokens = (CommonTokenStream) recognizer.getInputStream();
@@ -65,15 +65,15 @@ public class Manejo_Errores extends BaseErrorListener {
         else if (e instanceof InputMismatchException) {
             errorType = "Sintáctico";
             InputMismatchException ime = (InputMismatchException) e;
-            msg = "Error sintáctico: entrada no coincidente. Se esperaba uno de los siguientes tokens: " +
+            msg = " entrada no coincidente. Se esperaba uno de los siguientes tokens: " +
                     ime.getExpectedTokens().toString(recognizer.getVocabulary());
         } else if (e instanceof NoViableAltException) {
             errorType = "Sintáctico";
-            msg = "Error sintáctico: no hay alternativa viable en la entrada. Se esperaba uno de los siguientes: " +
+            msg = " no hay alternativa viable en la entrada. Se esperaba uno de los siguientes: " +
                     ((NoViableAltException) e).getExpectedTokens().toString(recognizer.getVocabulary());
         } else if (e instanceof FailedPredicateException) {
             errorType = "Sintáctico";
-            msg = "Error sintáctico: predicado fallido.";
+            msg = " predicado fallido.";
         } else {
             errorType = "Sintáctico";
 //            msg = "Error sintáctico no reconocido.";

@@ -29,7 +29,7 @@ program ciclos;
         End;
 
         {reiniciamos el contador}
-        cont :=  ;
+        cont := 4;
 
         {llenamos el arreglo unidimensional}
         For i := 1 To x Do
