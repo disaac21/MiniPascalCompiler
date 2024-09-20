@@ -200,7 +200,7 @@ variableDeclarationPart
    ;
 
 variableDeclaration
-   : identifierList COLON type_ (EQUAL initialValue)?
+   : identifierList COLON typeIdentifier (EQUAL initialValue)?
    ;
 
 procedureAndFunctionDeclarationPart
