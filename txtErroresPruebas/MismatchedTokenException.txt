@@ -7,7 +7,7 @@ end.
 }
 
 program test;
-var 123: INTEGER; 
+var 123: INTEGER;
 begin
     x := 10;
 end.

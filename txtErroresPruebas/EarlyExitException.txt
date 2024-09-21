@@ -1,7 +1,4 @@
 program test;
 var x: INTEGER;
 begin
-    x := 10;
-    x := 20;
-    extra;
 end.
