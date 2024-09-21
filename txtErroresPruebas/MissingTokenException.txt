@@ -1,0 +1,11 @@
+{program test;
+var x: INTEGER;
+begin
+    x := 10
+end.}
+
+program test;
+var x: INTEGER;
+begin
+    x := 10
+end
