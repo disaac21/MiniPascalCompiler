@@ -132,9 +132,9 @@ functionType
    : FUNCTION (formalParameterList)? COLON varType
    ;
 
-procedureType
-   : PROCEDURE (formalParameterList)? COLON varType
-   ;
+//procedureType
+//   : PROCEDURE (formalParameterList)? COLON varType
+//   ;
 
 type_
    : simpleType
@@ -149,9 +149,9 @@ simpleType
    | constant
    ;
 
-scalarType
-   : L_PAREN identifierList R_PAREN
-   ;
+//scalarType
+//   : L_PAREN identifierList R_PAREN
+//   ;
 
 subrangeType
    : constant DOUBLE_DOT constant
@@ -166,34 +166,34 @@ stringtype
    : STRING L_BRACK (identifier | unsignedNumber) R_BRACK
    ;
 
-typeList
-   : indexType (COMMA indexType)*
-   ;
+//typeList
+//   : indexType (COMMA indexType)*
+//   ;
 
-indexType
-   : simpleType
-   ;
+//indexType
+//   : simpleType
+//   ;
 
-componentType
-   : type_
-   ;
+//componentType
+//   : type_
+//   ;
+//
+//fixedPart
+//   : recordSection (SEMICOLON recordSection)*
+//   ;
+//
+//recordSection
+//   : identifierList COLON type_
+//   ;
 
-fixedPart
-   : recordSection (SEMICOLON recordSection)*
-   ;
-
-recordSection
-   : identifierList COLON type_
-   ;
-
-tag
-   : identifier COLON typeIdentifier
-   | typeIdentifier
-   ;
-
-baseType
-   : simpleType
-   ;
+//tag
+//   : identifier COLON typeIdentifier
+//   | typeIdentifier
+//   ;
+//
+//baseType
+//   : simpleType
+//   ;
 
 variableDeclarationPart
    : VAR variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON
@@ -244,9 +244,9 @@ procedureDeclaration
    : PROCEDURE identifier formalParameterList SEMICOLON block
    ;
 
-resultType
-   : typeIdentifier
-   ;
+//resultType
+//   : typeIdentifier
+//   ;
 
 statement
    : unsignedInteger COLON unlabelledStatement
@@ -263,19 +263,19 @@ writeStatement
 
 write: WRITE | WRITELN;
 
-writeParam
-    : readWriteVarValue
-    | identifier
-    | arrayValue
-    | functionDesignator
-    ;
-
-varValue
-    : string
-    | boolean
-    | char
-    | integer
-    ;
+//writeParam
+//    : readWriteVarValue
+//    | identifier
+//    | arrayValue
+//    | functionDesignator
+//    ;
+//
+//varValue
+//    : string
+//    | boolean
+//    | char
+//    | integer
+//    ;
 
 readWriteVarValue
     : string
