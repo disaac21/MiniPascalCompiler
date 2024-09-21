@@ -1,0 +1,13 @@
+{program test;
+var x: INTEGER;
+begin
+    x := 10  
+    x := 20; 
+end.
+}
+
+program test;
+var 123: INTEGER; 
+begin
+    x := 10;
+end.

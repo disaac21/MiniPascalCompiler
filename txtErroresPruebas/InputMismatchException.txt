@@ -1,0 +1,12 @@
+{program test;
+var x: 123;
+begin
+    x := 10;
+end.}
+
+program test;
+var x: INTEGER;
+begin
+    x := 10;
+    writeln(10, "Hello");
+end.

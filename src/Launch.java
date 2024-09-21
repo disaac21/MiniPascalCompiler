@@ -49,16 +49,17 @@ public class Launch {
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
+            Manejo_Errores errorListener = new Manejo_Errores();
             CharStream cs = fromFileName(source);
             MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
             Lexer.removeErrorListeners();
-            Lexer.addErrorListener(new Manejo_Errores());
+            Lexer.addErrorListener(errorListener);
 
             CommonTokenStream token = new CommonTokenStream(Lexer);
 
             MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
             parser.removeErrorListeners();
-            parser.addErrorListener(new Manejo_Errores());
+            parser.addErrorListener(errorListener);
 //            parser.addErrorListener(new DiagnosticErrorListener());
 //            parser.setErrorHandler(new CustomErrorStrategy());
             parser.setErrorHandler(new DefaultErrorStrategy());
@@ -69,14 +70,14 @@ public class Launch {
 
             ParseTree tree = parser.program();
 
-            int errorCount = parser.getErrorListeners().stream()
-                    .filter(el -> el instanceof Manejo_Errores)
-                    .map(el -> (Manejo_Errores) el)
-                    .mapToInt(Manejo_Errores::getErrorCount)
-                    .sum();
-//            System.err.println("Numero de errores: " + errorCount);
+//            int errorCount = parser.getErrorListeners().stream()
+//                    .filter(el -> el instanceof Manejo_Errores)
+//                    .map(el -> (Manejo_Errores) el)
+//                    .mapToInt(Manejo_Errores::getErrorCount)
+//                    .sum();
+            System.err.println("Numero de errores: " + errorListener.getErrorCount());
 
-            if (errorCount == 0){
+            if (errorListener.getErrorCount() == 0){
                 String verde = "\u001B[32m";
                 String reset = "\u001B[0m";
 

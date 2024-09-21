@@ -14,7 +14,7 @@ begin
   { Asignamos las constantes a las variables }
   letra := constchar;
   letra := 'hola';
-  mensaje := 'conststr';
+  mensaje := conststr;
   
   { Mostramos los valores de las constantes }
   writeln('Constante de tipo char: ', letra);
