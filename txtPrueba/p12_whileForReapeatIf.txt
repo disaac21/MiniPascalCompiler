@@ -17,8 +17,8 @@ begin
   writeln('Ingrese 10 números enteros:');
   for i := 1 to 10 do
   begin
-    write('Número ', i, ': ');
-    readln(numeros[i]);
+    write('Número ', i);
+    readln(i);
   end;
 
   { Usar ciclo for para calcular la suma de los números }
@@ -37,6 +37,7 @@ begin
   end;
 
   writeln('El número máximo es: ', maximo);
+  writeln('La suma de los números es impar.');
 
   { Usar ciclo repeat para encontrar el número mínimo }
   i := 1;

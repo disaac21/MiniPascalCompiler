@@ -38,7 +38,7 @@ begin
     if (not dentroComentario) and (c <> ' ') and (c <> 9) and (c <> 10) then
     begin
       { Mostrar el carácter }
-      write(c);
+      write('printprintprint');
     end;
 
     { Avanzar al siguiente carácter }

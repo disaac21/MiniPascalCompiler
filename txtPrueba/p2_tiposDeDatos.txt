@@ -5,6 +5,7 @@ program ManejoDeTipos;
 var
   num: integer;      { Variable de tipo integer }
   letra: char;       { Variable de tipo char }
+  prueba: integer;
   mensaje: string;   { Variable de tipo string }
   esVerdadero: boolean;  { Variable de tipo boolean }
 

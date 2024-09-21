@@ -184,12 +184,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#type_}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -201,12 +195,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSimpleType(MiniPascalGrammarParser.SimpleTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#scalarType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitScalarType(MiniPascalGrammarParser.ScalarTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#subrangeType}.
 	 * @param ctx the parse tree
@@ -225,48 +213,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStringtype(MiniPascalGrammarParser.StringtypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#typeList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTypeList(MiniPascalGrammarParser.TypeListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#indexType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIndexType(MiniPascalGrammarParser.IndexTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#componentType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComponentType(MiniPascalGrammarParser.ComponentTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#fixedPart}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFixedPart(MiniPascalGrammarParser.FixedPartContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#recordSection}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRecordSection(MiniPascalGrammarParser.RecordSectionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#tag}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTag(MiniPascalGrammarParser.TagContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#baseType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBaseType(MiniPascalGrammarParser.BaseTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#variableDeclarationPart}.
 	 * @param ctx the parse tree
@@ -334,12 +280,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitResultType(MiniPascalGrammarParser.ResultTypeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -357,18 +297,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWrite(MiniPascalGrammarParser.WriteContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#writeParam}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitWriteParam(MiniPascalGrammarParser.WriteParamContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#varValue}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVarValue(MiniPascalGrammarParser.VarValueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#readWriteVarValue}.
 	 * @param ctx the parse tree
