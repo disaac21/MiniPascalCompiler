@@ -1,3 +1,4 @@
+import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.MissingTokenException;
 import org.antlr.runtime.UnwantedTokenException;
 import org.antlr.v4.runtime.*;
@@ -58,7 +59,7 @@ public class Manejo_Errores extends BaseErrorListener {
             errorType = "Sintáctico";
             InputMismatchException ime = (InputMismatchException) e;
             Token unwantedToken = (Token) offendingSymbol;
-            msg = " entrada "+ unwantedToken.getText() + " no coincidente. Se esperaba uno de los siguientes tokens: " +
+            msg = " entrada \'"+ unwantedToken.getText() + "\' no coincidente. Se esperaba uno de los siguientes tokens: " +
                     ime.getExpectedTokens().toString(recognizer.getVocabulary());
         } else if (e instanceof NoViableAltException) {
             errorType = "Sintáctico";
