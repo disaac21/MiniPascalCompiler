@@ -22,7 +22,7 @@ begin
   modulo := a mod b;
 
   { Mostrar los resultados }
-  writeln('Operaciones con los números ', a, ' y ', b, ':');
+  writeln('Operaciones con los números ', a);
   writeln('Suma (a + b): ', suma);
   writeln('Resta (a - b): ', resta);
   writeln('Producto (a * b): ', producto);

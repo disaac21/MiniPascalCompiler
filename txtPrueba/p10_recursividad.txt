@@ -2,6 +2,12 @@ program FactorialRecursivo;
 
 { Este programa calcula el factorial de un número utilizando una función recursiva. }
 
+function SumarValores(var num1: integer; num2: integer; var resultado: integer): integer;
+begin
+  resultado := num1 + num2;  { El parámetro resultado es pasado por referencia y se modifica }
+  SumarValores := resultado;  { La función retorna el resultado }
+end;
+
 { Función recursiva para calcular el factorial de un número }
 function Factorial(n: integer): integer;
 begin
@@ -23,5 +29,6 @@ begin
   resultado := Factorial(numero);
 
   { Mostrar el resultado }
-  writeln('El factorial de ', numero, ' es: ', resultado);
+  writeln('El factorial de ', numero);
+  functionsita(N);
 end.

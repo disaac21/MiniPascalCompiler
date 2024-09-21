@@ -200,7 +200,7 @@ variableDeclarationPart
    ;
 
 variableDeclaration
-   : identifierList COLON typeIdentifier (EQUAL initialValue)?
+   : identifierList COLON (typeIdentifier | arrayType) (EQUAL initialValue)?
    ;
 
 procedureAndFunctionDeclarationPart
@@ -258,7 +258,7 @@ statement
    ;
 
 writeStatement
-    : write L_PAREN (string (COMMA identifier)?)? R_PAREN
+    : write L_PAREN (emptyStatement_ | (string (COMMA identifier)?)?)? R_PAREN
     ;
 
 write: WRITE | WRITELN;
