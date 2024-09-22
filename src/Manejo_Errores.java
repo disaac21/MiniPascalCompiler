@@ -61,8 +61,9 @@ public class Manejo_Errores extends BaseErrorListener {
         } else if (e instanceof NoViableAltException) {
             errorType = "Sintáctico";
             Token unwantedToken = (Token) offendingSymbol;
-            msg = " no hay alternativa viable en la entrada \'" + unwantedToken.getText() + "\' . Se esperaba uno de los siguientes: " +
-                    ((NoViableAltException) e).getExpectedTokens().toString(recognizer.getVocabulary());
+//            msg = " no hay alternativa viable en la entrada \'" + unwantedToken.getText() + "\' . Se esperaba uno de los siguientes: " +
+//                    ((NoViableAltException) e).getExpectedTokens().toString(recognizer.getVocabulary());
+            msg = " no hay alternativa viable en la entrada \'" + unwantedToken.getText() + "\' .";
         } else if (e instanceof FailedPredicateException) {
             errorType = "Sintáctico";
             msg = " predicado fallido.";

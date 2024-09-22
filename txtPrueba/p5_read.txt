@@ -11,7 +11,7 @@ var
 begin
   { Lectura de valores }
   writeln('Ingrese un número: ');
-  readln(hola); {aca tiene que haber un chequeo}
+  readln('hola'); {aca tiene que haber un chequeo}
 
   writeln('Ingrese una letra: ');
   readln(letra);
