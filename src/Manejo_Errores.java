@@ -74,7 +74,7 @@ public class Manejo_Errores extends BaseErrorListener {
 //        System.err.println(e);
         System.err.println();
         System.err.println("Error de tipo: " + errorType);
-        System.err.println("Línea " + line + " - carácter " + charPositionInLine + ": " + msg);
+        System.err.println("Línea " + line + " - columna " + (charPositionInLine+1) + ": " + msg);
 
         underlineError(recognizer, (Token) offendingSymbol,
                 line, charPositionInLine);

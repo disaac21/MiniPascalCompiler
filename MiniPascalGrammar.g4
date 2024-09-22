@@ -13,7 +13,7 @@ programHeading
 
 identifier
    : ID
-   | '"' ID '"' {notifyErrorListeners("Error léxico: Para asignar cadenas se deben usar comillas simples ' cadena ' ");}
+//   | '"' ID '"' {notifyErrorListeners("Error léxico: Para asignar cadenas se deben usar comillas simples ' cadena ' ");}
    ;
 
 block

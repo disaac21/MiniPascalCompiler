@@ -1,0 +1,16 @@
+program CheckNumber;
+var
+    num: INTEGER;
+
+begin
+    { Asignar un valor a la variable num }
+    num := -5;
+
+    { Estructura if para verificar el valor de num }
+    if num < 0 then
+        writeln('El número es positivo')
+    else if num < 0 then
+        writeln('El número es negativo')
+    else
+        writeln('El número es cero');
+end.
