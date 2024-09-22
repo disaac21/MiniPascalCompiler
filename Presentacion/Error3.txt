@@ -7,14 +7,14 @@ var
   letra: char;       { Variable de tipo char }
   prueba: integer;
   mensaje: string;   { Variable de tipo string }
-  esVer$dadero: boolean;  { Variable de tipo boolean }
+  esVerdadero: boolean;  { Variable de tipo boolean }
 
 begin
   { Asignación de valores a las variables }
-  num := 42;
+  num := 42
   letra := 'A';
   mensaje := 'Hola Pascal';
-  esVerdadero := true;
+  esVerdadero := $;
 
   { Operaciones con variables de tipo integer }
   num := num + 10;  { Sumar 10 al valor de num }
