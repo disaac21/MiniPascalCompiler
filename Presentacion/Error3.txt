@@ -3,7 +3,7 @@ program ManejoDeTipos;
 { Este programa maneja variables de tipo integer, char, string, y boolean }
 
 var
-  num: integer;      { Variable de tipo integer }
+  123: integer;      { Variable de tipo integer }
   letra: char;       { Variable de tipo char }
   prueba: integer;
   mensaje: string;   { Variable de tipo string }

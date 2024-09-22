@@ -39,54 +39,55 @@ public class Launch {
 
                 // Print the file path to the console
                 System.out.println("Selected file path: " + filePath);
-            } else {
-                System.out.println("No file was selected.");
-            }
-
-//             Close the JFrame
-            frame.dispose();
-            String source = filePath;
+                String source = filePath;
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
-            Manejo_Errores errorListener = new Manejo_Errores();
-            CharStream cs = fromFileName(source);
-            MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
-            Lexer.removeErrorListeners();
-            Lexer.addErrorListener(errorListener);
+                Manejo_Errores errorListener = new Manejo_Errores();
+                CharStream cs = fromFileName(source);
+                MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
+                Lexer.removeErrorListeners();
+                Lexer.addErrorListener(errorListener);
 
-            CommonTokenStream token = new CommonTokenStream(Lexer);
+                CommonTokenStream token = new CommonTokenStream(Lexer);
 
-            MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
-            parser.removeErrorListeners();
-            parser.addErrorListener(errorListener);
+                MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
+                parser.removeErrorListeners();
+                parser.addErrorListener(errorListener);
 //            parser.addErrorListener(new DiagnosticErrorListener());
 //            parser.setErrorHandler(new CustomErrorStrategy());
-            parser.setErrorHandler(new DefaultErrorStrategy());
+                parser.setErrorHandler(new DefaultErrorStrategy());
 
 //            parser.getInterpreter()
 //                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
 
 
-            ParseTree tree = parser.program();
+                ParseTree tree = parser.program();
 
 //            int errorCount = parser.getErrorListeners().stream()
 //                    .filter(el -> el instanceof Manejo_Errores)
 //                    .map(el -> (Manejo_Errores) el)
 //                    .mapToInt(Manejo_Errores::getErrorCount)
 //                    .sum();
-            System.err.println("Numero de errores: " + errorListener.getErrorCount());
+                System.err.println("Numero de errores: " + errorListener.getErrorCount());
 
-            if (errorListener.getErrorCount() == 0){
-                String verde = "\u001B[32m";
-                String reset = "\u001B[0m";
+                if (errorListener.getErrorCount() == 0) {
+                    String verde = "\u001B[32m";
+                    String reset = "\u001B[0m";
 
-                System.out.println(verde + "Compilado exitosamente" + reset);
-                MyVisitor visitor = new MyVisitor();
-                visitor.visit(tree);
-            }
+                    System.out.println(verde + "Compilado exitosamente" + reset);
+                    MyVisitor visitor = new MyVisitor();
+                    visitor.visit(tree);
+                }
 //            MyVisitor visitor = new MyVisitor();
 //            visitor.visit(tree);
+            } else {
+                System.out.println("No file was selected.");
+            }
+
+//             Close the JFrame
+            frame.dispose();
+
 
         } catch (IOException e) {
             e.printStackTrace();
