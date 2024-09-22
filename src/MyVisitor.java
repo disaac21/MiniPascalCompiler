@@ -590,7 +590,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitCompoundStatement(MiniPascalGrammarParser.CompoundStatementContext ctx) {
-        visit(ctx.statements());
+        if (ctx.emptyStatement_() != null) {
+            visit(ctx.emptyStatement_());
+        } else {
+            visit(ctx.statements());
+        }
         return null;
     }
 
