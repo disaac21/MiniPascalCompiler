@@ -414,10 +414,11 @@ structuredStatement
    ;
 
 compoundStatement
-   : BEGIN statements SEMICOLON END
-//   | BEGIN (statement | compoundStatement) END
-//   | procedureOrFunctionDeclaration
-   ;
+    : BEGIN statements SEMICOLON END
+    | BEGIN emptyStatement_ END
+//      | BEGIN (statement | compoundStatement) END
+//      | procedureOrFunctionDeclaration
+    ;
 
 statements
    : statement (SEMICOLON statement)*
