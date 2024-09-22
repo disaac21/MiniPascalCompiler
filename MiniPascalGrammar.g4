@@ -289,8 +289,8 @@ readStatement
 read: READ | READLN;
 
 readParam
-    : readWriteVarValue
-    | identifier
+//    : readWriteVarValue
+    : identifier
 //    | arrayValue
     ;
 
@@ -394,12 +394,14 @@ element
    ;
 
 actualParameter
-   : expression parameterwidth*
+//   : expression parameterwidth*
+   : expression
    ;
 
-parameterwidth
-   : COLON expression
-   ;
+// a:10 que nos dice el length de la variable
+//parameterwidth
+//   : COLON expression
+//   ;
 
 emptyStatement_
    :

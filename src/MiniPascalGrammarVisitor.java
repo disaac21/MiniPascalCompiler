@@ -442,12 +442,6 @@ public interface MiniPascalGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#parameterwidth}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniPascalGrammarParser#emptyStatement_}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -727,16 +727,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#parameterwidth}.
-	 * @param ctx the parse tree
-	 */
-	void enterParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#parameterwidth}.
-	 * @param ctx the parse tree
-	 */
-	void exitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#emptyStatement_}.
 	 * @param ctx the parse tree
 	 */

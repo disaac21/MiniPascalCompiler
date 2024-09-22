@@ -880,18 +880,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterEmptyStatement_(MiniPascalGrammarParser.EmptyStatement_Context ctx) { }
 	/**
 	 * {@inheritDoc}
