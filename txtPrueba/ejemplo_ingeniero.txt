@@ -2,10 +2,10 @@ program ciclos;
 
     {declaramos las variables}
     {hola hahhahaa;}
-    var lenght,i,j,x,y,cont:Integer;
+    var lenght,i,j,x,y,cont:integer;
     arreglo:Array[1..50] of Integer;
     {holsaaaa:COLO;}
-    arreglo_bidi: Array[1..10,1..5] of Integer;
+    arreglo_bidi: Array[1..10,1..5] of integer;
     var s:STRING;
 
     Function d ():Integer;

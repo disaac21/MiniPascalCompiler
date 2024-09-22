@@ -4,4 +4,4 @@ begin
     x := 10;
     x := 20;
     extra;
-end.
+{end.}

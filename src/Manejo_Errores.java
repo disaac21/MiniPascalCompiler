@@ -90,17 +90,57 @@ public class Manejo_Errores extends BaseErrorListener {
                     (CommonTokenStream) recognizer.getInputStream();
             String input = tokens.getTokenSource().getInputStream().toString();
             String[] lines = input.split("\n");
+
+            // Verificación para evitar ArrayIndexOutOfBoundsException
+            if (line - 1 >= lines.length || line - 1 < 0) {
+                System.err.println("Error al final del archivo. Asegurese de finalizar su archivo con un \'end.\'");
+                return; // Salir de la función si la línea es inválida
+            }
+
             String errorLine = lines[line - 1];
             System.err.println((line) + ": " + errorLine);
-            for (int i = 0; i < (countDigits(line) + 2 + charPositionInLine); i++) System.err.print(" ");
+
+            // Imprime espacios hasta la posición del error
+            for (int i = 0; i < (countDigits(line) + 2 + charPositionInLine); i++) {
+                System.err.print(" ");
+            }
+
             int start = offendingToken.getStartIndex();
             int stop = offendingToken.getStopIndex();
-            if (start >= 0 && stop >= 0) {
-                for (int i = start; i <= stop; i++) System.err.print("^");
+
+            // Verificación para evitar problemas de límites con el token ofensivo
+            if (start >= 0 && stop >= start && stop < input.length()) {
+                for (int i = start; i <= stop; i++) {
+                    System.err.print("^");
+                }
+            } else {
+                System.err.print("^");  // Muestra un solo símbolo de error si no se puede determinar la posición exacta
             }
             System.err.println();
         }
     }
+
+
+//    protected void underlineError(Recognizer recognizer,
+//                                  Token offendingToken, int line,
+//                                  int charPositionInLine) {
+//        if (recognizer.getInputStream() instanceof CommonTokenStream) {
+//
+//            CommonTokenStream tokens =
+//                    (CommonTokenStream) recognizer.getInputStream();
+//            String input = tokens.getTokenSource().getInputStream().toString();
+//            String[] lines = input.split("\n");
+//            String errorLine = lines[line - 1];
+//            System.err.println((line) + ": " + errorLine);
+//            for (int i = 0; i < (countDigits(line) + 2 + charPositionInLine); i++) System.err.print(" ");
+//            int start = offendingToken.getStartIndex();
+//            int stop = offendingToken.getStopIndex();
+//            if (start >= 0 && stop >= 0) {
+//                for (int i = start; i <= stop; i++) System.err.print("^");
+//            }
+//            System.err.println();
+//        }
+//    }
 
 
     public static int countDigits(int number) {
