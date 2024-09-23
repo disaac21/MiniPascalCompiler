@@ -31,4 +31,5 @@ begin
   writeln('Valor de num (integer): ', num);
   writeln('Valor de letra (char): ', 'letra');
   writeln('Valor de mensaje (string): ', mensaje);
+  write('Valor de mensaje (string): ', mensaje);
 end.

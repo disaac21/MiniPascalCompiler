@@ -11,18 +11,18 @@ var
 
 begin
   { Asignación de valores a las variables }
-  num := 42
+  num := 42;
   letra := 'A';
   mensaje := 'Hola Pascal';
-  esVerdadero := $;
+  esVerdadero := 'hola';
 
   { Operaciones con variables de tipo integer }
-  num := num + 10;  { Sumar 10 al valor de num }
+  num := 10;  { Sumar 10 al valor de num }
 
   { Operaciones con variables de tipo boolean }
   if esVerdadero then
     writeln('El valor booleano es verdadero.')
-  else
+  els
     writeln('El valor booleano es falso.');
 
   { Mostrar los valores de las variables }
