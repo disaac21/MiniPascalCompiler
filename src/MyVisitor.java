@@ -31,12 +31,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitConstantDefinitionPart(MiniPascalGrammarParser.ConstantDefinitionPartContext ctx) {
-        return visitChildren(ctx);
+        System.out.println(" Segmento de Declaracion de Constantes:");
+        for (MiniPascalGrammarParser.ConstantDefinitionContext varDeclCtx : ctx.constantDefinition()) {
+            visit(varDeclCtx);
+        }
+        return null;
     }
 
     @Override
     public Object visitConstantDefinition(MiniPascalGrammarParser.ConstantDefinitionContext ctx) {
-        return visitChildren(ctx);
+        System.out.println("  Declaracion de Constante:");
+        MiniPascalGrammarParser.IdentifierContext idCtx = ctx.identifier();
+        MiniPascalGrammarParser.ConstantContext typeCtx = ctx.constant();
+        System.out.println("   Identificador: " + idCtx.getText());
+        System.out.println("   Valor: " + typeCtx.getText());
+        return null;
     }
 
     @Override
