@@ -7,7 +7,7 @@ var
   _valorFinal: integer;     { Identificador válido: empieza con "_" y sigue con letras y dígitos }
   resultado_total: integer; { Identificador válido: letras y guión bajo }
   valor2: integer;          { Identificador válido: empieza con una letra y sigue con dígitos }
-  mensaje: string;          { Identificador válido: solo letras }
+  men$saje: string;          { Identificador válido: solo letras }
 
 begin
   { Asignando valores a las variables }
@@ -18,5 +18,5 @@ begin
   mensaje := 'Suma total: ';
 
   { Mostrando los resultados }
-  writeln(mensaje, resultado_total);
+  writeln('mensaje', resultado_total);
 end.
