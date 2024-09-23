@@ -2,9 +2,9 @@ program ConstantesCharYString;
 
 { Este programa utiliza constantes de tipo char y string }
 
-const
+conts
   constchar = 'a';               { Constante de tipo char }
-  conststr = 'Número de cuenta';  { Constante de tipo string }
+  conststr = "Numero de cuenta";  { Constante de tipo string }
 
 var
   letra: char;
