@@ -7,6 +7,10 @@ program MaximoComunDivisor;
 var
   a, b: integer;
 
+const
+  constchar = 'a';               { Constante de tipo char }
+  conststr = 'Número de cuenta';
+
 begin
   { Cuerpo principal (main) del programa }
   writeln('Ingrese el primer número: ');
