@@ -1,6 +1,6 @@
 program test;
-var z: float;
-var $y: real;
+var integer z: ;
+var $y: integer;
 var x: integer;
 begin
     x := [10..20];

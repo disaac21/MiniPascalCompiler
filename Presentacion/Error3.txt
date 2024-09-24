@@ -7,7 +7,7 @@ var
   letra: char;       { Variable de tipo char }
   prueba: integer;
   mensaje: string;   { Variable de tipo string }
-  esVerdadero: boolean;  { Variable de tipo boolean }
+  esVerdadero boolean;  { Variable de tipo boolean }
 
 begin
   { Asignación de valores a las variables }
@@ -17,12 +17,12 @@ begin
   esVerdadero := 'hola';
 
   { Operaciones con variables de tipo integer }
-  num := 10;  { Sumar 10 al valor de num }
+  num := 10$;  { Sumar 10 al valor de num }
 
   { Operaciones con variables de tipo boolean }
   if esVerdadero then
     writeln('El valor booleano es verdadero.')
-  els
+  else
     writeln('El valor booleano es falso.');
 
   { Mostrar los valores de las variables }
