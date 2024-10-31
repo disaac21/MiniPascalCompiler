@@ -1,5 +1,5 @@
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
@@ -9,12 +9,13 @@ import java.io.File;
 
 import static org.antlr.v4.runtime.CharStreams.fromFileName;
 
+
 public class Launch {
 
     public static void main(String[] args) {
 
         try {
-            // Create a new JFrame (this is optional, just to have a parent for the JFileChooser)
+//             Create a new JFrame (this is optional, just to have a parent for the JFileChooser)
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);
@@ -38,22 +39,55 @@ public class Launch {
 
                 // Print the file path to the console
                 System.out.println("Selected file path: " + filePath);
+                String source = filePath;
+//            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
+//            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
+
+                Manejo_Errores errorListener = new Manejo_Errores();
+                CharStream cs = fromFileName(source);
+                MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
+                Lexer.removeErrorListeners();
+                Lexer.addErrorListener(errorListener);
+
+                CommonTokenStream token = new CommonTokenStream(Lexer);
+
+                MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
+                parser.removeErrorListeners();
+                parser.addErrorListener(errorListener);
+//            parser.addErrorListener(new DiagnosticErrorListener());
+//            parser.setErrorHandler(new CustomErrorStrategy());
+                parser.setErrorHandler(new DefaultErrorStrategy());
+
+//            parser.getInterpreter()
+//                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+
+
+                ParseTree tree = parser.program();
+
+//            int errorCount = parser.getErrorListeners().stream()
+//                    .filter(el -> el instanceof Manejo_Errores)
+//                    .map(el -> (Manejo_Errores) el)
+//                    .mapToInt(Manejo_Errores::getErrorCount)
+//                    .sum();
+                System.err.println("Numero de errores: " + errorListener.getErrorCount());
+
+                if (errorListener.getErrorCount() == 0) {
+                    String verde = "\u001B[32m";
+                    String reset = "\u001B[0m";
+
+                    System.out.println(verde + "Compilado exitosamente" + reset);
+                    MyVisitor visitor = new MyVisitor();
+                    visitor.visit(tree);
+                }
+//            MyVisitor visitor = new MyVisitor();
+//            visitor.visit(tree);
             } else {
                 System.out.println("No file was selected.");
             }
 
-            // Close the JFrame
-            String source = filePath;
+//             Close the JFrame
             frame.dispose();
 
-            CharStream cs = fromFileName(source);
-            MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
-            CommonTokenStream token = new CommonTokenStream(Lexer);
-            MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
-            ParseTree tree = parser.program();
-
-            MyVisitor visitor = new MyVisitor();
-            visitor.visit(tree);
 
         } catch (IOException e) {
             e.printStackTrace();

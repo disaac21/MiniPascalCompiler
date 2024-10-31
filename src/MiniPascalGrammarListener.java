@@ -47,36 +47,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitBlock(MiniPascalGrammarParser.BlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#usesUnitsPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#usesUnitsPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#labelDeclarationPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#labelDeclarationPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabel(MiniPascalGrammarParser.LabelContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabel(MiniPascalGrammarParser.LabelContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#constantDefinitionPart}.
 	 * @param ctx the parse tree
 	 */
@@ -327,16 +297,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitFunctionType(MiniPascalGrammarParser.FunctionTypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#procedureType}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#type_}.
 	 * @param ctx the parse tree
 	 */
@@ -356,16 +316,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSimpleType(MiniPascalGrammarParser.SimpleTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#scalarType}.
-	 * @param ctx the parse tree
-	 */
-	void enterScalarType(MiniPascalGrammarParser.ScalarTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#scalarType}.
-	 * @param ctx the parse tree
-	 */
-	void exitScalarType(MiniPascalGrammarParser.ScalarTypeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#subrangeType}.
 	 * @param ctx the parse tree
@@ -396,76 +346,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStringtype(MiniPascalGrammarParser.StringtypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#typeList}.
-	 * @param ctx the parse tree
-	 */
-	void enterTypeList(MiniPascalGrammarParser.TypeListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#typeList}.
-	 * @param ctx the parse tree
-	 */
-	void exitTypeList(MiniPascalGrammarParser.TypeListContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#indexType}.
-	 * @param ctx the parse tree
-	 */
-	void enterIndexType(MiniPascalGrammarParser.IndexTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#indexType}.
-	 * @param ctx the parse tree
-	 */
-	void exitIndexType(MiniPascalGrammarParser.IndexTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#componentType}.
-	 * @param ctx the parse tree
-	 */
-	void enterComponentType(MiniPascalGrammarParser.ComponentTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#componentType}.
-	 * @param ctx the parse tree
-	 */
-	void exitComponentType(MiniPascalGrammarParser.ComponentTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#fixedPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterFixedPart(MiniPascalGrammarParser.FixedPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#fixedPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitFixedPart(MiniPascalGrammarParser.FixedPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#recordSection}.
-	 * @param ctx the parse tree
-	 */
-	void enterRecordSection(MiniPascalGrammarParser.RecordSectionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#recordSection}.
-	 * @param ctx the parse tree
-	 */
-	void exitRecordSection(MiniPascalGrammarParser.RecordSectionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#tag}.
-	 * @param ctx the parse tree
-	 */
-	void enterTag(MiniPascalGrammarParser.TagContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#tag}.
-	 * @param ctx the parse tree
-	 */
-	void exitTag(MiniPascalGrammarParser.TagContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#baseType}.
-	 * @param ctx the parse tree
-	 */
-	void enterBaseType(MiniPascalGrammarParser.BaseTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#baseType}.
-	 * @param ctx the parse tree
-	 */
-	void exitBaseType(MiniPascalGrammarParser.BaseTypeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#variableDeclarationPart}.
 	 * @param ctx the parse tree
@@ -577,16 +457,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
-	 * @param ctx the parse tree
-	 */
-	void enterResultType(MiniPascalGrammarParser.ResultTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#resultType}.
-	 * @param ctx the parse tree
-	 */
-	void exitResultType(MiniPascalGrammarParser.ResultTypeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#statement}.
 	 * @param ctx the parse tree
 	 */
@@ -617,25 +487,15 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 */
 	void exitWrite(MiniPascalGrammarParser.WriteContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#writeParam}.
+	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#readWriteVarValue}.
 	 * @param ctx the parse tree
 	 */
-	void enterWriteParam(MiniPascalGrammarParser.WriteParamContext ctx);
+	void enterReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#writeParam}.
+	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#readWriteVarValue}.
 	 * @param ctx the parse tree
 	 */
-	void exitWriteParam(MiniPascalGrammarParser.WriteParamContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#varValue}.
-	 * @param ctx the parse tree
-	 */
-	void enterVarValue(MiniPascalGrammarParser.VarValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#varValue}.
-	 * @param ctx the parse tree
-	 */
-	void exitVarValue(MiniPascalGrammarParser.VarValueContext ctx);
+	void exitReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#readStatement}.
 	 * @param ctx the parse tree
@@ -866,16 +726,6 @@ public interface MiniPascalGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#parameterwidth}.
-	 * @param ctx the parse tree
-	 */
-	void enterParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MiniPascalGrammarParser#parameterwidth}.
-	 * @param ctx the parse tree
-	 */
-	void exitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniPascalGrammarParser#emptyStatement_}.
 	 * @param ctx the parse tree

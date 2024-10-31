@@ -64,42 +64,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUsesUnitsPart(MiniPascalGrammarParser.UsesUnitsPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLabelDeclarationPart(MiniPascalGrammarParser.LabelDeclarationPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLabel(MiniPascalGrammarParser.LabelContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLabel(MiniPascalGrammarParser.LabelContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterConstantDefinitionPart(MiniPascalGrammarParser.ConstantDefinitionPartContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -400,18 +364,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitProcedureType(MiniPascalGrammarParser.ProcedureTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterType_(MiniPascalGrammarParser.Type_Context ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -431,18 +383,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSimpleType(MiniPascalGrammarParser.SimpleTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterScalarType(MiniPascalGrammarParser.ScalarTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitScalarType(MiniPascalGrammarParser.ScalarTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -479,90 +419,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStringtype(MiniPascalGrammarParser.StringtypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTypeList(MiniPascalGrammarParser.TypeListContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTypeList(MiniPascalGrammarParser.TypeListContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIndexType(MiniPascalGrammarParser.IndexTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIndexType(MiniPascalGrammarParser.IndexTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComponentType(MiniPascalGrammarParser.ComponentTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComponentType(MiniPascalGrammarParser.ComponentTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFixedPart(MiniPascalGrammarParser.FixedPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFixedPart(MiniPascalGrammarParser.FixedPartContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRecordSection(MiniPascalGrammarParser.RecordSectionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRecordSection(MiniPascalGrammarParser.RecordSectionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTag(MiniPascalGrammarParser.TagContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTag(MiniPascalGrammarParser.TagContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBaseType(MiniPascalGrammarParser.BaseTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBaseType(MiniPascalGrammarParser.BaseTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -700,18 +556,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterResultType(MiniPascalGrammarParser.ResultTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitResultType(MiniPascalGrammarParser.ResultTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterStatement(MiniPascalGrammarParser.StatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -748,25 +592,13 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWriteParam(MiniPascalGrammarParser.WriteParamContext ctx) { }
+	@Override public void enterReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWriteParam(MiniPascalGrammarParser.WriteParamContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterVarValue(MiniPascalGrammarParser.VarValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVarValue(MiniPascalGrammarParser.VarValueContext ctx) { }
+	@Override public void exitReadWriteVarValue(MiniPascalGrammarParser.ReadWriteVarValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1043,18 +875,6 @@ public class MiniPascalGrammarBaseListener implements MiniPascalGrammarListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitActualParameter(MiniPascalGrammarParser.ActualParameterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParameterwidth(MiniPascalGrammarParser.ParameterwidthContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

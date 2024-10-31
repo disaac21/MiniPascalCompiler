@@ -1,0 +1,22 @@
+program EvaluacionAritmetica;
+
+{ Este programa evalúa una expresión aritmética simple respetando la precedencia
+  de operadores, que sigue las reglas estándar: *, / tienen mayor precedencia que +, -. }
+
+var
+  a, b, c, d, resultado: real;
+
+begin
+  { Asignamos valores a las variables }
+  a := 10;
+  b := 5;
+  c := 2;
+  d := 8;
+
+  { Evaluamos una expresión aritmética compleja }
+  resultado := a + b * c - d / c;
+
+  { Mostramos la expresión y el resultado }
+  writeln('La expresión evaluada es: ', a, ' + ', b, ' * ', c, ' - ', d, ' / ', c);
+  writeln('El resultado es: ', resultado);
+end.

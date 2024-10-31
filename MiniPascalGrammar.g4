@@ -6,32 +6,31 @@ program
    : programHeading (INTERFACE)? block DOT EOF
    ;
 
-programHeading: PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
+programHeading
+   : PROGRAM identifier (L_PAREN identifierList R_PAREN)? SEMICOLON
    | UNIT identifier SEMICOLON
-   | PROCEDURE
-   | FUNCTION
    ;
-// program identifier ([ identifierList ]) ;
 
 identifier
    : ID
+//   | '"' ID '"' {notifyErrorListeners("Error léxico: Para asignar cadenas se deben usar comillas simples ' cadena ' ");}
    ;
 
 block
-   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION | OVERLOAD SEMICOLON)* compoundStatement
+   : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION )* compoundStatement
    ;
 
-usesUnitsPart
-   : USES identifierList SEMICOLON
-   ;
+//usesUnitsPart
+//   : USES identifierList SEMICOLON
+//   ;
 
-labelDeclarationPart
-   : LABEL label (COMMA label)* SEMICOLON
-   ;
-
-label
-   : unsignedInteger
-   ;
+//labelDeclarationPart
+//   : LABEL label (COMMA label)* SEMICOLON
+//   ;
+//
+//label
+//   : unsignedInteger
+//   ;
 
 constantDefinitionPart
    : CONST (constantDefinition SEMICOLON)+
@@ -48,10 +47,11 @@ constantChr
 constant
    : unsignedNumber
    | sign unsignedNumber
-   | identifier
+//   | identifier
    | sign identifier
    | string
    | constantChr
+   | varType
    | char
    | boolean
    ;
@@ -66,7 +66,7 @@ varType
     ;
 
 arrayType
-   : ARRAY L_BRACK indexRanges R_BRACK OF varType
+   : ARRAY L_BRACK indexRanges R_BRACK OF (integerR_ | booleanR_ | charR_ )
    ;
 
 arrayOfType
@@ -79,7 +79,7 @@ arrayValue
    ;
 
 indexRanges
-   : indexRange (COMMA indexRange)*
+   : indexRange (COMMA indexRange)?
    ;
 
 indexRange
@@ -132,9 +132,9 @@ functionType
    : FUNCTION (formalParameterList)? COLON varType
    ;
 
-procedureType
-   : PROCEDURE (formalParameterList)? COLON varType
-   ;
+//procedureType
+//   : PROCEDURE (formalParameterList)? COLON varType
+//   ;
 
 type_
    : simpleType
@@ -142,65 +142,65 @@ type_
    ;
 
 simpleType
-   : scalarType
-   | subrangeType
+//   : scalarType
+   : subrangeType
    | typeIdentifier
    | stringtype
    | constant
    ;
 
-scalarType
-   : L_PAREN identifierList R_PAREN
-   ;
+//scalarType
+//   : L_PAREN identifierList R_PAREN
+//   ;
 
 subrangeType
    : constant DOUBLE_DOT constant
    ;
 
 typeIdentifier
-   : identifier
-   | (CHAR_ | BOOLEAN_ | INTEGER_ | STRING_)
+//   : identifier
+   : (CHAR_ | BOOLEAN_ | INTEGER_ | STRING_)
    ;
 
 stringtype
    : STRING L_BRACK (identifier | unsignedNumber) R_BRACK
    ;
 
-typeList
-   : indexType (COMMA indexType)*
-   ;
+//typeList
+//   : indexType (COMMA indexType)*
+//   ;
 
-indexType
-   : simpleType
-   ;
+//indexType
+//   : simpleType
+//   ;
 
-componentType
-   : type_
-   ;
+//componentType
+//   : type_
+//   ;
+//
+//fixedPart
+//   : recordSection (SEMICOLON recordSection)*
+//   ;
+//
+//recordSection
+//   : identifierList COLON type_
+//   ;
 
-fixedPart
-   : recordSection (SEMICOLON recordSection)*
-   ;
-
-recordSection
-   : identifierList COLON type_
-   ;
-
-tag
-   : identifier COLON typeIdentifier
-   | typeIdentifier
-   ;
-
-baseType
-   : simpleType
-   ;
+//tag
+//   : identifier COLON typeIdentifier
+//   | typeIdentifier
+//   ;
+//
+//baseType
+//   : simpleType
+//   ;
 
 variableDeclarationPart
    : VAR variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON
    ;
 
 variableDeclaration
-   : identifierList COLON type_ (EQUAL initialValue)?
+   : identifierList COLON (typeIdentifier | arrayType) (EQUAL initialValue)?
    ;
 
 procedureAndFunctionDeclarationPart
@@ -244,34 +244,41 @@ procedureDeclaration
    : PROCEDURE identifier formalParameterList SEMICOLON block
    ;
 
-resultType
-   : typeIdentifier
-   ;
+//resultType
+//   : typeIdentifier
+//   ;
 
 statement
-   : label COLON unlabelledStatement
+   : unsignedInteger COLON unlabelledStatement
    | writeStatement
    | readStatement
    | unlabelledStatement
    | functionDesignator
+   | procedureOrFunctionDeclaration
    ;
 
 writeStatement
-    : write L_PAREN (writeParam (COMMA writeParam)*)? R_PAREN
+    : write L_PAREN (emptyStatement_ | (string (COMMA identifier)?)?)? R_PAREN
     ;
-
 
 write: WRITE | WRITELN;
 
-writeParam
-    : varValue
-    | identifier
-    | arrayValue
-    ;
+//writeParam
+//    : readWriteVarValue
+//    | identifier
+//    | arrayValue
+//    | functionDesignator
+//    ;
+//
+//varValue
+//    : string
+//    | boolean
+//    | char
+//    | integer
+//    ;
 
-varValue
+readWriteVarValue
     : string
-    | boolean
     | char
     | integer
     ;
@@ -282,9 +289,9 @@ readStatement
 read: READ | READLN;
 
 readParam
-    : varValue
-    | identifier
-    | arrayValue
+//    : readWriteVarValue
+    : identifier
+//    | arrayValue
     ;
 
 unlabelledStatement
@@ -387,12 +394,14 @@ element
    ;
 
 actualParameter
-   : expression parameterwidth*
+//   : expression parameterwidth*
+   : expression
    ;
 
-parameterwidth
-   : COLON expression
-   ;
+// a:10 que nos dice el length de la variable
+//parameterwidth
+//   : COLON expression
+//   ;
 
 emptyStatement_
    :
@@ -405,9 +414,11 @@ structuredStatement
    ;
 
 compoundStatement
-   : BEGIN statements END
-   | procedureOrFunctionDeclaration
-   ;
+    : BEGIN statements SEMICOLON END
+    | BEGIN emptyStatement_ END
+//      | BEGIN (statement | compoundStatement) END
+//      | procedureOrFunctionDeclaration
+    ;
 
 statements
    : statement (SEMICOLON statement)*
@@ -446,6 +457,8 @@ forList
 initialValue
    : arrayInitialization
    | constant
+   | identifier
+//   | expression // puede ser cualquiera de los dos
    ;
 
 arrayInitialization
@@ -512,7 +525,7 @@ TO: 'to';
 DO: 'do';
 DOWNTO: 'downto';
 VAR: 'var';
-OVERLOAD: 'overload';
+//OVERLOAD: 'overload';
 
 ARRAY: 'Array';
 OF: 'of';
@@ -528,16 +541,16 @@ WRITELN: 'WRITELN';
 WRITE: 'WRITE';
 
 
-NIL: 'NIL';
-INTERFACE: 'INTERFACE';
-UNIT: 'UNIT';
+//NIL: 'NIL';
+//INTERFACE: 'INTERFACE';
+//UNIT: 'UNIT';
 IMPLEMENTATION: 'IMPLEMENTATION';
-LABEL: 'LABEL';
+//LABEL: 'LABEL';
 CONST: 'CONST';
 
-ID: [a-zA-Z] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
+ID: [a-zA-Z_] [a-zA-Z0-9_]*; //warning porque es case insensitive, para quitar solo hay que quitar el range de mayusculas
 
 CHR: 'CHR';
 TYPE: 'TYPE';
-USES: 'USES';
+//USES: 'USES';
 AT: 'AT';
