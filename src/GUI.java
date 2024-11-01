@@ -43,8 +43,10 @@ public class GUI extends javax.swing.JFrame {
         TextAreaScrollPane = new javax.swing.JScrollPane();
         TextArea = new javax.swing.JTextArea();
         MenuBar = new javax.swing.JMenuBar();
-        FileContextMenu = new javax.swing.JMenu();
+        FileMenu = new javax.swing.JMenu();
         OpenFileMenuItem = new javax.swing.JMenuItem();
+        RunMenu = new javax.swing.JMenu();
+        RunFileMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,7 +54,7 @@ public class GUI extends javax.swing.JFrame {
         TextArea.setRows(5);
         TextAreaScrollPane.setViewportView(TextArea);
 
-        FileContextMenu.setText("File");
+        FileMenu.setText("File");
 
         OpenFileMenuItem.setText("Open File");
         OpenFileMenuItem.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -65,9 +67,26 @@ public class GUI extends javax.swing.JFrame {
                 OpenFileMenuItemActionPerformed(evt);
             }
         });
-        FileContextMenu.add(OpenFileMenuItem);
+        FileMenu.add(OpenFileMenuItem);
 
-        MenuBar.add(FileContextMenu);
+        MenuBar.add(FileMenu);
+
+        RunMenu.setText("Run");
+
+        RunFileMenuItem.setText("Run File");
+        RunFileMenuItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                RunFileMenuItemMouseClicked(evt);
+            }
+        });
+        RunFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RunFileMenuItemActionPerformed(evt);
+            }
+        });
+        RunMenu.add(RunFileMenuItem);
+
+        MenuBar.add(RunMenu);
 
         setJMenuBar(MenuBar);
 
@@ -92,7 +111,6 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void OpenFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenFileMenuItemActionPerformed
-        procesoCompiUno();
         showFileContent();
     }//GEN-LAST:event_OpenFileMenuItemActionPerformed
 
@@ -101,6 +119,14 @@ public class GUI extends javax.swing.JFrame {
         // aca tengo que hacer que se abra el file chooser
 
     }//GEN-LAST:event_OpenFileMenuItemMouseClicked
+
+    private void RunFileMenuItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RunFileMenuItemMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RunFileMenuItemMouseClicked
+
+    private void RunFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunFileMenuItemActionPerformed
+        procesoCompiUno();
+    }//GEN-LAST:event_RunFileMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -139,77 +165,51 @@ public class GUI extends javax.swing.JFrame {
 
     public void procesoCompiUno() {
         try {
-//             Create a new JFrame (this is optional, just to have a parent for the JFileChooser)
-            JFrame frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setVisible(true);
+            // Get the path of the selected file and save it in a variable
+            String filePath = currentFile.getAbsolutePath();
 
-            // Get the current working directory (project directory)
-            String projectDirectory = System.getProperty("user.dir");
-
-            // Create a JFileChooser instance
-            JFileChooser fileChooser = new JFileChooser(projectDirectory);
-
-            // Open the file chooser dialog
-            int returnValue = fileChooser.showOpenDialog(frame);
-            String filePath = "";
-            // Check if the user selected a file
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                // Get the selected file
-                File selectedFile = fileChooser.getSelectedFile();
-                currentFile = fileChooser.getSelectedFile();
-
-                // Get the path of the selected file and save it in a variable
-                filePath = selectedFile.getAbsolutePath();
-
-                // Print the file path to the console
-                System.out.println("Selected file path: " + filePath);
-                String source = filePath;
+            // Print the file path to the console
+            System.out.println("Selected file path: " + filePath);
+            String source = filePath;
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
-                Manejo_Errores errorListener = new Manejo_Errores();
-                CharStream cs = fromFileName(source);
-                MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
-                Lexer.removeErrorListeners();
-                Lexer.addErrorListener(errorListener);
+            Manejo_Errores errorListener = new Manejo_Errores();
+            CharStream cs = fromFileName(source);
+            MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
+            Lexer.removeErrorListeners();
+            Lexer.addErrorListener(errorListener);
 
-                CommonTokenStream token = new CommonTokenStream(Lexer);
+            CommonTokenStream token = new CommonTokenStream(Lexer);
 
-                MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
-                parser.removeErrorListeners();
-                parser.addErrorListener(errorListener);
+            MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
+            parser.removeErrorListeners();
+            parser.addErrorListener(errorListener);
 //            parser.addErrorListener(new DiagnosticErrorListener());
 //            parser.setErrorHandler(new CustomErrorStrategy());
-                parser.setErrorHandler(new DefaultErrorStrategy());
+            parser.setErrorHandler(new DefaultErrorStrategy());
 
 //            parser.getInterpreter()
 //                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
-                ParseTree tree = parser.program();
+            ParseTree tree = parser.program();
 
 //            int errorCount = parser.getErrorListeners().stream()
 //                    .filter(el -> el instanceof Manejo_Errores)
 //                    .map(el -> (Manejo_Errores) el)
 //                    .mapToInt(Manejo_Errores::getErrorCount)
 //                    .sum();
-                System.err.println("Numero de errores: " + errorListener.getErrorCount());
+            System.err.println("Numero de errores: " + errorListener.getErrorCount());
 
-                if (errorListener.getErrorCount() == 0) {
-                    String verde = "\u001B[32m";
-                    String reset = "\u001B[0m";
+            if (errorListener.getErrorCount() == 0) {
+                String verde = "\u001B[32m";
+                String reset = "\u001B[0m";
 
-                    System.out.println(verde + "Compilado exitosamente" + reset);
-                    MyVisitor visitor = new MyVisitor();
-                    visitor.visit(tree);
-                }
+                System.out.println(verde + "Compilado exitosamente" + reset);
+                MyVisitor visitor = new MyVisitor();
+                visitor.visit(tree);
+            }
 //            MyVisitor visitor = new MyVisitor();
 //            visitor.visit(tree);
-            } else {
-                System.out.println("No file was selected.");
-            }
-
-//             Close the JFrame
-            frame.dispose();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -222,30 +222,52 @@ public class GUI extends javax.swing.JFrame {
         TextArea.setText("");
 
         try {
-            fr = new FileReader(currentFile);
-            br = new BufferedReader(fr);
-            String linea;
-            TextArea.setText("");
-            while ((linea = br.readLine()) != null) {
-                TextArea.append(linea);
-                TextArea.append("\n");
+            String projectDirectory = System.getProperty("user.dir");
+            JFileChooser jfc = new JFileChooser(projectDirectory);
+
+            int returnValue = jfc.showOpenDialog(this);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                currentFile = jfc.getSelectedFile();
+
+                fr = new FileReader(currentFile);
+                br = new BufferedReader(fr);
+                String linea;
+                TextArea.setText("");
+                while ((linea = br.readLine()) != null) {
+                    TextArea.append(linea);
+                    TextArea.append("\n");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione un Archivo.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            br.close();
-            fr.close();
-        } catch (IOException ex) {
+        if (br != null) {
+            try {
+                br.close();
+            } catch (IOException ex) {
+                System.out.println("Buffer Error");
+            }
         }
+        if (fr != null) {
+            try {
+                fr.close();
+            } catch (IOException ex) {
+                System.out.println("Buffer Error");
+            }
+        }
+        TextArea.setEditable(false);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu FileContextMenu;
+    private javax.swing.JMenu FileMenu;
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JMenuItem OpenFileMenuItem;
+    private javax.swing.JMenuItem RunFileMenuItem;
+    private javax.swing.JMenu RunMenu;
     private javax.swing.JTextArea TextArea;
     private javax.swing.JScrollPane TextAreaScrollPane;
     // End of variables declaration//GEN-END:variables
