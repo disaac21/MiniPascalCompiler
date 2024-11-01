@@ -42,6 +42,8 @@ public class GUI extends javax.swing.JFrame {
 
         TextAreaScrollPane = new javax.swing.JScrollPane();
         TextArea = new javax.swing.JTextArea();
+        TerminalScrollPane = new javax.swing.JScrollPane();
+        Terminal = new javax.swing.JTextArea();
         MenuBar = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
         OpenFileMenuItem = new javax.swing.JMenuItem();
@@ -53,6 +55,10 @@ public class GUI extends javax.swing.JFrame {
         TextArea.setColumns(20);
         TextArea.setRows(5);
         TextAreaScrollPane.setViewportView(TextArea);
+
+        Terminal.setColumns(20);
+        Terminal.setRows(5);
+        TerminalScrollPane.setViewportView(Terminal);
 
         FileMenu.setText("File");
 
@@ -94,10 +100,15 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(135, 135, 135)
-                .addComponent(TextAreaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(135, Short.MAX_VALUE)
+                .addComponent(TextAreaScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(415, 415, 415))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(692, Short.MAX_VALUE)
+                    .addComponent(TerminalScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -105,6 +116,11 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(TextAreaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(TerminalScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         pack();
@@ -164,55 +180,64 @@ public class GUI extends javax.swing.JFrame {
     }
 
     public void procesoCompiUno() {
-        try {
-            // Get the path of the selected file and save it in a variable
-            String filePath = currentFile.getAbsolutePath();
+        if (currentFile == null) {
+            JOptionPane.showMessageDialog(this, "Debe Cargar un Archivo al Programa");
+        } else {
 
-            // Print the file path to the console
-            System.out.println("Selected file path: " + filePath);
-            String source = filePath;
+            try {
+                Terminal.setText("");
+                // Get the path of the selected file and save it in a variable
+                String filePath = currentFile.getAbsolutePath();
+
+                // Print the file path to the console
+                System.out.println("Selected file path: " + filePath);
+                Terminal.append("Selected file path: " + filePath + "\n");
+                String source = filePath;
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
-            Manejo_Errores errorListener = new Manejo_Errores();
-            CharStream cs = fromFileName(source);
-            MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
-            Lexer.removeErrorListeners();
-            Lexer.addErrorListener(errorListener);
+                Manejo_Errores errorListener = new Manejo_Errores();
+                CharStream cs = fromFileName(source);
+                MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
+                Lexer.removeErrorListeners();
+                Lexer.addErrorListener(errorListener);
 
-            CommonTokenStream token = new CommonTokenStream(Lexer);
+                CommonTokenStream token = new CommonTokenStream(Lexer);
 
-            MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
-            parser.removeErrorListeners();
-            parser.addErrorListener(errorListener);
+                MiniPascalGrammarParser parser = new MiniPascalGrammarParser(token);
+                parser.removeErrorListeners();
+                parser.addErrorListener(errorListener);
 //            parser.addErrorListener(new DiagnosticErrorListener());
 //            parser.setErrorHandler(new CustomErrorStrategy());
-            parser.setErrorHandler(new DefaultErrorStrategy());
+                parser.setErrorHandler(new DefaultErrorStrategy());
 
 //            parser.getInterpreter()
 //                    .setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
-            ParseTree tree = parser.program();
+                ParseTree tree = parser.program();
 
 //            int errorCount = parser.getErrorListeners().stream()
 //                    .filter(el -> el instanceof Manejo_Errores)
 //                    .map(el -> (Manejo_Errores) el)
 //                    .mapToInt(Manejo_Errores::getErrorCount)
 //                    .sum();
-            System.err.println("Numero de errores: " + errorListener.getErrorCount());
+                System.err.println("Numero de errores: " + errorListener.getErrorCount());
+                Terminal.append("Numero de errores: " + errorListener.getErrorCount() + "\n");
 
-            if (errorListener.getErrorCount() == 0) {
-                String verde = "\u001B[32m";
-                String reset = "\u001B[0m";
+                if (errorListener.getErrorCount() == 0) {
+                    String verde = "\u001B[32m";
+                    String reset = "\u001B[0m";
 
-                System.out.println(verde + "Compilado exitosamente" + reset);
-                MyVisitor visitor = new MyVisitor();
-                visitor.visit(tree);
-            }
+                    System.out.println(verde + "Compilado exitosamente" + reset);
+                    Terminal.append("Compilado exitosamente\n");
+                    MyVisitor visitor = new MyVisitor();
+                    visitor.visit(tree);
+                }
 //            MyVisitor visitor = new MyVisitor();
 //            visitor.visit(tree);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -268,6 +293,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem OpenFileMenuItem;
     private javax.swing.JMenuItem RunFileMenuItem;
     private javax.swing.JMenu RunMenu;
+    private javax.swing.JTextArea Terminal;
+    private javax.swing.JScrollPane TerminalScrollPane;
     private javax.swing.JTextArea TextArea;
     private javax.swing.JScrollPane TextAreaScrollPane;
     // End of variables declaration//GEN-END:variables
