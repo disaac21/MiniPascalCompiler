@@ -15,6 +15,7 @@ public class Launch {
     public static void main(String[] args) {
 
         try {
+            javax.swing.JTextArea Terminal = new javax.swing.JTextArea();
 //             Create a new JFrame (this is optional, just to have a parent for the JFileChooser)
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,7 +44,7 @@ public class Launch {
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
-                Manejo_Errores errorListener = new Manejo_Errores();
+                Manejo_Errores errorListener = new Manejo_Errores(Terminal);
                 CharStream cs = fromFileName(source);
                 MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
                 Lexer.removeErrorListeners();

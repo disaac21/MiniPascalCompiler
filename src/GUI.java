@@ -196,7 +196,7 @@ public class GUI extends javax.swing.JFrame {
 //            String source = "C:\\Users\\serli\\Compi 1 Serlio\\Proyecto Daniel\\MiniPascalCompiler\\ejemplo_ingeniero.txt";
 //            String source = "C:\\Users\\danie\\Desktop\\MiniPascalCompiler\\src\\test.txt";
 
-                Manejo_Errores errorListener = new Manejo_Errores();
+                Manejo_Errores errorListener = new Manejo_Errores(Terminal);
                 CharStream cs = fromFileName(source);
                 MiniPascalGrammarLexer Lexer = new MiniPascalGrammarLexer(cs);
                 Lexer.removeErrorListeners();
@@ -293,7 +293,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem OpenFileMenuItem;
     private javax.swing.JMenuItem RunFileMenuItem;
     private javax.swing.JMenu RunMenu;
-    private javax.swing.JTextArea Terminal;
+    public javax.swing.JTextArea Terminal;
     private javax.swing.JScrollPane TerminalScrollPane;
     private javax.swing.JTextArea TextArea;
     private javax.swing.JScrollPane TextAreaScrollPane;

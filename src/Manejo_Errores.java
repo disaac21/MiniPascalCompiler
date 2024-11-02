@@ -12,6 +12,7 @@ import java.util.List;
 public class Manejo_Errores extends BaseErrorListener {
 
     private int errorCount = 0;
+    public javax.swing.JTextArea Terminal;
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,
@@ -74,8 +75,11 @@ public class Manejo_Errores extends BaseErrorListener {
 
 //        System.err.println(e);
         System.err.println();
+        Terminal.append("\n");
         System.err.println("Error de tipo: " + errorType);
+        Terminal.append("Error de tipo: " + errorType + "\n");
         System.err.println("Línea " + line + " - columna " + (charPositionInLine+1) + ": " + msg);
+        Terminal.append("Línea " + line + " - columna " + (charPositionInLine+1) + ": " + msg + "\n");
 
         underlineError(recognizer, (Token) offendingSymbol,
                 line, charPositionInLine);
@@ -95,15 +99,18 @@ public class Manejo_Errores extends BaseErrorListener {
             // Verificación para evitar ArrayIndexOutOfBoundsException
             if (line - 1 >= lines.length || line - 1 < 0) {
                 System.err.println("Error al final del archivo. Asegurese de finalizar su archivo con un \'end.\'");
+                Terminal.append("Error al final del archivo. Asegurese de finalizar su archivo con un \'end.\'\n");
                 return; // Salir de la función si la línea es inválida
             }
 
             String errorLine = lines[line - 1];
             System.err.println((line) + ": " + errorLine);
+            Terminal.append((line) + ": " + errorLine + "\n");
 
             // Imprime espacios hasta la posición del error
             for (int i = 0; i < (countDigits(line) + 2 + charPositionInLine); i++) {
                 System.err.print(" ");
+                Terminal.append(" ");
             }
 
             int start = offendingToken.getStartIndex();
@@ -113,11 +120,14 @@ public class Manejo_Errores extends BaseErrorListener {
             if (start >= 0 && stop >= start && stop < input.length()) {
                 for (int i = start; i <= stop; i++) {
                     System.err.print("^");
+                    Terminal.append("^");
                 }
             } else {
                 System.err.print("^");  // Muestra un solo símbolo de error si no se puede determinar la posición exacta
+                Terminal.append("^");
             }
             System.err.println();
+            Terminal.append("\n");
         }
     }
 
@@ -197,6 +207,11 @@ public class Manejo_Errores extends BaseErrorListener {
 
     public int getErrorCount() {
         return errorCount;
+    }
+
+    public Manejo_Errores(javax.swing.JTextArea Terminal) {
+        this.Terminal = Terminal;
+
     }
 
 //    protected void underlineError(Recognizer recognizer, Token offendingToken, int line, int charPositionInLine) {
