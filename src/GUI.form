@@ -14,7 +14,6 @@
                 <Property name="text" type="java.lang.String" value="Open File"/>
               </Properties>
               <Events>
-                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="OpenFileMenuItemMouseClicked"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OpenFileMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
@@ -30,7 +29,6 @@
                 <Property name="text" type="java.lang.String" value="Run File"/>
               </Properties>
               <Events>
-                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="RunFileMenuItemMouseClicked"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RunFileMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
