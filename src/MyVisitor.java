@@ -47,9 +47,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
 
-        ArrayList<Binding> TablaSimbolos = new ArrayList<>();
-
-        return visitChildren(ctx);
+        String previousScope = scope_actual;
+        scope_actual = "block_" + scope_actual;
+        visitChildren(ctx);
+        scope_actual = previousScope;
+        return null;
     }
 
     @Override
@@ -288,7 +290,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             StringBuilder identifiers = new StringBuilder();
             List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
             for (int i = 0; i < idNodes.size(); i++) {
-
                 identifiers.append(idNodes.get(i).getText());
                 if (i < idNodes.size() - 1) {
                     identifiers.append(", ");
@@ -368,30 +369,34 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
+        String previousScope = scope_actual;
+        scope_actual = ctx.identifier().getText();
         System.out.println(" Segmento de Declaracion de Funciones:");
         System.out.println("  Identificador: " + ctx.identifier().getText());
         System.out.println("  Tipo de Return: " + ctx.varType().getText());
         if (ctx.formalParameterList() != null) {
-            System.out.println("  Parametros:");
             visit(ctx.formalParameterList());
         }
         System.out.println("  Bloque:");
         visit(ctx.block());
         System.out.println();
+        scope_actual = previousScope;
         return null;
     }
 
     @Override
     public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
+        String previousScope = scope_actual;
+        scope_actual = ctx.identifier().getText();
         System.out.println(" Segmento de Declaracion de Procedimientos:");
         System.out.println("  Identificador: " + ctx.identifier().getText());
         if (ctx.formalParameterList() != null) {
-            System.out.println("  Procedimiento:");
             visit(ctx.formalParameterList());
         }
         System.out.println("   Bloque:");
         visit(ctx.block());
         System.out.println();
+        scope_actual = previousScope;
         return null;
     }
 
