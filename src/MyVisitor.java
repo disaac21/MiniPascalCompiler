@@ -74,7 +74,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             TablaSimbolos.add(binding);
             imprimirTablaSimbolos();
         } else {
-            System.out.println("\u001B[31mError: La variable " + binding.getNombre() + " ya ha sido declarada en el scope " + scope_actual + "\u001B[0m");
+            System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
             System.exit(1);
         }
         return null;
