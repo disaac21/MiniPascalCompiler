@@ -5,6 +5,28 @@ import java.util.List;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
+    ArrayList <Binding> TablaSimbolos = new ArrayList<>();
+    String scope_actual = "global";
+
+    public void imprimirTablaSimbolos(){
+        System.out.println(" ------- Tabla de Simbolos ------- ");
+        for (Binding binding : TablaSimbolos) {
+            System.out.println(binding);
+        }
+        System.out.println(" --------------------------------- ");
+    }
+
+    private boolean checkVariable(String variable) {
+        boolean found = false;
+        for (Binding binding : TablaSimbolos) {
+            if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
         System.out.println("Inicio del Programa:");
@@ -49,6 +71,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         MiniPascalGrammarParser.ConstantContext typeCtx = ctx.constant();
         System.out.println("   Identificador: " + idCtx.getText());
         System.out.println("   Valor: " + typeCtx.getText());
+
+        Binding binding = new Binding(idCtx.getText(), "const", scope_actual);
+        if (!checkVariable(binding.getNombre())) {
+            TablaSimbolos.add(binding);
+        }else{
+            System.out.println("Error: La variable " + binding.getNombre() + " ya ha sido declarada en el scope " + scope_actual);
+        }
+        imprimirTablaSimbolos();
         return null;
     }
 
