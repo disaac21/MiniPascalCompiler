@@ -16,7 +16,7 @@ identifier
 //   | '"' ID '"' {notifyErrorListeners("Error léxico: Para asignar cadenas se deben usar comillas simples ' cadena ' ");}
    ;
 
-block
+    block
    : ( constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION )* compoundStatement
    ;
 

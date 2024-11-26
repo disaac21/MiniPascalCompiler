@@ -1,5 +1,6 @@
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
@@ -26,6 +27,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
+
+        ArrayList<Binding> TablaSimbolos = new ArrayList<>();
+
         return visitChildren(ctx);
     }
 
@@ -236,7 +240,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //    }
 
     @Override
-    public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx) {
+    public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx){
         System.out.println(" Segmento de Declaracion de Variables:");
         for (MiniPascalGrammarParser.VariableDeclarationContext varDeclCtx : ctx.variableDeclaration()) {
             visit(varDeclCtx);

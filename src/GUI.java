@@ -42,10 +42,12 @@ public class GUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         TextArea.setColumns(20);
+        TextArea.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         TextArea.setRows(5);
         TextAreaScrollPane.setViewportView(TextArea);
 
         Terminal.setColumns(20);
+        Terminal.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         Terminal.setRows(5);
         TerminalScrollPane.setViewportView(Terminal);
 
@@ -235,7 +237,7 @@ public class GUI extends javax.swing.JFrame {
                 System.out.println("Buffer Error");
             }
         }
-        TextArea.setEditable(false);
+        TextArea.setEditable(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
