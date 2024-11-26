@@ -1,14 +1,12 @@
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
-    ArrayList <Binding> TablaSimbolos = new ArrayList<>();
+    ArrayList<Binding> TablaSimbolos = new ArrayList<>();
     String scope_actual = "global";
 
-    public void imprimirTablaSimbolos(){
+    public void imprimirTablaSimbolos() {
         System.out.println(" ------- Tabla de Simbolos ------- ");
         for (Binding binding : TablaSimbolos) {
             System.out.println(binding);
@@ -16,12 +14,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println(" --------------------------------- ");
     }
 
-    private boolean checkVariable(String variable) {
+    private boolean encontrarVariable(String variable) {
         boolean found = false;
         for (Binding binding : TablaSimbolos) {
             if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
                 found = true;
-                break;
             }
         }
         return found;
@@ -73,12 +70,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("   Valor: " + typeCtx.getText());
 
         Binding binding = new Binding(idCtx.getText(), "const", scope_actual);
-        if (!checkVariable(binding.getNombre())) {
+        if (!encontrarVariable(binding.getNombre())) {
             TablaSimbolos.add(binding);
-        }else{
-            System.out.println("Error: La variable " + binding.getNombre() + " ya ha sido declarada en el scope " + scope_actual);
+            imprimirTablaSimbolos();
+        } else {
+            System.out.println("\u001B[31mError: La variable " + binding.getNombre() + " ya ha sido declarada en el scope " + scope_actual + "\u001B[0m");
+            System.exit(1);
         }
-        imprimirTablaSimbolos();
         return null;
     }
 
@@ -270,7 +268,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //    }
 
     @Override
-    public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx){
+    public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx) {
         System.out.println(" Segmento de Declaracion de Variables:");
         for (MiniPascalGrammarParser.VariableDeclarationContext varDeclCtx : ctx.variableDeclaration()) {
             visit(varDeclCtx);
