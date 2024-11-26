@@ -24,6 +24,48 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return found;
     }
 
+    private boolean verificarValor(String valor, String tipoEsperado) {
+        // Validación para tipos básicos
+        if (tipoEsperado.equals("integer")) {
+            // Expresión que permite números enteros o variables separadas por '+'
+            String[] components = valor.split("\\+");
+            for (String component : components) {
+                component = component.trim(); // Eliminar espacios en blanco
+
+                // Verificar si es un número entero
+                if (component.matches("-?\\d+")) {
+                    continue;
+                }
+
+                // Verificar si es una variable definida como tipo 'integer'
+                boolean isIntegerVariable = false;
+                for (Binding binding : TablaSimbolos) {
+                    if (binding.getNombre().equals(component) &&
+                            binding.getScope().equals(scope_actual) &&
+                            binding.getTipo().equals("integer")) {
+                        isIntegerVariable = true;
+                        break;
+                    }
+                }
+
+                if (!isIntegerVariable) {
+                    return false; // Si no es número ni variable válida, la expresión no es válida
+                }
+            }
+            return true; // Todos los componentes son válidos
+        } else if (tipoEsperado.equals("boolean")) {
+            return valor.equals("true") || valor.equals("false"); // Booleano
+        } else if (tipoEsperado.equals("char")) {
+            return valor.matches("'[^']'"); // Un único carácter entre comillas simples
+        } else if (tipoEsperado.equals("string")) {
+            return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
+        }
+
+        // Tipo no reconocido
+        return false;
+    }
+
+
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
         System.out.println("Inicio del Programa:");
@@ -48,7 +90,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
 
         String previousScope = scope_actual;
-        scope_actual = "block_" + scope_actual;
+        scope_actual = scope_actual;
         visitChildren(ctx);
         scope_actual = previousScope;
         return null;
@@ -351,7 +393,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
-        return visitChildren(ctx);
+        String paramType = ctx.varType().getText();
+        for (MiniPascalGrammarParser.IdentifierContext idCtx : ctx.identifierList().identifier()) {
+            String paramName = idCtx.getText();
+            Binding binding = new Binding(paramName, paramType, scope_actual);
+            TablaSimbolos.add(binding);
+            System.out.println("Parámetro añadido: " + paramName + " de tipo " + paramType + " en el ámbito " + scope_actual);
+        }
+        return null;
     }
 
     @Override
@@ -481,7 +530,33 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println(" Segmento de Asignacion de Variables:");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
-        System.out.println("  Asignando el valor " + expression + " a la variable " + variable);
+
+        // Verificar si la variable está definida en el ámbito actual
+        if (!encontrarVariable(variable)) {
+            System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+            return null;
+        }
+
+        // Obtener el tipo de la variable desde la tabla de símbolos
+        String tipoVariable = null;
+        for (Binding binding : TablaSimbolos) {
+            if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                tipoVariable = binding.getTipo();
+                break;
+            }
+        }
+
+        // Validar el tipo de la expresión
+        if (tipoVariable != null) {
+            if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+            } else {
+                System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+            }
+        } else {
+            System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+        }
+
         return null;
     }
 
