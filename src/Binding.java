@@ -8,7 +8,7 @@ public class Binding {
 
     // Constructor
     public Binding(String nombre, String tipo, String scope) {
-        System.out.println("entro al constructor de binding");
+//        System.out.println("entro al constructor de binding");
         this.nombre = nombre;
         this.tipo = tipo;
         this.scope = scope;

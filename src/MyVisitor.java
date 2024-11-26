@@ -288,12 +288,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             StringBuilder identifiers = new StringBuilder();
             List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
             for (int i = 0; i < idNodes.size(); i++) {
+
                 identifiers.append(idNodes.get(i).getText());
                 if (i < idNodes.size() - 1) {
                     identifiers.append(", ");
                 }
+                System.out.println("   Identificador: " + idNodes.get(i).getText());
+                Binding binding = new Binding(idNodes.get(i).getText(), typeCtx.getText(), scope_actual);
+                if (!encontrarVariable(binding.getNombre())) {
+                    TablaSimbolos.add(binding);
+                    imprimirTablaSimbolos();
+                } else {
+                    System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                    System.exit(1);
+                }
             }
-            System.out.println(identifiers.toString());
         }
         if (idListCtx != null && arrayTypeCtx != null) {
             System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getText());
