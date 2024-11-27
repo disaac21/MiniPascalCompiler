@@ -28,7 +28,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         // Validación para tipos básicos
         if (tipoEsperado.equals("integer")) {
             // Expresión que permite números enteros o variables separadas por '+'
-            String[] components = valor.split("\\+");
+            String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
             for (String component : components) {
                 component = component.trim(); // Eliminar espacios en blanco
 
@@ -419,19 +419,34 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
         String previousScope = scope_actual;
-        scope_actual = ctx.identifier().getText();
+        scope_actual = ctx.identifier().getText(); // El nuevo ámbito es el nombre de la función
+
         System.out.println(" Segmento de Declaracion de Funciones:");
-        System.out.println("  Identificador: " + ctx.identifier().getText());
-        System.out.println("  Tipo de Return: " + ctx.varType().getText());
+        String functionName = ctx.identifier().getText();
+        String returnType = ctx.varType().getText();
+
+        // Agregar la función a la tabla de símbolos
+        Binding functionBinding = new Binding(functionName, returnType, scope_actual);
+        TablaSimbolos.add(functionBinding);
+
+        System.out.println("  Identificador: " + functionName);
+        System.out.println("  Tipo de Return: " + returnType);
+
+        // Procesar parámetros formales
         if (ctx.formalParameterList() != null) {
             visit(ctx.formalParameterList());
         }
+
+        // Procesar el bloque de la función
         System.out.println("  Bloque:");
         visit(ctx.block());
         System.out.println();
+
+        // Restaurar el ámbito anterior
         scope_actual = previousScope;
         return null;
     }
+
 
     @Override
     public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
