@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,77 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return found;
     }
 
+    private boolean verificarValor(String valor, String tipoEsperado) {
+        // Validación para tipos básicos
+
+        boolean isFunction = false;
+        if (valor.contains("(")) {
+            valor = valor.substring(0, valor.indexOf("("));
+            isFunction = true;
+        }
+
+        if (tipoEsperado.equals("integer")) {
+            // Expresión que permite números enteros o variables separadas por '+'
+            String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
+
+//            for (String component : components) {
+//                System.out.println("COMPONENTE: " + component);
+//            }
+
+            for (String component : components) {
+                component = component.trim(); // Eliminar espacios en blanco
+
+                // Verificar si es un número entero
+                if (component.matches("-?\\d+")) {
+                    continue;
+                }
+
+                // Verificar si es una variable definida como tipo 'integer'
+                boolean isIntegerVariable = false;
+                for (Binding binding : TablaSimbolos) {
+                    if (binding.getNombre().equals(component)) {
+                        System.out.println("EQUALS COMPONENT");
+                        if (isFunction) {
+                            if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
+                                System.out.println("EQUALS SCOPE");
+                                if (binding.getTipo().equals("integer")) {
+                                    System.out.println("EQUALS TIPO");
+                                    isIntegerVariable = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (binding.getScope().equals(scope_actual)) {
+                                System.out.println("EQUALS SCOPE");
+                                if (binding.getTipo().equals("integer")) {
+                                    System.out.println("EQUALS TIPO");
+                                    isIntegerVariable = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!isIntegerVariable) {
+                    return false; // Si no es número ni variable válida, la expresión no es válida
+                }
+            }
+            return true; // Todos los componentes son válidos
+        } else if (tipoEsperado.equals("boolean")) {
+            return valor.equals("true") || valor.equals("false"); // Booleano
+        } else if (tipoEsperado.equals("char")) {
+            return valor.matches("'[^']'"); // Un único carácter entre comillas simples
+        } else if (tipoEsperado.equals("string")) {
+            return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
+        }
+
+        // Tipo no reconocido
+        return false;
+
+    }
+
+
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
         System.out.println("Inicio del Programa:");
@@ -47,9 +119,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitBlock(MiniPascalGrammarParser.BlockContext ctx) {
 
-        ArrayList<Binding> TablaSimbolos = new ArrayList<>();
-
-        return visitChildren(ctx);
+        String previousScope = scope_actual;
+        scope_actual = scope_actual;
+        visitChildren(ctx);
+        scope_actual = previousScope;
+        return null;
     }
 
     @Override
@@ -288,7 +362,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             StringBuilder identifiers = new StringBuilder();
             List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
             for (int i = 0; i < idNodes.size(); i++) {
-
                 identifiers.append(idNodes.get(i).getText());
                 if (i < idNodes.size() - 1) {
                     identifiers.append(", ");
@@ -350,7 +423,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitParameterGroup(MiniPascalGrammarParser.ParameterGroupContext ctx) {
-        return visitChildren(ctx);
+        String paramType = ctx.varType().getText();
+        for (MiniPascalGrammarParser.IdentifierContext idCtx : ctx.identifierList().identifier()) {
+            String paramName = idCtx.getText();
+            Binding binding = new Binding(paramName, paramType, scope_actual);
+            TablaSimbolos.add(binding);
+            System.out.println("Parámetro añadido: " + paramName + " de tipo " + paramType + " en el ámbito " + scope_actual);
+        }
+        return null;
     }
 
     @Override
@@ -368,30 +448,49 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDeclaration(MiniPascalGrammarParser.FunctionDeclarationContext ctx) {
+        String previousScope = scope_actual;
+        scope_actual = ctx.identifier().getText(); // El nuevo ámbito es el nombre de la función
+
         System.out.println(" Segmento de Declaracion de Funciones:");
-        System.out.println("  Identificador: " + ctx.identifier().getText());
-        System.out.println("  Tipo de Return: " + ctx.varType().getText());
+        String functionName = ctx.identifier().getText();
+        String returnType = ctx.varType().getText();
+
+        // Agregar la función a la tabla de símbolos
+        Binding functionBinding = new Binding(functionName, returnType, scope_actual);
+        TablaSimbolos.add(functionBinding);
+
+        System.out.println("  Identificador: " + functionName);
+        System.out.println("  Tipo de Return: " + returnType);
+
+        // Procesar parámetros formales
         if (ctx.formalParameterList() != null) {
-            System.out.println("  Parametros:");
             visit(ctx.formalParameterList());
         }
+
+        // Procesar el bloque de la función
         System.out.println("  Bloque:");
         visit(ctx.block());
         System.out.println();
+
+        // Restaurar el ámbito anterior
+        scope_actual = previousScope;
         return null;
     }
 
+
     @Override
     public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
+        String previousScope = scope_actual;
+        scope_actual = ctx.identifier().getText();
         System.out.println(" Segmento de Declaracion de Procedimientos:");
         System.out.println("  Identificador: " + ctx.identifier().getText());
         if (ctx.formalParameterList() != null) {
-            System.out.println("  Procedimiento:");
             visit(ctx.formalParameterList());
         }
         System.out.println("   Bloque:");
         visit(ctx.block());
         System.out.println();
+        scope_actual = previousScope;
         return null;
     }
 
@@ -476,7 +575,36 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println(" Segmento de Asignacion de Variables:");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
-        System.out.println("  Asignando el valor " + expression + " a la variable " + variable);
+
+        // Verificar si la variable está definida en el ámbito actual
+        if (!encontrarVariable(variable)) {
+            System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+            return null;
+        }
+
+        // Obtener el tipo de la variable desde la tabla de símbolos
+        String tipoVariable = null;
+        for (Binding binding : TablaSimbolos) {
+            if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                tipoVariable = binding.getTipo();
+                break;
+            }
+        }
+
+
+//        expression = expression.substring(0, expression.indexOf("("));
+
+        // Validar el tipo de la expresión
+        if (tipoVariable != null) {
+            if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+            } else {
+                System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+            }
+        } else {
+            System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+        }
+
         return null;
     }
 
