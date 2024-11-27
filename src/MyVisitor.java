@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +27,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
+
+        boolean isFunction = false;
+        if (valor.contains("(")) {
+            valor = valor.substring(0, valor.indexOf("("));
+            isFunction = true;
+        }
+
         if (tipoEsperado.equals("integer")) {
             // Expresión que permite números enteros o variables separadas por '+'
             String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
+
+//            for (String component : components) {
+//                System.out.println("COMPONENTE: " + component);
+//            }
+
             for (String component : components) {
                 component = component.trim(); // Eliminar espacios en blanco
 
@@ -40,11 +53,27 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 // Verificar si es una variable definida como tipo 'integer'
                 boolean isIntegerVariable = false;
                 for (Binding binding : TablaSimbolos) {
-                    if (binding.getNombre().equals(component) &&
-                            binding.getScope().equals(scope_actual) &&
-                            binding.getTipo().equals("integer")) {
-                        isIntegerVariable = true;
-                        break;
+                    if (binding.getNombre().equals(component)) {
+                        System.out.println("EQUALS COMPONENT");
+                        if (isFunction) {
+                            if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
+                                System.out.println("EQUALS SCOPE");
+                                if (binding.getTipo().equals("integer")) {
+                                    System.out.println("EQUALS TIPO");
+                                    isIntegerVariable = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (binding.getScope().equals(scope_actual)) {
+                                System.out.println("EQUALS SCOPE");
+                                if (binding.getTipo().equals("integer")) {
+                                    System.out.println("EQUALS TIPO");
+                                    isIntegerVariable = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -561,6 +590,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 break;
             }
         }
+
+
+//        expression = expression.substring(0, expression.indexOf("("));
 
         // Validar el tipo de la expresión
         if (tipoVariable != null) {
