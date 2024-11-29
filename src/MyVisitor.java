@@ -143,7 +143,25 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("   Identificador: " + idCtx.getText());
         System.out.println("   Valor: " + typeCtx.getText());
 
-        Binding binding = new Binding(idCtx.getText(), "const", scope_actual);
+        String tipo = "";
+        if (typeCtx.getText().charAt(0) == '\'' && typeCtx.getText().charAt(2) == '\'') {
+            System.out.println("   Tipo: char");
+            tipo = "char";
+        } else if (typeCtx.getText().equals("true") || typeCtx.getText().equals("false")) {
+            System.out.println("   Tipo: boolean");
+            tipo = "boolean";
+        } else if (typeCtx.getText().matches("-?\\d+")) {
+            System.out.println("   Tipo: integer");
+            tipo = "integer";
+        } else if (typeCtx.getText().charAt(0) == '\'') {
+            System.out.println("   Tipo: string");
+            tipo = "string";
+        } else {
+            System.out.println("   Tipo Unknown");
+            tipo = "error";
+        }
+
+        Binding binding = new Binding(idCtx.getText(), tipo, scope_actual);
         if (!encontrarVariable(binding.getNombre())) {
             TablaSimbolos.add(binding);
             imprimirTablaSimbolos();
@@ -172,7 +190,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) {
-        System.out.println("Tipo Arreglo: " + ctx.getText());
+        System.out.println("Tipo Arreglo: " + ctx.getChild(2).getText());
         return null;
     }
 
@@ -378,7 +396,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
         if (idListCtx != null && arrayTypeCtx != null) {
-            System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getText());
+            System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
+            System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3));
             System.out.print("   Identificador: ");
             StringBuilder identifiers = new StringBuilder();
             List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
@@ -387,7 +406,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (i < idNodes.size() - 1) {
                     identifiers.append(", ");
                 }
-                Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getText(), scope_actual);
+                Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
                 if (!encontrarVariable(binding.getNombre())) {
                     TablaSimbolos.add(binding);
                     imprimirTablaSimbolos();
