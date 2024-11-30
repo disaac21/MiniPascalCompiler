@@ -396,26 +396,91 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
         if (idListCtx != null && arrayTypeCtx != null) {
-            System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
-            System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3));
-            System.out.print("   Identificador: ");
-            StringBuilder identifiers = new StringBuilder();
-            List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
-            for (int i = 0; i < idNodes.size(); i++) {
-                identifiers.append(idNodes.get(i).getText());
-                if (i < idNodes.size() - 1) {
-                    identifiers.append(", ");
+
+            if (arrayTypeCtx.indexRanges().getText().contains(",")) {
+                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
+                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) + " y " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(3));
+                System.out.println("BIDI");
+                System.out.print("   Identificador: ");
+                StringBuilder identifiers = new StringBuilder();
+                List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
+
+                for (int i = 0; i < idNodes.size(); i++) {
+                    identifiers.append(idNodes.get(i).getText());
+                    if (i < idNodes.size() - 1) {
+                        identifiers.append(", ");
+                    }
+
+                    //Agregar el Arreglo
+                    Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
+                    if (!encontrarVariable(binding.getNombre())) {
+                        TablaSimbolos.add(binding);
+                        imprimirTablaSimbolos();
+                    } else {
+                        System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                        System.exit(1);
+                    }
+
+                    //Agrega cada entrada del arreglo
+                    int inicio = arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) - 48;
+                    int fin = (int) arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) - 48;
+                    int inicio2 = arrayTypeCtx.indexRanges().indexRange().get(1).getText().charAt(0) - 48;
+                    int fin2 = (int) arrayTypeCtx.indexRanges().indexRange().get(1).getText().charAt(3) - 48;
+
+                    for (int j = inicio; j <= fin; j++) {
+                        for (int k = inicio2; k <= fin2; k++) {
+                            Binding binding2 = new Binding(idNodes.get(i).getText() + "[" + j + "," + k + "]", arrayTypeCtx.getChild(5).getText(), scope_actual);
+                            if (!encontrarVariable(binding2.getNombre())) {
+                                TablaSimbolos.add(binding2);
+                                imprimirTablaSimbolos();
+                            } else {
+                                System.out.println("\u001B[31mError: La variable \'" + binding2.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                                System.exit(1);
+                            }
+                        }
+                    }
                 }
-                Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
-                if (!encontrarVariable(binding.getNombre())) {
-                    TablaSimbolos.add(binding);
-                    imprimirTablaSimbolos();
-                } else {
-                    System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
-                    System.exit(1);
+                System.out.println(identifiers.toString());
+
+
+            } else {
+                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
+                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3));
+                System.out.print("   Identificador: ");
+                StringBuilder identifiers = new StringBuilder();
+                List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
+                for (int i = 0; i < idNodes.size(); i++) {
+                    identifiers.append(idNodes.get(i).getText());
+                    if (i < idNodes.size() - 1) {
+                        identifiers.append(", ");
+                    }
+
+                    //Agregar el Arreglo
+                    Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
+                    if (!encontrarVariable(binding.getNombre())) {
+                        TablaSimbolos.add(binding);
+                        imprimirTablaSimbolos();
+                    } else {
+                        System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                        System.exit(1);
+                    }
+
+                    //Agrega cada entrada del arreglo
+                    int inicio = arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) - 48;
+                    int fin = (int) arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) - 48;
+                    for (int j = inicio; j <= fin; j++) {
+                        Binding binding2 = new Binding(idNodes.get(i).getText() + "[" + j + "]", arrayTypeCtx.getChild(5).getText(), scope_actual);
+                        if (!encontrarVariable(binding2.getNombre())) {
+                            TablaSimbolos.add(binding2);
+                            imprimirTablaSimbolos();
+                        } else {
+                            System.out.println("\u001B[31mError: La variable \'" + binding2.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                            System.exit(1);
+                        }
+                    }
                 }
+                System.out.println(identifiers.toString());
             }
-            System.out.println(identifiers.toString());
         }
         return null;
     }
