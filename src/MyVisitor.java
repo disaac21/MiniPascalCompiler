@@ -614,6 +614,39 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
             if (ctx.identifier() != null) {
                 visit(ctx.string());
+
+                //Proceso de Verificacion
+                String variable = ctx.identifier().getText();
+                String tipoVariable = "";
+
+                // Obtener el tipo de la variable desde la tabla de símbolos
+                for (Binding binding : TablaSimbolos) {
+                    if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                        tipoVariable = binding.getTipo();
+                        break;
+                    }
+                }
+
+                System.out.println("  Variable: " + variable);
+                System.out.println("  Tipo de Variable: " + tipoVariable);
+
+                if (!encontrarVariable(variable)) {
+                    System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+                    return null;
+                } else {
+                    // Validar el tipo de la expresión
+                    if (tipoVariable != null) {
+                        if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
+                            System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                        } else {
+                            System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+                        }
+                    } else {
+                        System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+                    }
+                }
+
+
                 System.out.println("  Identificador: " + ctx.identifier().getText());
             } else
                 visit(ctx.string());
