@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +15,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     private boolean encontrarVariable(String variable) {
-        boolean found = false;
         for (Binding binding : TablaSimbolos) {
             if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
-                found = true;
+                return true;
             }
         }
-        return found;
+        return false;
     }
 
     private boolean verificarValor(String valor, String tipoEsperado) {
@@ -95,6 +93,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     }
 
+    private boolean verificarValorNoBooleanForFunctions(String valor, String tipoEsperado) {
+        // Validación para tipos básicos
+        if (tipoEsperado.equals("integer")) {
+            return true;
+        } else if (tipoEsperado.equals("char")) {
+            return true;
+        } else if (tipoEsperado.equals("string")) {
+            return true;
+        }
+
+        // Tipo no reconocido
+        return false;
+
+    }
+
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
@@ -143,7 +156,25 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("   Identificador: " + idCtx.getText());
         System.out.println("   Valor: " + typeCtx.getText());
 
-        Binding binding = new Binding(idCtx.getText(), "const", scope_actual);
+        String tipo = "";
+        if (typeCtx.getText().charAt(0) == '\'' && typeCtx.getText().charAt(2) == '\'') {
+            System.out.println("   Tipo: char");
+            tipo = "char";
+        } else if (typeCtx.getText().equals("true") || typeCtx.getText().equals("false")) {
+            System.out.println("   Tipo: boolean");
+            tipo = "boolean";
+        } else if (typeCtx.getText().matches("-?\\d+")) {
+            System.out.println("   Tipo: integer");
+            tipo = "integer";
+        } else if (typeCtx.getText().charAt(0) == '\'') {
+            System.out.println("   Tipo: string");
+            tipo = "string";
+        } else {
+            System.out.println("   Tipo Unknown");
+            tipo = "error";
+        }
+
+        Binding binding = new Binding(idCtx.getText(), tipo, scope_actual);
         if (!encontrarVariable(binding.getNombre())) {
             TablaSimbolos.add(binding);
             imprimirTablaSimbolos();
@@ -172,7 +203,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) {
-        System.out.println("Tipo Arreglo: " + ctx.getText());
+        System.out.println("Tipo Arreglo: " + ctx.getChild(2).getText());
         return null;
     }
 
@@ -378,25 +409,91 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
         if (idListCtx != null && arrayTypeCtx != null) {
-            System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getText());
-            System.out.print("   Identificador: ");
-            StringBuilder identifiers = new StringBuilder();
-            List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
-            for (int i = 0; i < idNodes.size(); i++) {
-                identifiers.append(idNodes.get(i).getText());
-                if (i < idNodes.size() - 1) {
-                    identifiers.append(", ");
+
+            if (arrayTypeCtx.indexRanges().getText().contains(",")) {
+                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
+                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) + " y " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(3));
+                System.out.println("BIDI");
+                System.out.print("   Identificador: ");
+                StringBuilder identifiers = new StringBuilder();
+                List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
+
+                for (int i = 0; i < idNodes.size(); i++) {
+                    identifiers.append(idNodes.get(i).getText());
+                    if (i < idNodes.size() - 1) {
+                        identifiers.append(", ");
+                    }
+
+                    //Agregar el Arreglo
+                    Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
+                    if (!encontrarVariable(binding.getNombre())) {
+                        TablaSimbolos.add(binding);
+                        imprimirTablaSimbolos();
+                    } else {
+                        System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                        System.exit(1);
+                    }
+
+                    //Agrega cada entrada del arreglo
+                    int inicio = arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) - 48;
+                    int fin = (int) arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) - 48;
+                    int inicio2 = arrayTypeCtx.indexRanges().indexRange().get(1).getText().charAt(0) - 48;
+                    int fin2 = (int) arrayTypeCtx.indexRanges().indexRange().get(1).getText().charAt(3) - 48;
+
+                    for (int j = inicio; j <= fin; j++) {
+                        for (int k = inicio2; k <= fin2; k++) {
+                            Binding binding2 = new Binding(idNodes.get(i).getText() + "[" + j + "," + k + "]", arrayTypeCtx.getChild(5).getText(), scope_actual);
+                            if (!encontrarVariable(binding2.getNombre())) {
+                                TablaSimbolos.add(binding2);
+                                imprimirTablaSimbolos();
+                            } else {
+                                System.out.println("\u001B[31mError: La variable \'" + binding2.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                                System.exit(1);
+                            }
+                        }
+                    }
                 }
-                Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getText(), scope_actual);
-                if (!encontrarVariable(binding.getNombre())) {
-                    TablaSimbolos.add(binding);
-                    imprimirTablaSimbolos();
-                } else {
-                    System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
-                    System.exit(1);
+                System.out.println(identifiers.toString());
+
+
+            } else {
+                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
+                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3));
+                System.out.print("   Identificador: ");
+                StringBuilder identifiers = new StringBuilder();
+                List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
+                for (int i = 0; i < idNodes.size(); i++) {
+                    identifiers.append(idNodes.get(i).getText());
+                    if (i < idNodes.size() - 1) {
+                        identifiers.append(", ");
+                    }
+
+                    //Agregar el Arreglo
+                    Binding binding = new Binding(idNodes.get(i).getText(), arrayTypeCtx.getChild(5).getText(), scope_actual);
+                    if (!encontrarVariable(binding.getNombre())) {
+                        TablaSimbolos.add(binding);
+                        imprimirTablaSimbolos();
+                    } else {
+                        System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                        System.exit(1);
+                    }
+
+                    //Agrega cada entrada del arreglo
+                    int inicio = arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) - 48;
+                    int fin = (int) arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) - 48;
+                    for (int j = inicio; j <= fin; j++) {
+                        Binding binding2 = new Binding(idNodes.get(i).getText() + "[" + j + "]", arrayTypeCtx.getChild(5).getText(), scope_actual);
+                        if (!encontrarVariable(binding2.getNombre())) {
+                            TablaSimbolos.add(binding2);
+                            imprimirTablaSimbolos();
+                        } else {
+                            System.out.println("\u001B[31mError: La variable \'" + binding2.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                            System.exit(1);
+                        }
+                    }
                 }
+                System.out.println(identifiers.toString());
             }
-            System.out.println(identifiers.toString());
         }
         return null;
     }
@@ -517,6 +614,39 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
             if (ctx.identifier() != null) {
                 visit(ctx.string());
+
+                //Proceso de Verificacion
+                String variable = ctx.identifier().getText();
+                String tipoVariable = "";
+
+                // Obtener el tipo de la variable desde la tabla de símbolos
+                for (Binding binding : TablaSimbolos) {
+                    if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                        tipoVariable = binding.getTipo();
+                        break;
+                    }
+                }
+
+                System.out.println("  Variable: " + variable);
+                System.out.println("  Tipo de Variable: " + tipoVariable);
+
+                if (!encontrarVariable(variable)) {
+                    System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+                    return null;
+                } else {
+                    // Validar el tipo de la expresión
+                    if (tipoVariable != null) {
+                        if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
+                            System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                        } else {
+                            System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+                        }
+                    } else {
+                        System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+                    }
+                }
+
+
                 System.out.println("  Identificador: " + ctx.identifier().getText());
             } else
                 visit(ctx.string());
@@ -546,6 +676,37 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitReadStatement(MiniPascalGrammarParser.ReadStatementContext ctx) {
         System.out.println("Funcion Read:");
         System.out.println(" Parametro: " + ctx.readParam().getText());
+
+        String variable = ctx.readParam().getText();
+        String tipoVariable = "";
+
+        // Obtener el tipo de la variable desde la tabla de símbolos
+        for (Binding binding : TablaSimbolos) {
+            if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                tipoVariable = binding.getTipo();
+                break;
+            }
+        }
+
+        System.out.println("  Variable: " + variable);
+        System.out.println("  Tipo de Variable: " + tipoVariable);
+
+        if (!encontrarVariable(variable)) {
+            System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+            return null;
+        } else {
+            // Validar el tipo de la expresión
+            if (tipoVariable != null) {
+                if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
+                    System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                } else {
+                    System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+                }
+            } else {
+                System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+            }
+        }
+
         System.out.println();
         return null;
     }
