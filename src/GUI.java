@@ -186,6 +186,9 @@ public class GUI extends javax.swing.JFrame {
                     Terminal.append("Compilado exitosamente\n");
                     MyVisitor visitor = new MyVisitor();
                     visitor.visit(tree);
+
+                    IRVisitors irVisitor = new IRVisitors();
+                    irVisitor.visit(tree);
                 }
 
             } catch (Exception e) {
