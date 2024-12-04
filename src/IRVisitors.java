@@ -1,6 +1,7 @@
 public class IRVisitors extends MiniPascalGrammarBaseVisitor<Object> {
 
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
+        System.out.println("Programa Nuevoooooo");
         return visitChildren(ctx);
     }
 
