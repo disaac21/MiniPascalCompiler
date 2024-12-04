@@ -185,7 +185,10 @@ public class GUI extends javax.swing.JFrame {
                     System.out.println(verde + "Compilado exitosamente" + reset);
                     Terminal.append("Compilado exitosamente\n");
                     MyVisitor visitor = new MyVisitor();
+                    visitor.clearOutputFiles();
                     visitor.visit(tree);
+                    visitor.generateLLVMFrom3AC();
+                    visitor.writell();
 
                     IRVisitors irVisitor = new IRVisitors();
                     irVisitor.visit(tree);

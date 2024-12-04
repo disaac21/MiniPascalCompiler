@@ -1,7 +1,81 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
+
+    private int tempCounter = 1;  // Contador de variables temporales
+    private String generateTempVariable() {
+        return "t" + tempCounter++;  // t1, t2, t3, ...
+    }
+    ArrayList <ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
+
+    public void clearOutputFiles() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
+            writer.write("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output3AC.txt"))) {
+            writer.write("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void generateLLVMFrom3AC() {
+        for (ThreeAddressCode instruction : threeAddressCodeList) {
+            switch (instruction.operation) {
+                case "alloca":
+                    emit("%" + instruction.result + " = alloca " + instruction.arg1);
+                    break;
+                case "=":
+                    emit("%" + instruction.result + " = " + instruction.operation + " " + instruction.arg1);
+                    break;
+                case "store":
+                    emit("store " + instruction.arg1 + ", " + instruction.arg2 + " " + instruction.result);
+                    break;
+                case "call":
+                    emit("call " + instruction.arg1);
+                    break;
+                case "<=":
+                    emit("%" + instruction.result + " = icmp sle " + instruction.arg1 + " " + instruction.arg2);
+                    break;
+                case "if":
+                    emit("br i1 " + instruction.arg1 + ", label %" + instruction.arg2 + ", label %" + instruction.result);
+                    break;
+                case "goto":
+                    emit("br label %" + instruction.result);
+                    break;
+                case "label":
+                    emit("%" + instruction.result + ":");
+                    break;
+                default:
+                    // Manejo de otros tipos de operaciones
+                    break;
+            }
+        }
+    }
+
+
+    StringBuilder llvmCode = new StringBuilder();
+
+    private void emit(String line) {
+        llvmCode.append(line).append("\n");
+    }
+
+
+
+    public void writell(){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
+            writer.write(llvmCode.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     ArrayList<Binding> TablaSimbolos = new ArrayList<>();
     String scope_actual = "global";
@@ -401,6 +475,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 Binding binding = new Binding(idNodes.get(i).getText(), typeCtx.getText(), scope_actual);
                 if (!encontrarVariable(binding.getNombre())) {
                     TablaSimbolos.add(binding);
+                    String variableName = binding.getNombre();
+                    String variableType = binding.getTipo();
+
+                    // Asignar el tipo correspondiente en 3AC
+                    String tempVar = generateTempVariable(); // Crear variable temporal
+                    String operation = "alloca"; // Operación de asignación de memoria
+                    threeAddressCodeList.add(new ThreeAddressCode(operation, variableType, null, tempVar)); // Agregar la instrucción
+
+//                    String llvmType = switch (variableType) {
+//                        case "integer" -> "i32";
+//                        case "boolean" -> "i1";
+//                        case "char" -> "i8";     // Char -> i8 (un solo byte)
+//                        case "string" -> "i8*";  // String -> i8* (puntero a una cadena de caracteres)
+//                        default -> "unknown"; // Handle errors appropriately
+//                    };
+//                    emit("%" + variableName + " = alloca " + llvmType);
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
