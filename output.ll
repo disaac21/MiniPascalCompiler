@@ -1,5 +1,8 @@
-%t1 = alloca integer
-%t2 = alloca char
-%t3 = alloca integer
-%t4 = alloca string
-%t5 = alloca boolean
+@.str = private unnamed_addr constant [6 x i8] c"hola\0A\00"
+declare i32 @puts(ptr nocapture) nounwind
+define i32 @main() {
+  call i32 @puts(ptr @.str)
+  ret i32 0
+}
+!0 = !{i32 42, null, !"string"}
+!foo = !{!0}

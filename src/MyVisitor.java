@@ -7,10 +7,12 @@ import java.util.List;
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private int tempCounter = 1;  // Contador de variables temporales
+
     private String generateTempVariable() {
         return "t" + tempCounter++;  // t1, t2, t3, ...
     }
-    ArrayList <ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
+
+    ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
 
     public void clearOutputFiles() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
@@ -68,8 +70,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
 
-
-    public void writell(){
+    public void writell() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
             writer.write(llvmCode.toString());
         } catch (IOException e) {
@@ -738,8 +739,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
 
                 System.out.println("  Identificador: " + ctx.identifier().getText());
-            } else
+            } else {
                 visit(ctx.string());
+                visit(ctx.string());
+
+// Generar código LLVM para la cadena
+                String strValue = ctx.string().getText().substring(1, ctx.string().getText().length() - 1);
+                String llvmString = "@.str = private unnamed_addr constant [" + (strValue.length() + 2) + " x i8] c\"" + strValue + "\\0A\\00\"";
+                emit(llvmString);
+                emit("declare i32 @puts(ptr nocapture) nounwind");
+                emit("define i32 @main() {");
+                emit("  call i32 @puts(ptr @.str)");
+                emit("  ret i32 0");
+                emit("}");
+                emit("!0 = !{i32 42, null, !\"string\"}");
+                emit("!foo = !{!0}");
+            }
         } else {
             visit(ctx.emptyStatement_());
         }
