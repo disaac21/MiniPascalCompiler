@@ -372,20 +372,21 @@ public class IRVisitors extends MiniPascalGrammarBaseVisitor<Object> {
 
         // write_int function for printing integers
         System.out.println("define void @write_int(i32 %num) {");
-        System.out.println("  %buf = alloca [32 x i8], align 1");
-        System.out.println("  %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
-        System.out.println("  call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
-        System.out.println("  call i32 @puts(i8* %buf_ptr)");
-        System.out.println("  ret void");
+//        System.out.println("    %buf = alloca [32 x i8], align 1");
+//        System.out.println("    %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
+//        System.out.println("    call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+//        System.out.println("    call i32 @puts(i8* %buf_ptr)");
+        System.out.println("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+        System.out.println("    ret void");
         System.out.println("}\n");
 
         // write_string function for printing strings
         System.out.println("define void @write_string(i8* %str) {");
-        System.out.println("  %str_ptr = alloca i8*");
-        System.out.println("  store i8* %str, i8** %str_ptr");
-        System.out.println("  %str_val = load i8*, i8** %str_ptr");
-        System.out.println("  call i32 @puts(i8* %str_val)");
-        System.out.println("  ret void");
+//        System.out.println("    %str_ptr = alloca i8*");
+//        System.out.println("    store i8* %str, i8** %str_ptr");
+//        System.out.println("    %str_val = load i8*, i8** %str_ptr");
+        System.out.println("    call i32 @puts(i8* %str)");
+        System.out.println("    ret void");
         System.out.println("}\n");
 
         // read function for reading input
