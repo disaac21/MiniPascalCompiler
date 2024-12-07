@@ -7,6 +7,7 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 
+@.str3 = private constant [16 x i8] c"Probando Pascal\00"
 @.str2 = private constant [15 x i8] c"Hola No Pascal\00"
 @.str1 = private constant [13 x i8] c"Hola, Pascal\00"
 
@@ -27,25 +28,17 @@ define i32 @main() {
     %mensaje2_val = load i8*, i8** %mensaje2
     store i1 1, i1* %esVerdadero
     %esVerdadero_val = load i1, i1* %esVerdadero
-
-    call void @write_string(i8* %mensaje_val)
-    call void @write_string(i8* %mensaje2_val)
+    call void @write_string(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str3, i32 0, i32 0))
     ret i32 0
 }
 
 define void @write_int(i32 %num) {
-    %buf = alloca [32 x i8], align 1
-    %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0
-    call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)
-    call i32 @puts(i8* %buf_ptr)
+    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)
     ret void
 }
 
 define void @write_string(i8* %str) {
-    %str_ptr = alloca i8*
-    store i8* %str, i8** %str_ptr
-    %str_val = load i8*, i8** %str_ptr
-    call i32 @puts(i8* %str_val)
+    call i32 @puts(i8* %str)
     ret void
 }
 

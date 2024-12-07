@@ -765,7 +765,18 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 System.out.println("  Identificador: " + ctx.identifier().getText());
             } else {
                 visit(ctx.string());
-                visit(ctx.string());
+                String strValue = ctx.string().getText();
+                strValue = strValue.substring(1, strValue.length() - 1); // Remove quotes
+
+                String currentTempString = generateTempStringVariable();
+                int stringLength = strValue.length();
+                stringLength++;
+                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue +"\\00\"\n";
+
+                llvmCode.insert(0,textToPrepend);
+
+                emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+
 
 // Generar código LLVM para la cadena
 //                String strValue = ctx.string().getText().substring(1, ctx.string().getText().length() - 1);
@@ -778,6 +789,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                emit("}");
 //                emit("!0 = !{i32 42, null, !\"string\"}");
 //                emit("!foo = !{!0}");
+
 //                call void @write_int(i32 %num_val)
             }
         } else {
