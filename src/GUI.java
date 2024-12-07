@@ -5,17 +5,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CharStream;
-
-import org.antlr.v4.*;
-
 import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static org.antlr.v4.runtime.CharStreams.fromFileName;
 
 public class GUI extends javax.swing.JFrame {
 
@@ -109,11 +103,11 @@ public class GUI extends javax.swing.JFrame {
 
     private void OpenFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenFileMenuItemActionPerformed
         showFileContent();
-    }//GEN-LAST:event_OpenFileMenuItemActionPerformed
+    }
 
     private void RunFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunFileMenuItemActionPerformed
         procesoCompiUno();
-    }//GEN-LAST:event_RunFileMenuItemActionPerformed
+    }
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -152,13 +146,8 @@ public class GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Debe Cargar un Programa");
         } else {
             try {
-                Terminal.setText("");
 
-//                String filePath = currentFile.getAbsolutePath(); // Get the path of the selected file and save it in a variable
-//
-//                System.out.println("Selected file path: " + filePath); // Print the file path to the console
-//                Terminal.append("Selected file path: " + filePath + "\n");
-//                String source = filePath;
+                Terminal.setText("");
 
                 Manejo_Errores errorListener = new Manejo_Errores(Terminal);
                 CharStream cs = CharStreams.fromString(TextArea.getText());
@@ -184,14 +173,18 @@ public class GUI extends javax.swing.JFrame {
 
                     System.out.println(verde + "Compilado exitosamente" + reset);
                     Terminal.append("Compilado exitosamente\n");
+
+                    // COMPI 1
                     MyVisitor visitor = new MyVisitor();
                     visitor.clearOutputFiles();
                     visitor.visit(tree);
                     visitor.generateLLVMFrom3AC();
                     visitor.writell();
 
+                    // COMPI 2
                     IRVisitors irVisitor = new IRVisitors();
                     irVisitor.visit(tree);
+                    ProcesoCompiDos(irVisitor, tree);
                 }
 
             } catch (Exception e) {
@@ -246,7 +239,16 @@ public class GUI extends javax.swing.JFrame {
         TextArea.setEditable(true);
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    public void ProcesoCompiDos(IRVisitors irVisitor, ParseTree tree) {
+        // Header del .ll
+        irVisitor.Header((MiniPascalGrammarParser.ProgramHeadingContext) tree.getChild(0));
+        // all constants here (aca iria la idea de los arraylists de constantes)
+        // cosas que vayan surgiendo
+        // Main function declaration
+        System.out.println("\ndefine i32 @main() {");
+        irVisitor.Footer();
+    }
+
     private javax.swing.JMenu FileMenu;
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JMenuItem OpenFileMenuItem;
@@ -256,5 +258,4 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane TerminalScrollPane;
     private javax.swing.JTextArea TextArea;
     private javax.swing.JScrollPane TextAreaScrollPane;
-    // End of variables declaration//GEN-END:variables
 }
