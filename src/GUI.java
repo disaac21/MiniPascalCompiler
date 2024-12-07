@@ -178,7 +178,7 @@ public class GUI extends javax.swing.JFrame {
                     MyVisitor visitor = new MyVisitor();
                     visitor.clearOutputFiles();
                     visitor.visit(tree);
-                    visitor.generateLLVMFrom3AC();
+//                    visitor.generateLLVMFrom3AC();
                     visitor.writell();
 
                     // COMPI 2
