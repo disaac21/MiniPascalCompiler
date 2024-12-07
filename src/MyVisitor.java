@@ -1,8 +1,10 @@
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
@@ -10,6 +12,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private String generateTempVariable() {
         return "t" + tempCounter++;  // t1, t2, t3, ...
+    }
+
+    private int stringTempCounter = 1;  // Contador de strings globales
+    private String generateTempStringVariable() {
+        return "@.str" + tempCounter++;  // s1, s2, s3, ...
     }
 
     ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
@@ -492,7 +499,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             emit("  %"+variableName+" = alloca i8");
                             break;
                         case "string":
-//                            emit("  %"+variableName+" = alloca i8*");
+                            emit("  %"+variableName+" = alloca [256 x i8]*");
                             break;
                     }
 
@@ -915,7 +922,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 emit("  %"+variable+"_val = load i8, i8* %"+variable);
                 break;
             case "string":
-                emit("  store i8* " + expression + ", i8** %" + variable);
+
+                String currentTempString = generateTempStringVariable();
+                int stringLength = expression.length();
+                stringLength--;
+                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length()-1) +"\\00\"\n";
+
+                llvmCode.insert(0,textToPrepend);
+
+                emit("  store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                 break;
         }
 
