@@ -16,7 +16,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private int stringTempCounter = 1;  // Contador de strings globales
     private String generateTempStringVariable() {
-        return "@.str" + tempCounter++;  // s1, s2, s3, ...
+        return "@.str" + stringTempCounter++;  // s1, s2, s3, ...
     }
 
     ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
@@ -196,10 +196,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("Inicio del Programa:");
         visit(ctx.programHeading());
         System.out.println("\nBloque:");
-        emit("define i32 @main() {");
+        emit("\ndefine i32 @main() {");
         visit(ctx.block());
         System.out.println("\nFin del Programa");
-        emit("  ret i32 0");
+        emit("    ret i32 0");
         emit("}");
         return null;
     }
@@ -490,16 +490,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     String variableType = binding.getTipo();
                     switch (variableType){
                         case "integer":
-                            emit("  %"+variableName+" = alloca i32");
+                            emit("    %"+variableName+" = alloca i32");
                             break;
                         case "boolean":
-                            emit("  %"+variableName+" = alloca i1");
+                            emit("    %"+variableName+" = alloca i1");
                             break;
                         case "char":
-                            emit("  %"+variableName+" = alloca i8");
+                            emit("    %"+variableName+" = alloca i8");
                             break;
                         case "string":
-                            emit("  %"+variableName+" = alloca [256 x i8]*");
+                            emit("    %"+variableName+" = alloca i8*");
                             break;
                     }
 
@@ -768,16 +768,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 visit(ctx.string());
 
 // Generar código LLVM para la cadena
-                String strValue = ctx.string().getText().substring(1, ctx.string().getText().length() - 1);
-                String llvmString = "@.str = private unnamed_addr constant [" + (strValue.length() + 2) + " x i8] c\"" + strValue + "\\0A\\00\"";
-                emit(llvmString);
-                emit("declare i32 @puts(ptr nocapture) nounwind");
-                emit("define i32 @main() {");
-                emit("  call i32 @puts(ptr @.str)");
-                emit("  ret i32 0");
-                emit("}");
-                emit("!0 = !{i32 42, null, !\"string\"}");
-                emit("!foo = !{!0}");
+//                String strValue = ctx.string().getText().substring(1, ctx.string().getText().length() - 1);
+//                String llvmString = "@.str = private unnamed_addr constant [" + (strValue.length() + 2) + " x i8] c\"" + strValue + "\\0A\\00\"";
+//                emit(llvmString);
+//                emit("declare i32 @puts(ptr nocapture) nounwind");
+//                emit("define i32 @main() {");
+//                emit("    call i32 @puts(ptr @.str)");
+//                emit("    ret i32 0");
+//                emit("}");
+//                emit("!0 = !{i32 42, null, !\"string\"}");
+//                emit("!foo = !{!0}");
+//                call void @write_int(i32 %num_val)
             }
         } else {
             visit(ctx.emptyStatement_());
@@ -899,27 +900,27 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         // Generar código LLVM para la asignación
         switch (tipoVariable){
             case "integer":
-                emit("  store i32 " + expression + ", i32* %" + variable);
-                emit("  %"+variable+"_val = load i32, i32* %"+variable);
+                emit("    store i32 " + expression + ", i32* %" + variable);
+                emit("    %"+variable+"_val = load i32, i32* %"+variable);
                 break;
             case "boolean":
                 switch(expression){
                     case "true":
-                        emit("  store i1 1, i1* %" + variable);
-                        emit("  %"+variable+"_val = load i1, i1* %"+variable);
+                        emit("    store i1 1, i1* %" + variable);
+                        emit("    %"+variable+"_val = load i1, i1* %"+variable);
                         break;
                     case "false":
-                        emit("  store i1 0, i1* %" + variable);
+                        emit("    store i1 0, i1* %" + variable);
                         break;
                     default:
-                        emit("  store i1 " + expression + ", i1* %" + variable);
+                        emit("    store i1 " + expression + ", i1* %" + variable);
                         break;
                 }
                 break;
             case "char":
                 int asciivalue = expression.charAt(1);
-                emit("  store i8 " + asciivalue + ", i8* %" + variable);
-                emit("  %"+variable+"_val = load i8, i8* %"+variable);
+                emit("    store i8 " + asciivalue + ", i8* %" + variable);
+                emit("    %"+variable+"_val = load i8, i8* %"+variable);
                 break;
             case "string":
 
@@ -930,7 +931,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 llvmCode.insert(0,textToPrepend);
 
-                emit("  store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+//                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                emit("    %"+variable+"_val = load i8*, i8** %"+variable);
                 break;
         }
 
