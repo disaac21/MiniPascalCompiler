@@ -8,13 +8,29 @@ import java.io.*;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
+    private boolean scanfdeclared = false;
     private int tempCounter = 1;  // Contador de variables temporales
+    private int counter = 1;
+    ArrayList<Loads> loads = new ArrayList<Loads>();
+
+    public Loads lastLoad(String variable) {
+        for (int i = loads.size() - 1; i >= 0; i--) {
+//            System.out.println("Variable: " + loads.get(i).getVariable() + " counter: " + loads.get(i).getCounter());
+            if (loads.get(i).getVariable().equals(variable)) {
+                return loads.get(i);
+            }
+
+        }
+        return null;
+    }
+
 
     private String generateTempVariable() {
         return "t" + tempCounter++;  // t1, t2, t3, ...
     }
 
     private int stringTempCounter = 1;  // Contador de strings globales
+
     private String generateTempStringVariable() {
         return "@.str" + stringTempCounter++;  // s1, s2, s3, ...
     }
@@ -488,34 +504,26 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     TablaSimbolos.add(binding);
                     String variableName = binding.getNombre();
                     String variableType = binding.getTipo();
-                    switch (variableType){
+                    switch (variableType) {
                         case "integer":
-                            emit("    %"+variableName+" = alloca i32");
+                            emit("    %" + variableName + " = alloca i32");
                             break;
                         case "boolean":
-                            emit("    %"+variableName+" = alloca i1");
+                            emit("    %" + variableName + " = alloca i1");
                             break;
                         case "char":
-                            emit("    %"+variableName+" = alloca i8");
+                            emit("    %" + variableName + " = alloca i8");
                             break;
                         case "string":
-                            emit("    %"+variableName+" = alloca i8*");
+                            emit("    %" + variableName + " = alloca i8*");
                             break;
                     }
 
                     // Asignar el tipo correspondiente en 3AC
+                    //aca va a tocar hacer cambios
                     String tempVar = generateTempVariable(); // Crear variable temporal
                     String operation = "alloca"; // Operación de asignación de memoria
                     threeAddressCodeList.add(new ThreeAddressCode(operation, variableType, null, tempVar)); // Agregar la instrucción
-
-//                    String llvmType = switch (variableType) {
-//                        case "integer" -> "i32";
-//                        case "boolean" -> "i1";
-//                        case "char" -> "i8";     // Char -> i8 (un solo byte)
-//                        case "string" -> "i8*";  // String -> i8* (puntero a una cadena de caracteres)
-//                        default -> "unknown"; // Handle errors appropriately
-//                    };
-//                    emit("%" + variableName + " = alloca " + llvmType);
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
@@ -771,9 +779,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String currentTempString = generateTempStringVariable();
                 int stringLength = strValue.length();
                 stringLength++;
-                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue +"\\00\"\n";
+                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\\00\"\n";
 
-                llvmCode.insert(0,textToPrepend);
+                llvmCode.insert(0, textToPrepend);
 
                 emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
@@ -843,6 +851,26 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
                     System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+                    if (!scanfdeclared) {
+                        llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
+                        scanfdeclared = true;
+                    }
+                    switch (tipoVariable) {
+                        case "integer":
+                            llvmCode.insert(0,"@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
+
+                            emit("    %int_ptr"+ counter +" = bitcast i32* %int_var to i8* ;");
+                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr"+counter+")");
+                            counter++;
+                            break;
+                        case "char":
+                            llvmCode.insert(0,"@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
+                            break;
+                        case "string":
+                            llvmCode.insert(0,"@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
+                                    "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
+                            break;
+                    }
                 }
             } else {
                 System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
@@ -910,19 +938,26 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         //esto ya es generando el .ll
         // Generar código LLVM para la asignación
-        switch (tipoVariable){
+        switch (tipoVariable) {
             case "integer":
                 emit("    store i32 " + expression + ", i32* %" + variable);
-                emit("    %"+variable+"_val = load i32, i32* %"+variable);
+                emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                loads.add(new Loads(variable, counter));
+                counter++;
                 break;
             case "boolean":
-                switch(expression){
+                switch (expression) {
                     case "true":
                         emit("    store i1 1, i1* %" + variable);
-                        emit("    %"+variable+"_val = load i1, i1* %"+variable);
+                        emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                        loads.add(new Loads(variable, counter));
+                        counter++;
                         break;
                     case "false":
                         emit("    store i1 0, i1* %" + variable);
+                        emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                        loads.add(new Loads(variable, counter));
+                        counter++;
                         break;
                     default:
                         emit("    store i1 " + expression + ", i1* %" + variable);
@@ -932,20 +967,24 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             case "char":
                 int asciivalue = expression.charAt(1);
                 emit("    store i8 " + asciivalue + ", i8* %" + variable);
-                emit("    %"+variable+"_val = load i8, i8* %"+variable);
+                emit("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                loads.add(new Loads(variable, counter));
+                counter++;
                 break;
             case "string":
 
                 String currentTempString = generateTempStringVariable();
                 int stringLength = expression.length();
                 stringLength--;
-                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length()-1) +"\\00\"\n";
+                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
 
-                llvmCode.insert(0,textToPrepend);
+                llvmCode.insert(0, textToPrepend);
 
 //                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                 emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                emit("    %"+variable+"_val = load i8*, i8** %"+variable);
+                emit("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                loads.add(new Loads(variable, counter));
+                counter++;
                 break;
         }
 

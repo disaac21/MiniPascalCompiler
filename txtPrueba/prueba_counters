@@ -1,0 +1,18 @@
+program ManejoDeTipos;
+
+{ Este programa maneja variables de tipo integer, char, string, y boolean }
+
+var
+  num: integer;      { Variable de tipo integer }
+  letra: char;       { Variable de tipo char }
+  prueba: integer;
+  mensaje: string;   { Variable de tipo string }
+  esVerdadero: boolean;  { Variable de tipo boolean }
+
+begin
+  num := 42;
+  letra := 'A';
+  mensaje := 'Hola, Pascal';
+  esVerdadero := true;
+  mensaje := 'Hola Mundo';
+end.
