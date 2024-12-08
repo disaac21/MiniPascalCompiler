@@ -25,7 +25,7 @@ define i32 @main() {
     %mensaje_val3 = load i8*, i8** %mensaje
     store i1 1, i1* %esVerdadero
     %esVerdadero_val4 = load i1, i1* %esVerdadero
-    store i1 1, i1* %esFalso
+    store i1 0, i1* %esFalso
     %esFalso_val5 = load i1, i1* %esFalso
     store i32 50, i32* %prueba
     %prueba_val6 = load i32, i32* %prueba
