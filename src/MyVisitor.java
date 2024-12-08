@@ -1263,6 +1263,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("  Condicion: " + statementText);
 
         String[] expresionSplit = statementText.split(" ");
+        if (expresionSplit.length == 1) {
+
+            // aca arreglar detalle de cuando solo hay un argumento en el if
+
+        }
         String variable = expresionSplit[0];
         String operador = expresionSplit[1];
         String valor = expresionSplit[2];
