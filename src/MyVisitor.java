@@ -35,6 +35,24 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return "@.str" + stringTempCounter++;  // s1, s2, s3, ...
     }
 
+    private int condCounter = 1;  // Contador de condicionales
+
+    private String generateCondVariable() {
+        return "cond" + condCounter++;  // t1, t2, t3, ...
+    }
+
+    private int labelCounter = 1;  // Contador de etiquetas
+
+    private String generateLabel() {
+        return "L" + labelCounter++;  // L1, L2, L3, ...
+    }
+
+    private int ifCounter = 1;  // Contador de if
+
+    private String generateIf() {
+        return "if" + ifCounter++;  // if1, if2, if3, ...
+    }
+
     ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
 
     public void clearOutputFiles() {
@@ -115,6 +133,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean encontrarVariable(String variable) {
         for (Binding binding : TablaSimbolos) {
             if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean encontrarVariableEnLoads(String variable) {
+        for (Loads load : loads) {
+            if (load.getVariable().equals(variable)) {
                 return true;
             }
         }
@@ -215,8 +242,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit("\ndefine i32 @main() {");
         visit(ctx.block());
         System.out.println("\nFin del Programa");
-        emit("    ret i32 0");
-        emit("}");
+        Footer();
+        Header(ctx.programHeading());
         return null;
     }
 
@@ -771,9 +798,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             String currentTempString = generateTempStringVariable();
                             int stringLength = strValue.length();
 //                            stringLength++;
-                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue +"\"\n";
+                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\"\n";
 
-                            llvmCode.insert(0,textToPrepend);
+                            llvmCode.insert(0, textToPrepend);
 
                             emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
@@ -871,17 +898,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     }
                     switch (tipoVariable) {
                         case "integer":
-                            llvmCode.insert(0,"@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
+                            llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
 
-                            emit("    %int_ptr"+ counter +" = bitcast i32* %int_var to i8* ;");
-                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr"+counter+")");
+                            emit("    %int_ptr" + counter + " = bitcast i32* %int_var to i8* ;");
+                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
                             counter++;
                             break;
                         case "char":
-                            llvmCode.insert(0,"@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
+                            llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
                             break;
                         case "string":
-                            llvmCode.insert(0,"@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
+                            llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
                                     "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
                             break;
                     }
@@ -1198,11 +1225,96 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitIfStatement(MiniPascalGrammarParser.IfStatementContext ctx) {
         System.out.println(" Caso If:");
-        System.out.println("  Condicion: " + ctx.expression().getText());
+
+        String statementText = "";
+        for (int i = 0; i < ctx.expression().getChildCount(); i++) {
+            statementText += ctx.expression().getChild(i).getText() + " ";
+        }
+
+        System.out.println("  Condicion: " + statementText);
+
+        String[] expresionSplit = statementText.split(" ");
+        String variable = expresionSplit[0];
+        String operador = expresionSplit[1];
+        String valor = expresionSplit[2];
+
+        String currentCounter = generateCondVariable();
+
+
+        if (encontrarVariableEnLoads(valor)) {
+            System.out.println("  Valor: " + valor + " es una variable definida.");
+
+            switch (operador) {
+                case ">":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "<":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+        } else {
+            try {
+                Integer.parseInt(valor);
+                System.out.println("  Valor: " + valor + " es un número.");
+
+                switch (operador) {
+                    case ">":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "<":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                }
+
+            } catch (NumberFormatException e) {
+                System.err.println("  Valor: " + valor + " no es una variable definida ni un número.");
+            }
+        }
+
+        emit("    br i1 %" + currentCounter + ", label %then" + ifCounter + ", label %else" + ifCounter);
+        emit("then" + ifCounter + ":");
+        visit(ctx.statement(0));
+        emit("    br label %merge" + ifCounter);
+
         System.out.println("  Hacer: " + ctx.statement(0).getText());
         if (ctx.ELSE() != null) {
             System.out.println("  Else: " + ctx.statement(1).getText());
+            emit("else" + ifCounter + ":");
+            visit(ctx.statement(1));
+            emit("    br label %merge" + ifCounter);
         }
+        emit("merge" + ifCounter + ":");
+        ifCounter++;
+
         System.out.println();
         return null;
     }
@@ -1297,4 +1409,76 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitFinalValue(MiniPascalGrammarParser.FinalValueContext ctx) {
         return visitChildren(ctx);
     }
+
+    public void Header(MiniPascalGrammarParser.ProgramHeadingContext programHeader) {
+
+        String programName = programHeader.identifier().getText();
+        String allHeader = "";
+
+        // Start of the program with filename header
+        allHeader += "; ModuleID = 'MiniPascal'\n";
+        allHeader += "source_filename = \"" + programName + "\"\n";
+        allHeader += "target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\"\n";
+        allHeader += "target triple = \"x86_64-pc-microsoft-msvc\"\n";
+
+        // Standard library functions + Global declarations
+        allHeader += "%struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }\n";
+        allHeader += "@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"\n";
+        allHeader += "@stdin = external global %struct._IO_FILE*\n";
+        allHeader += "@double_fmt = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\"\n";
+
+
+        llvmCode.insert(0, allHeader);
+    }
+
+    public void Footer() {
+        // End of the program
+        emit("  ret i32 0\n}\n");
+
+        // write_int function for printing integers
+        emit("define void @write_int(i32 %num) {");
+//        System.out.println("    %buf = alloca [32 x i8], align 1");
+//        System.out.println("    %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
+//        System.out.println("    call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+//        System.out.println("    call i32 @puts(i8* %buf_ptr)");
+        emit("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+        emit("    ret void");
+        emit("}\n");
+
+        // write_string function for printing strings
+        emit("define void @write_string(i8* %str) {");
+//        System.out.println("    %str_ptr = alloca i8*");
+//        System.out.println("    store i8* %str, i8** %str_ptr");
+//        System.out.println("    %str_val = load i8*, i8** %str_ptr");
+        emit("    call i32 @puts(i8* %str)");
+        emit("    ret void");
+        emit("}\n");
+
+        // read function for reading input
+//        System.out.println("define i32 @read() {");
+//        System.out.println("  %buf = alloca [32 x i8], align 1");
+//        System.out.println("  %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
+//        System.out.println("  %stdin_val = load %struct._IO_FILE*, %struct._IO_FILE** @stdin");
+//        System.out.println("  %result = call i8* @fgets(i8* %buf_ptr, i32 32, %struct._IO_FILE* %stdin_val)");
+//        System.out.println("  %num = call i32 @atoi(i8* %buf_ptr)");
+//        System.out.println("  ret i32 %num");
+//        System.out.println("}\n");
+
+        // Function declarations for standard library functions
+        emit("declare i32 @atoi(i8*)");
+        emit("declare i32 @sprintf(i8*, i8*, ...)");
+        emit("declare i32 @puts(i8*)");
+        emit("declare i8* @fgets(i8*, i32, %struct._IO_FILE*)");
+        emit("declare void @exit(i32)\n");
+
+// Footer
+        emit("; Function Attrs: noinline nounwind optnone uwtable");
+        emit("declare i32 @printf(i8*, ...) #0");
+        emit("attributes #0 = { noinline nounwind optnone uwtable \"correctly-rounded-divide-sqrt-fp-math\"=\"false\" \"disable-tail-calls\"=\"false\" \"frame-pointer\"=\"all\" \"less-precise-fpmad\"=\"false\" \"min-legal-vector-width\"=\"0\" \"no-infs-fp-math\"=\"false\" \"no-jump-tables\"=\"false\" \"no-nans-fp-math\"=\"false\" \"no-signed-zeros-fp-math\"=\"false\" \"no-trapping-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+cx8,+fxsr,+mmx,+sse,+sse2,+x87\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
+        emit("!llvm.module.flags = !{!0}\n");
+        emit("!llvm.ident = !{!1}");
+        emit("!0 = !{i32 1, !\"wchar_size\", i32 4}");
+        emit("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
+    }
+
 }
