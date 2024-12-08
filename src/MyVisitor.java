@@ -763,6 +763,20 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                         } else {
                             System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+
+
+                            String strValue = ctx.string().getText();
+                            strValue = strValue.substring(1, strValue.length() - 1); // Remove quotes
+
+                            String currentTempString = generateTempStringVariable();
+                            int stringLength = strValue.length();
+//                            stringLength++;
+                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue +"\"\n";
+
+                            llvmCode.insert(0,textToPrepend);
+
+                            emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+
                         }
                     } else {
                         System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
