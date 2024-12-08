@@ -1227,8 +1227,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println(" Caso If:");
 
         String statementText = "";
-        for (int i = 0; i < ctx.expression().getChildCount(); i++) {
-            statementText += ctx.expression().getChild(i).getText() + " ";
+        if (ctx.expression().getChildCount() == 1) {
+            for (int i = 0; i < ctx.expression().getChild(0).getChildCount(); i++) {
+                statementText += ctx.expression().getChild(0).getChild(i).getText() + " ";
+            }
+        } else {
+            for (int i = 0; i < ctx.expression().getChildCount(); i++) {
+                statementText += ctx.expression().getChild(i).getText() + " ";
+            }
         }
 
         System.out.println("  Condicion: " + statementText);
@@ -1269,6 +1275,90 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         }
                     }
                     break;
+                case "=":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "<>":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case ">=":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "<=":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "and":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "or":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "not":
+                    for (Loads load : loads) {
+                        if (load.getVariable().equals(variable)) {
+                            for (Loads load2 : loads) {
+                                if (load2.getVariable().equals(valor)) {
+                                    emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
 
         } else {
@@ -1289,6 +1379,62 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         for (Loads load : loads) {
                             if (load.getVariable().equals(variable)) {
                                 emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "<>":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case ">=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "<=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "and":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "or":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                break;
+                            }
+                        }
+                        break;
+                    case "not":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
                                 break;
                             }
                         }

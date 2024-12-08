@@ -6,7 +6,7 @@ target triple = "x86_64-pc-microsoft-msvc"
 @str_fmt = unnamed_addr constant [4 x i8] c"%d\0A\00"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
-@.str3 = private constant [15 x i8] c"pruebas nuevas\00"
+@.str3 = private constant [7 x i8] c"prueba\00"
 @.str2 = private constant [27 x i8] c"Valor de mensaje (string): "
 @.str1 = private constant [13 x i8] c"Hola, Pascal\00"
 
@@ -16,6 +16,7 @@ define i32 @main() {
     %prueba = alloca i32
     %mensaje = alloca i8*
     %esVerdadero = alloca i1
+    %esFalso = alloca i1
     store i32 42, i32* %num
     %num_val1 = load i32, i32* %num
     store i8 65, i8* %letra
@@ -24,15 +25,17 @@ define i32 @main() {
     %mensaje_val3 = load i8*, i8** %mensaje
     store i1 1, i1* %esVerdadero
     %esVerdadero_val4 = load i1, i1* %esVerdadero
+    store i1 1, i1* %esFalso
+    %esFalso_val5 = load i1, i1* %esFalso
     store i32 50, i32* %prueba
-    %prueba_val5 = load i32, i32* %prueba
-    %cond1 = icmp slt i32 %num_val1, %prueba_val5
+    %prueba_val6 = load i32, i32* %prueba
+    %cond1 = and i1 %esVerdadero_val4, %esFalso_val5
     br i1 %cond1, label %then1, label %else1
 then1:
     call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str2, i32 0, i32 0))
     br label %merge1
 else1:
-    call void @write_string(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str3, i32 0, i32 0))
+    call void @write_string(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str3, i32 0, i32 0))
     br label %merge1
 merge1:
   ret i32 0

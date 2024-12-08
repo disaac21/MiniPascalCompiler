@@ -3935,7 +3935,7 @@ public class MiniPascalGrammarParser extends Parser {
 			setState(510);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 16515072L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 16744448L) != 0)) {
 				{
 				setState(507);
 				relationaloperator();
@@ -3965,6 +3965,9 @@ public class MiniPascalGrammarParser extends Parser {
 		public TerminalNode LE() { return getToken(MiniPascalGrammarParser.LE, 0); }
 		public TerminalNode GE() { return getToken(MiniPascalGrammarParser.GE, 0); }
 		public TerminalNode GT() { return getToken(MiniPascalGrammarParser.GT, 0); }
+		public TerminalNode AND() { return getToken(MiniPascalGrammarParser.AND, 0); }
+		public TerminalNode OR() { return getToken(MiniPascalGrammarParser.OR, 0); }
+		public TerminalNode NOT() { return getToken(MiniPascalGrammarParser.NOT, 0); }
 		public RelationaloperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -3993,7 +3996,7 @@ public class MiniPascalGrammarParser extends Parser {
 			{
 			setState(512);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16515072L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16744448L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -4047,7 +4050,6 @@ public class MiniPascalGrammarParser extends Parser {
 	public final SimpleExpressionContext simpleExpression() throws RecognitionException {
 		SimpleExpressionContext _localctx = new SimpleExpressionContext(_ctx, getState());
 		enterRule(_localctx, 118, RULE_simpleExpression);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -4055,16 +4057,16 @@ public class MiniPascalGrammarParser extends Parser {
 			term();
 			setState(518);
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 166912L) != 0)) {
+			switch ( getInterpreter().adaptivePredict(_input,37,_ctx) ) {
+			case 1:
 				{
 				setState(515);
 				additiveoperator();
 				setState(516);
 				simpleExpression();
 				}
+				break;
 			}
-
 			}
 		}
 		catch (RecognitionException re) {
@@ -5844,7 +5846,7 @@ public class MiniPascalGrammarParser extends Parser {
 		"HJLNPRTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088\u008a\u008c"+
 		"\u008e\u0090\u0092\u0094\u0096\u0098\u009a\u009c\u009e\u00a0\u00a2\u00a4"+
 		"\u00a6\u00a8\u00aa\u0000\b\u0001\u0000\n\u000b\u0001\u000014\u0001\u0000"+
-		"78\u0001\u000056\u0001\u0000\u0012\u0017\u0003\u0000\n\u000b\u000f\u000f"+
+		"78\u0001\u000056\u0001\u0000\u000f\u0017\u0003\u0000\n\u000b\u000f\u000f"+
 		"\u0011\u0011\u0001\u0000\f\u000e\u0002\u0000++--\u0295\u0000\u00ac\u0001"+
 		"\u0000\u0000\u0000\u0002\u00c2\u0001\u0000\u0000\u0000\u0004\u00c4\u0001"+
 		"\u0000\u0000\u0000\u0006\u00cd\u0001\u0000\u0000\u0000\b\u00d2\u0001\u0000"+
