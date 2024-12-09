@@ -1708,6 +1708,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String operador = expresionSplit[1];
             String valor = expresionSplit[2];
 
+            //mover linea del load a dentro del while aca
+
             if (encontrarVariableEnLoads(valor)) {
                 System.out.println("  Valor: " + valor + " es una variable definida.");
 

@@ -15,9 +15,9 @@ define i32 @main() {
     %i = alloca i32
     store i32 0, i32* %i
     call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str1, i32 0, i32 0))
+    %i_val1 = load i32, i32* %i
 br label %while_condition1
 while_condition1:
-    %i_val1 = load i32, i32* %i
     %cond1 = icmp slt i32 %i_val1, 10
     br i1 %cond1, label %while_body1, label %while_end1
 while_body1:
