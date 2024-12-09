@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "ManejoDeTipos"
+source_filename = "WhileLoopExample"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -7,41 +7,28 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str6 = private constant [27 x i8] c"Valor de mensaje (string): "
-@.str5 = private constant [23 x i8] c"Valor de letra (char): "
-@.str4 = private constant [24 x i8] c"Valor de num (integer): "
-@.str3 = private constant [28 x i8] c"El valor booleano es falso.\00"
-@.str2 = private constant [32 x i8] c"El valor booleano es verdadero.\00"
-@.str1 = private constant [13 x i8] c"Hola, Pascal\00"
+@.str3 = private constant [40 x i8] c"While loop completed. Final value of i: "
+@.str2 = private constant [20 x i8] c"Current value of i: "
+@.str1 = private constant [27 x i8] c"Starting the while loop...\00"
 
 define i32 @main() {
-    %num = alloca i32
-    %letra = alloca i8
-    %prueba = alloca i32
-    %mensaje = alloca i8*
-    %esVerdadero = alloca i1
-    store i32 42, i32* %num
-    %num_val1 = load i32, i32* %num
-    store i8 65, i8* %letra
-    %letra_val2 = load i8, i8* %letra
-    store i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str1, i32 0, i32 0), i8** %mensaje
-    %mensaje_val3 = load i8*, i8** %mensaje
-    store i1 1, i1* %esVerdadero
-    %esVerdadero_val4 = load i1, i1* %esVerdadero
-    br i1 %esVerdadero_val4, label %then1, label %else1
-then1:
-    call void @write_string(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @.str2, i32 0, i32 0))
-    br label %merge1
-else1:
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str3, i32 0, i32 0))
-    br label %merge1
-merge1:
-    call void @write_string(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str4, i32 0, i32 0))
-    call void @write_int(i32 %num_val1)
-    call void @write_string(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str5, i32 0, i32 0))
-    call void @write_char(i8 %letra_val2)
-    call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str6, i32 0, i32 0))
-    call void @write_string(i8* %mensaje_val3)
+    %i = alloca i32
+    store i32 0, i32* %i
+    call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str1, i32 0, i32 0))
+br label %while_condition1
+while_condition1:
+    %i_val1 = load i32, i32* %i
+    %cond1 = icmp slt i32 %i_val1, 10
+    br i1 %cond1, label %while_body1, label %while_end1
+while_body1:
+    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str2, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
+    %i_val2 = add i32 %i_val1, 1
+    store i32 %i_val2, i32* %i
+    br label %while_condition1
+while_end1:
+    call void @write_string(i8* getelementptr inbounds ([40 x i8], [40 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
   ret i32 0
 }
 
