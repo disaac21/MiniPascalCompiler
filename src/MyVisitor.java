@@ -1,10 +1,8 @@
-import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
@@ -1709,6 +1707,34 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String valor = expresionSplit[2];
 
             //mover linea del load a dentro del while aca
+            for (Loads load : loads) {
+                if (load.getVariable().equals(variable)) {
+                    String lineToMove = "%" + variable + "_val" + load.getCounter() + " = load i32, i32* %" + variable;
+                    String marker = "while_condition" + whileCounter + ":";
+
+                    System.out.println("Line to move: " + lineToMove);
+                    System.out.println("Marker: " + marker);
+
+                    int lineIndex  = llvmCode.indexOf(lineToMove);
+                    int markerIndex = llvmCode.indexOf(marker);
+
+                    System.out.println("Line index: " + lineIndex);
+                    System.out.println("Marker index: " + markerIndex);
+
+                    if (lineIndex != -1 && markerIndex != -1) {
+                        // Remove the line from its original position
+                        llvmCode.insert(markerIndex + marker.length(), "\n    " + lineToMove + "\n");
+                        llvmCode.delete(lineIndex, lineIndex + lineToMove.length());
+
+                        // Insert the line after the marker
+                    } else {
+                        System.out.println("Line or marker not found.");
+                    }
+
+                    break;
+                }
+            }
+
 
             if (encontrarVariableEnLoads(valor)) {
                 System.out.println("  Valor: " + valor + " es una variable definida.");
@@ -1934,7 +1960,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit("while_body" + whileCounter + ":");
 
         //while body
+//        if (/* condition to recognize another statement */) {
+//            String condVar = generateCondVariable();
+//            emit("    %" + condVar + " = icmp slt i32 %i_val1, 3");
+//            emit("    br i1 %" + condVar + ", label %then" + whileCounter + ", label %else" + whileCounter);
+//        }
         visit(ctx.statement());
+
 
 
         emit("    br label %while_condition" + whileCounter);

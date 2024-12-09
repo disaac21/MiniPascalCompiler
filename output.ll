@@ -7,27 +7,42 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str3 = private constant [40 x i8] c"While loop completed. Final value of i: "
+@.str4 = private constant [40 x i8] c"While loop completed. Final value of i: "
+@.str3 = private constant [53 x i8] c"i is greater than or equal to 3. Current value of i: "
 @.str2 = private constant [20 x i8] c"Current value of i: "
 @.str1 = private constant [27 x i8] c"Starting the while loop...\00"
 
 define i32 @main() {
     %i = alloca i32
+    %num = alloca i32
+    %palabra = alloca i8*
+    %decision = alloca i1
     store i32 0, i32* %i
+    
     call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str1, i32 0, i32 0))
-    %i_val1 = load i32, i32* %i
 br label %while_condition1
 while_condition1:
+    %i_val1 = load i32, i32* %i
+
     %cond1 = icmp slt i32 %i_val1, 10
     br i1 %cond1, label %while_body1, label %while_end1
 while_body1:
+then1:
     call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str2, i32 0, i32 0))
     call void @write_int(i32 %i_val1)
     %i_val2 = add i32 %i_val1, 1
     store i32 %i_val2, i32* %i
+    br label %merge1
+else1:
+    call void @write_string(i8* getelementptr inbounds ([53 x i8], [53 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
+    %i_val4 = add i32 %i_val3, 1
+    store i32 %i_val4, i32* %i
+    br label %merge1
+merge1:
     br label %while_condition1
 while_end1:
-    call void @write_string(i8* getelementptr inbounds ([40 x i8], [40 x i8]* @.str3, i32 0, i32 0))
+    call void @write_string(i8* getelementptr inbounds ([40 x i8], [40 x i8]* @.str4, i32 0, i32 0))
     call void @write_int(i32 %i_val1)
   ret i32 0
 }
