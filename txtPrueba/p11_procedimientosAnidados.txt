@@ -5,7 +5,7 @@ program MaximoComunDivisor;
   y recursivo. }
 
 var
-  a, b: integer;
+  a, b, resultado: integer;
 
 begin
   { Cuerpo principal (main) del programa }

@@ -7,7 +7,9 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str1 = private constant [11 x i8] c"respuesta: "
+@.str3 = private constant [19 x i8] c"el valor final es: "
+@.str2 = private constant [19 x i8] c"x es diferente a 3\00"
+@.str1 = private constant [20 x i8] c"x es 3, entro al if\00"
 @int_format = private constant [3 x i8] c"%d\00"       ; Formato para enteros
 
 declare i32 @scanf(i8*, ...)
@@ -16,10 +18,29 @@ define i32 @main() {
     %x = alloca i32
     %int_ptr1 = bitcast i32* %x to i8* ;
     call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr1)
+    
+br label %while_condition1
+while_condition1:
     %x_val1 = load i32, i32* %x
-    store i32 89, i32* %x
+
+    %cond1 = icmp sle i32 %x_val1, 3
+    br i1 %cond1, label %while_body1, label %while_end1
+while_body1:
+    %cond2 = icmp eq i32 %x_val1, 3
+    br i1 %cond2, label %then1, label %else1
+then1:
+    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str1, i32 0, i32 0))
+    br label %merge1
+else1:
+    call void @write_string(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str2, i32 0, i32 0))
+    br label %merge1
+merge1:
+    %int_ptr2 = bitcast i32* %x to i8* ;
+    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr2)
     %x_val2 = load i32, i32* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str1, i32 0, i32 0))
+    br label %while_condition1
+while_end1:
+    call void @write_string(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str3, i32 0, i32 0))
     call void @write_int(i32 %x_val2)
   ret i32 0
 }

@@ -7,6 +7,10 @@ import java.util.List;
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private boolean scanfdeclared = false;
+    private boolean intformatdeclared = false;
+    private boolean charformatdeclared = false;
+    private boolean stringformatdeclared = false;
+
     private int tempCounter = 1;  // Contador de variables temporales
     private int counter = 1;
     ArrayList<Loads> loads = new ArrayList<Loads>();
@@ -14,7 +18,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Loads lastLoad(String variable) {
         for (int i = loads.size() - 1; i >= 0; i--) {
 //            System.out.println("Variable: " + loads.get(i).getVariable() + " counter: " + loads.get(i).getCounter());
-            if (loads.get(i).getVariable().equals(variable)) {
+            if (loads.get(i).getVariable().equals(variable) && loads.get(i).getScope().equals(scope_actual)) {
                 return loads.get(i);
             }
 
@@ -932,20 +936,40 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (tipovariable_lowercase) {
                         case "integer":
                             System.out.println("ENTROOOOOOO");
-                            llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
+                            if(!intformatdeclared){
+                                llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
+                                intformatdeclared = true;
+                            }
 
                             emit("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
                             emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
                             emit("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
-                            loads.add(new Loads(variable, counter));
+                            loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
                         case "char":
-                            llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
+                            if(!charformatdeclared){
+                                llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
+                                charformatdeclared = true;
+                            }
+                            emit("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
+                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
+                            emit("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
+                            loads.add(new Loads(variable, counter, scope_actual));
+                            counter++;
                             break;
                         case "string":
-                            llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
-                                    "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
+                            if(!stringformatdeclared){
+                                llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
+                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
+                                stringformatdeclared = true;
+                            }
+                            emit("    %str_ptr" + counter + " = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0");
+                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr" + counter + ")");
+                            emit("    store i8* %str_ptr" + counter + ", i8** %" + variable);
+                            emit("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                            loads.add(new Loads(variable, counter, scope_actual));
+                            counter++;
                             break;
                     }
                 }
@@ -1022,7 +1046,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
                     emit("    store i32 " + expression + ", i32* %" + variable);
                     emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
-                    loads.add(new Loads(variable, counter));
+                    loads.add(new Loads(variable, counter, scope_actual));
                     counter++;
                     break;
                 case "boolean":
@@ -1032,7 +1056,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
                             emit("    store i1 1, i1* %" + variable);
                             emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                            loads.add(new Loads(variable, counter));
+                            loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
                         case "false":
@@ -1040,7 +1064,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
                             emit("    store i1 0, i1* %" + variable);
                             emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                            loads.add(new Loads(variable, counter));
+                            loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
                         default:
@@ -1054,7 +1078,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
                     emit("    store i8 " + asciivalue + ", i8* %" + variable);
                     emit("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                    loads.add(new Loads(variable, counter));
+                    loads.add(new Loads(variable, counter, scope_actual));
                     counter++;
                     break;
                 case "string":
@@ -1071,7 +1095,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
                     emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                     emit("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                    loads.add(new Loads(variable, counter));
+                    loads.add(new Loads(variable, counter, scope_actual));
                     counter++;
                     break;
             }
@@ -1121,31 +1145,31 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 case "+":
                                     threeAddressCodeList.add(new ThreeAddressCode("add", variableEnUso, valor, variableEnUso + "_val" + counter));
                                     emit("    %" + variableEnUso + "_val" + counter + " = add i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                                 case "-":
                                     threeAddressCodeList.add(new ThreeAddressCode("sub", variableEnUso, valor, variableEnUso + "_val" + counter));
                                     emit("    %" + variableEnUso + "_val" + counter + " = sub i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                                 case "*":
                                     threeAddressCodeList.add(new ThreeAddressCode("mul", variableEnUso, valor, variableEnUso + "_val" + counter));
                                     emit("    %" + variableEnUso + "_val" + counter + " = mul i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                                 case "/":
                                     threeAddressCodeList.add(new ThreeAddressCode("sdiv", variableEnUso, valor, variableEnUso + "_val" + counter));
                                     emit("    %" + variableEnUso + "_val" + counter + " = sdiv i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                             }
 
                             emit("    store i32 %" + variableEnUso + "_val" + (counter - 1) + ", i32* %" + variableEnUso);
-                            loads.add(new Loads(variableEnUso, counter));
+                            loads.add(new Loads(variableEnUso, counter, scope_actual));
                             counter++;
                             break;
                         case "boolean":
@@ -1155,7 +1179,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
                                     emit("    store i1 1, i1* %" + variableEnUso);
                                     emit("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                                 case "false":
@@ -1163,7 +1187,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
                                     emit("    store i1 0, i1* %" + variableEnUso);
                                     emit("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
-                                    loads.add(new Loads(variableEnUso, counter));
+                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
                                     counter++;
                                     break;
                                 default:
