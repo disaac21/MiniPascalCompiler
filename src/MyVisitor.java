@@ -117,6 +117,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     public void writell() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
+            System.out.println("llvmcode -----------------------------------");
+            System.out.println("\n\n\n\n\n"+llvmCode.toString());
             writer.write(llvmCode.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -924,7 +926,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
                     System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
-                    System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+                    System.out.println("  Asignando el valor a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
                     if (!scanfdeclared) {
                         llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
                         scanfdeclared = true;
@@ -935,6 +937,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                             emit("    %int_ptr" + counter + " = bitcast i32* %int_var to i8* ;");
                             emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
+                            emit("    %" + variable + "_val" + counter + " = load i32, i32* " + variable);
                             counter++;
                             break;
                         case "char":
