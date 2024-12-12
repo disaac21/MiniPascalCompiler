@@ -1,10 +1,8 @@
-import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
@@ -33,6 +31,30 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private String generateTempStringVariable() {
         return "@.str" + stringTempCounter++;  // s1, s2, s3, ...
+    }
+
+    private int condCounter = 1;  // Contador de condicionales
+
+    private String generateCondVariable() {
+        return "cond" + condCounter++;  // t1, t2, t3, ...
+    }
+
+    private int labelCounter = 1;  // Contador de etiquetas
+
+    private String generateLabel() {
+        return "L" + labelCounter++;  // L1, L2, L3, ...
+    }
+
+    private int ifCounter = 1;  // Contador de if
+
+    private String generateIf() {
+        return "if" + ifCounter++;  // if1, if2, if3, ...
+    }
+
+    private int whileCounter = 1;  // Contador de while
+
+    private String generateWhile() {
+        return "while" + whileCounter++;  // while1, while2, while3, ...
     }
 
     ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
@@ -115,6 +137,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean encontrarVariable(String variable) {
         for (Binding binding : TablaSimbolos) {
             if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean encontrarVariableEnLoads(String variable) {
+        for (Loads load : loads) {
+            if (load.getVariable().equals(variable)) {
                 return true;
             }
         }
@@ -215,8 +246,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit("\ndefine i32 @main() {");
         visit(ctx.block());
         System.out.println("\nFin del Programa");
-        emit("    ret i32 0");
-        emit("}");
+        Footer();
+        Header(ctx.programHeading());
         return null;
     }
 
@@ -506,24 +537,28 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     String variableType = binding.getTipo();
                     switch (variableType) {
                         case "integer":
+                            threeAddressCodeList.add(new ThreeAddressCode("alloca", "i32", null, variableName));
                             emit("    %" + variableName + " = alloca i32");
                             break;
                         case "boolean":
+                            threeAddressCodeList.add(new ThreeAddressCode("alloca", "i1", null, variableName));
                             emit("    %" + variableName + " = alloca i1");
                             break;
                         case "char":
+                            threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8", null, variableName));
                             emit("    %" + variableName + " = alloca i8");
                             break;
                         case "string":
+                            threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8*", null, variableName));
                             emit("    %" + variableName + " = alloca i8*");
                             break;
                     }
 
                     // Asignar el tipo correspondiente en 3AC
                     //aca va a tocar hacer cambios
-                    String tempVar = generateTempVariable(); // Crear variable temporal
-                    String operation = "alloca"; // Operación de asignación de memoria
-                    threeAddressCodeList.add(new ThreeAddressCode(operation, variableType, null, tempVar)); // Agregar la instrucción
+//                    String tempVar = generateTempVariable(); // Crear variable temporal
+//                    String operation = "alloca"; // Operación de asignación de memoria
+//                    threeAddressCodeList.add(new ThreeAddressCode(operation, variableType, null, tempVar)); // Agregar la instrucción
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
@@ -763,6 +798,41 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                         } else {
                             System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
+
+
+                            String strValue = ctx.string().getText();
+                            strValue = strValue.substring(1, strValue.length() - 1); // Remove quotes
+
+                            String currentTempString = generateTempStringVariable();
+                            int stringLength = strValue.length();
+//                            stringLength++;
+                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\"\n";
+
+                            llvmCode.insert(0, textToPrepend);
+
+                            // 3AC for write('texto', variable)
+                            threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
+                            threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
+//                            threeAddressCodeList.add(new ThreeAddressCode("write", variable, null, null));
+
+                            emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    if (tipoVariable.equals("integer")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
+                                        emit("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+                                    } else if (tipoVariable.equals("char")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
+                                        emit("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+                                    } else if (tipoVariable.equals("string")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
+                                        emit("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
+                                    }
+                                    break;
+                                }
+                            }
+
                         }
                     } else {
                         System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
@@ -782,6 +852,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\\00\"\n";
 
                 llvmCode.insert(0, textToPrepend);
+
+                // 3AC for write('texto')
+                threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
+                threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 
                 emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
@@ -857,17 +931,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     }
                     switch (tipoVariable) {
                         case "integer":
-                            llvmCode.insert(0,"@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
+                            llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
 
-                            emit("    %int_ptr"+ counter +" = bitcast i32* %int_var to i8* ;");
-                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr"+counter+")");
+                            emit("    %int_ptr" + counter + " = bitcast i32* %int_var to i8* ;");
+                            emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
                             counter++;
                             break;
                         case "char":
-                            llvmCode.insert(0,"@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
+                            llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
                             break;
                         case "string":
-                            llvmCode.insert(0,"@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
+                            llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
                                     "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
                             break;
                     }
@@ -907,87 +981,204 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
 
-        // Verificar si la variable está definida en el ámbito actual
-        if (!encontrarVariable(variable)) {
-            System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
-            return null;
-        }
-
-        // Obtener el tipo de la variable desde la tabla de símbolos
-        String tipoVariable = null;
-        for (Binding binding : TablaSimbolos) {
-            if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
-                tipoVariable = binding.getTipo();
-                break;
+        if (ctx.expression().simpleExpression().getChildCount() == 1) {
+            // Verificar si la variable está definida en el ámbito actual
+            if (!encontrarVariable(variable)) {
+                System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+                return null;
             }
-        }
+
+            // Obtener el tipo de la variable desde la tabla de símbolos
+            String tipoVariable = null;
+            for (Binding binding : TablaSimbolos) {
+                if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
+                    tipoVariable = binding.getTipo();
+                    break;
+                }
+            }
 
 
 //        expression = expression.substring(0, expression.indexOf("("));
 
-        // Validar el tipo de la expresión
-        if (tipoVariable != null) {
-            if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
-                System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
-            } else {
-                System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
-            }
-        } else {
-            System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
-        }
-
-        //esto ya es generando el .ll
-        // Generar código LLVM para la asignación
-        switch (tipoVariable) {
-            case "integer":
-                emit("    store i32 " + expression + ", i32* %" + variable);
-                emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
-                loads.add(new Loads(variable, counter));
-                counter++;
-                break;
-            case "boolean":
-                switch (expression) {
-                    case "true":
-                        emit("    store i1 1, i1* %" + variable);
-                        emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                        loads.add(new Loads(variable, counter));
-                        counter++;
-                        break;
-                    case "false":
-                        emit("    store i1 0, i1* %" + variable);
-                        emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                        loads.add(new Loads(variable, counter));
-                        counter++;
-                        break;
-                    default:
-                        emit("    store i1 " + expression + ", i1* %" + variable);
-                        break;
+            // Validar el tipo de la expresión
+            if (tipoVariable != null) {
+                if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                    System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                } else {
+                    System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
                 }
-                break;
-            case "char":
-                int asciivalue = expression.charAt(1);
-                emit("    store i8 " + asciivalue + ", i8* %" + variable);
-                emit("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                loads.add(new Loads(variable, counter));
-                counter++;
-                break;
-            case "string":
+            } else {
+                System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
+            }
 
-                String currentTempString = generateTempStringVariable();
-                int stringLength = expression.length();
-                stringLength--;
-                String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
+            //esto ya es generando el .ll
+            // Generar código LLVM para la asignación
+            switch (tipoVariable) {
+                case "integer":
+                    threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
+                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
+                    emit("    store i32 " + expression + ", i32* %" + variable);
+                    emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                    loads.add(new Loads(variable, counter));
+                    counter++;
+                    break;
+                case "boolean":
+                    switch (expression) {
+                        case "true":
+                            threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
+                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
+                            emit("    store i1 1, i1* %" + variable);
+                            emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            loads.add(new Loads(variable, counter));
+                            counter++;
+                            break;
+                        case "false":
+                            threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variable));
+                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
+                            emit("    store i1 0, i1* %" + variable);
+                            emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            loads.add(new Loads(variable, counter));
+                            counter++;
+                            break;
+                        default:
+                            emit("    store i1 " + expression + ", i1* %" + variable);
+                            break;
+                    }
+                    break;
+                case "char":
+                    int asciivalue = expression.charAt(1);
+                    threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
+                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
+                    emit("    store i8 " + asciivalue + ", i8* %" + variable);
+                    emit("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                    loads.add(new Loads(variable, counter));
+                    counter++;
+                    break;
+                case "string":
 
-                llvmCode.insert(0, textToPrepend);
+                    String currentTempString = generateTempStringVariable();
+                    int stringLength = expression.length();
+                    stringLength--;
+                    String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
+
+                    llvmCode.insert(0, textToPrepend);
 
 //                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                emit("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                loads.add(new Loads(variable, counter));
-                counter++;
-                break;
-        }
+                    threeAddressCodeList.add(new ThreeAddressCode("store", currentTempString, "string", variable));
+                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
+                    emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                    emit("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                    loads.add(new Loads(variable, counter));
+                    counter++;
+                    break;
+            }
 
+        } else {
+            String statementText = "";
+            for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
+                statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
+            }
+
+
+            System.out.println("  Asignacion Operacion: " + statementText);
+
+            String[] expresionSplit = statementText.split(" ");
+            String currentCounter = generateCondVariable();
+
+            String variableEnUso = expresionSplit[0];
+            String operador = expresionSplit[1];
+            String valor = expresionSplit[2];
+
+            // Verificar si la variable está definida en el ámbito actual
+            if (!encontrarVariable(variableEnUso)) {
+                System.err.println(" Error: La variable '" + variableEnUso + "' no está definida en el ámbito '" + scope_actual + "'.");
+                return null;
+            }
+
+            // Obtener el tipo de la variable desde la tabla de símbolos
+            String tipoVariable = null;
+            for (Binding binding : TablaSimbolos) {
+                if (binding.getNombre().equals(variableEnUso) && binding.getScope().equals(scope_actual)) {
+                    tipoVariable = binding.getTipo();
+                    break;
+                }
+            }
+
+            // Validar el tipo de la expresión
+            if (tipoVariable != null) {
+                if (!verificarValor(valor, tipoVariable)) { // Ahora se pasan dos parámetros
+                    System.err.println(" Error: El valor '" + valor + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variableEnUso + "'.");
+                } else {
+                    System.out.println("  Asignando el valor " + valor + " a la variable '" + variableEnUso + "' de tipo '" + tipoVariable + "'.");
+
+                    // Generar código LLVM para la asignación
+                    switch (tipoVariable) {
+                        case "integer":
+                            switch (operador) {
+                                case "+":
+                                    threeAddressCodeList.add(new ThreeAddressCode("add", variableEnUso, valor, variableEnUso + "_val" + counter));
+                                    emit("    %" + variableEnUso + "_val" + counter + " = add i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                                case "-":
+                                    threeAddressCodeList.add(new ThreeAddressCode("sub", variableEnUso, valor, variableEnUso + "_val" + counter));
+                                    emit("    %" + variableEnUso + "_val" + counter + " = sub i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                                case "*":
+                                    threeAddressCodeList.add(new ThreeAddressCode("mul", variableEnUso, valor, variableEnUso + "_val" + counter));
+                                    emit("    %" + variableEnUso + "_val" + counter + " = mul i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                                case "/":
+                                    threeAddressCodeList.add(new ThreeAddressCode("sdiv", variableEnUso, valor, variableEnUso + "_val" + counter));
+                                    emit("    %" + variableEnUso + "_val" + counter + " = sdiv i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                            }
+
+                            emit("    store i32 %" + variableEnUso + "_val" + (counter - 1) + ", i32* %" + variableEnUso);
+                            loads.add(new Loads(variableEnUso, counter));
+                            counter++;
+                            break;
+                        case "boolean":
+                            switch (valor) {
+                                case "true":
+                                    threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variableEnUso));
+                                    threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
+                                    emit("    store i1 1, i1* %" + variableEnUso);
+                                    emit("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                                case "false":
+                                    threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variableEnUso));
+                                    threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
+                                    emit("    store i1 0, i1* %" + variableEnUso);
+                                    emit("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
+                                    loads.add(new Loads(variableEnUso, counter));
+                                    counter++;
+                                    break;
+                                default:
+                                    emit("    store i1 " + valor + ", i1* %" + variableEnUso);
+                                    break;
+                            }
+                            break;
+                        case "char":
+                            int asciivalue = valor.charAt(1);
+                            threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variableEnUso));
+                            threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "char", variableEnUso + "_val" + counter));
+
+                    }
+                }
+            } else {
+                System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variableEnUso + "'.");
+            }
+        }
         return null;
     }
 
@@ -1003,11 +1194,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitExpression(MiniPascalGrammarParser.ExpressionContext ctx) {
-        visit(ctx.simpleExpression()); // Visitar el nodo de la expresión simple
         if (ctx.relationaloperator() != null) {
             System.out.println("Operador Relacional: " + ctx.relationaloperator().getText());
             visit(ctx.expression()); // Visitar el nodo de la expresión
         }
+        visit(ctx.simpleExpression()); // Visitar el nodo de la expresión simple
         return null;
     }
 
@@ -1184,11 +1375,286 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitIfStatement(MiniPascalGrammarParser.IfStatementContext ctx) {
         System.out.println(" Caso If:");
-        System.out.println("  Condicion: " + ctx.expression().getText());
+
+        String statementText = "";
+        if (ctx.expression().getChildCount() == 1) {
+            for (int i = 0; i < ctx.expression().getChild(0).getChildCount(); i++) {
+                statementText += ctx.expression().getChild(0).getChild(i).getText() + " ";
+            }
+        } else {
+            for (int i = 0; i < ctx.expression().getChildCount(); i++) {
+                statementText += ctx.expression().getChild(i).getText() + " ";
+            }
+        }
+
+        System.out.println("  Condicion: " + statementText);
+
+        String[] expresionSplit = statementText.split(" ");
+        String currentCounter = generateCondVariable();
+
+        if (expresionSplit.length == 1) {
+
+            // aca arreglar detalle de cuando solo hay un argumento en el if
+            String variable = expresionSplit[0];
+            if (encontrarVariableEnLoads(variable)) {
+                System.out.println("  Valor: " + variable + " es una variable definida.");
+
+                for (Loads load : loads) {
+                    if (load.getVariable().equals(variable)) {
+                        threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+                        emit("    br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
+                        break;
+                    }
+                }
+            } else {
+                System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+            }
+
+        } else {
+
+            String variable = expresionSplit[0];
+            String operador = expresionSplit[1];
+            String valor = expresionSplit[2];
+
+            if (encontrarVariableEnLoads(valor)) {
+                System.out.println("  Valor: " + valor + " es una variable definida.");
+
+                switch (operador) {
+                    case ">":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<>":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case ">=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "and":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "or":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "not":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+
+            } else {
+                try {
+                    Integer.parseInt(valor);
+                    System.out.println("  Valor: " + valor + " es un número.");
+
+                    switch (operador) {
+                        case ">":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<>":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case ">=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "and":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "or":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "not":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.err.println("  Valor: " + valor + " no es una variable definida ni un número.");
+                }
+            }
+            threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+            emit("    br i1 %" + currentCounter + ", label %then" + ifCounter + ", label %else" + ifCounter);
+        }
+
+        threeAddressCodeList.add(new ThreeAddressCode("then", "then" + ifCounter, null, null));
+        emit("then" + ifCounter + ":");
+        visit(ctx.statement(0));
+        threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+        emit("    br label %merge" + ifCounter);
+
         System.out.println("  Hacer: " + ctx.statement(0).getText());
         if (ctx.ELSE() != null) {
             System.out.println("  Else: " + ctx.statement(1).getText());
+            threeAddressCodeList.add(new ThreeAddressCode("else", "else" + ifCounter, null, null));
+            emit("else" + ifCounter + ":");
+            visit(ctx.statement(1));
+            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+            emit("    br label %merge" + ifCounter);
         }
+        threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+        emit("merge" + ifCounter + ":");
+        ifCounter++;
+
         System.out.println();
         return null;
     }
@@ -1201,20 +1667,312 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitWhileStatement(MiniPascalGrammarParser.WhileStatementContext ctx) {
         System.out.println(" Caso While:");
-        System.out.println("  Condicion: " + ctx.expression().getText());
 
-        String statementText = ctx.statement().getText();
-        if (statementText.startsWith("begin") && statementText.endsWith("end")) {
-            statementText = statementText.substring(5, statementText.length() - 3).trim();
-
-            String[] statements = statementText.split(";");
-            System.out.println("  Sentencia entre begin ... end:");
-            for (String stmt : statements) {
-                System.out.println(" " + stmt.trim());
+        String statementText = "";
+        if (ctx.expression().getChildCount() == 1) {
+            for (int i = 0; i < ctx.expression().getChild(0).getChildCount(); i++) {
+                statementText += ctx.expression().getChild(0).getChild(i).getText() + " ";
             }
         } else {
-            System.out.println("   Sentencia: " + statementText);
+            for (int i = 0; i < ctx.expression().getChildCount(); i++) {
+                statementText += ctx.expression().getChild(i).getText() + " ";
+            }
         }
+
+        threeAddressCodeList.add(new ThreeAddressCode("while", "label", "while_condition" + whileCounter, "br"));
+        emit("br label %while_condition" + whileCounter);
+        System.out.println("  Condicion: " + statementText);
+
+        String[] expresionSplit = statementText.split(" ");
+        String currentCounter = generateCondVariable();
+
+        emit("while_condition" + whileCounter + ":");
+
+        if (expresionSplit.length == 1) {
+
+            // aca arreglar detalle de cuando solo hay un argumento en el if
+            String variable = expresionSplit[0];
+            if (encontrarVariableEnLoads(variable)) {
+                System.out.println("  Valor: " + variable + " es una variable definida.");
+
+
+            } else {
+                System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
+            }
+
+        } else {
+
+            String variable = expresionSplit[0];
+            String operador = expresionSplit[1];
+            String valor = expresionSplit[2];
+
+            //mover linea del load a dentro del while aca
+            for (Loads load : loads) {
+                if (load.getVariable().equals(variable)) {
+                    String lineToMove = "%" + variable + "_val" + load.getCounter() + " = load i32, i32* %" + variable;
+                    String marker = "while_condition" + whileCounter + ":";
+
+                    System.out.println("Line to move: " + lineToMove);
+                    System.out.println("Marker: " + marker);
+
+                    int lineIndex  = llvmCode.indexOf(lineToMove);
+                    int markerIndex = llvmCode.indexOf(marker);
+
+                    System.out.println("Line index: " + lineIndex);
+                    System.out.println("Marker index: " + markerIndex);
+
+                    if (lineIndex != -1 && markerIndex != -1) {
+                        // Remove the line from its original position
+                        llvmCode.insert(markerIndex + marker.length(), "\n    " + lineToMove + "\n");
+                        llvmCode.delete(lineIndex, lineIndex + lineToMove.length());
+
+                        // Insert the line after the marker
+                    } else {
+                        System.out.println("Line or marker not found.");
+                    }
+
+                    break;
+                }
+            }
+
+
+            if (encontrarVariableEnLoads(valor)) {
+                System.out.println("  Valor: " + valor + " es una variable definida.");
+
+                switch (operador) {
+                    case ">":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<>":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case ">=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "<=":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "and":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "or":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "not":
+                        for (Loads load : loads) {
+                            if (load.getVariable().equals(variable)) {
+                                for (Loads load2 : loads) {
+                                    if (load2.getVariable().equals(valor)) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                        emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+
+            } else {
+                try {
+                    Integer.parseInt(valor);
+                    System.out.println("  Valor: " + valor + " es un número.");
+
+                    switch (operador) {
+                        case ">":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<>":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case ">=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "<=":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "and":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "or":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "not":
+                            for (Loads load : loads) {
+                                if (load.getVariable().equals(variable)) {
+                                    threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                    emit("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.err.println("  Valor: " + valor + " no es una variable definida ni un número.");
+                }
+            }
+            threeAddressCodeList.add(new ThreeAddressCode("while", "do" + whileCounter, "else" + whileCounter, currentCounter));
+            emit("    br i1 %" + currentCounter + ", label %while_body" + whileCounter + ", label %while_end" + whileCounter);
+        }
+
+        threeAddressCodeList.add(new ThreeAddressCode("do", "while_body" + whileCounter, null, null));
+        emit("while_body" + whileCounter + ":");
+
+        //while body
+//        if (/* condition to recognize another statement */) {
+//            String condVar = generateCondVariable();
+//            emit("    %" + condVar + " = icmp slt i32 %i_val1, 3");
+//            emit("    br i1 %" + condVar + ", label %then" + whileCounter + ", label %else" + whileCounter);
+//        }
+        visit(ctx.statement());
+
+
+
+        emit("    br label %while_condition" + whileCounter);
+        threeAddressCodeList.add(new ThreeAddressCode("end", "while_end" + whileCounter, null, null));
+        emit("while_end" + whileCounter + ":");
+        whileCounter++;
         System.out.println();
         return null;
     }
@@ -1283,4 +2041,84 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitFinalValue(MiniPascalGrammarParser.FinalValueContext ctx) {
         return visitChildren(ctx);
     }
+
+    public void Header(MiniPascalGrammarParser.ProgramHeadingContext programHeader) {
+
+        String programName = programHeader.identifier().getText();
+        String allHeader = "";
+
+        // Start of the program with filename header
+        allHeader += "; ModuleID = 'MiniPascal'\n";
+        allHeader += "source_filename = \"" + programName + "\"\n";
+        allHeader += "target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\"\n";
+        allHeader += "target triple = \"x86_64-pc-microsoft-msvc\"\n";
+
+        // Standard library functions + Global declarations
+        allHeader += "%struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }\n";
+        allHeader += "@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"\n";
+        allHeader += "@stdin = external global %struct._IO_FILE*\n";
+        allHeader += "@double_fmt = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\"\n";
+        allHeader += "@char_fmt = private unnamed_addr constant [4 x i8] c\"%c\\0A\\00\"\n";
+
+
+        llvmCode.insert(0, allHeader);
+    }
+
+    public void Footer() {
+        // End of the program
+        emit("  ret i32 0\n}\n");
+
+        // write_int function for printing integers
+        emit("define void @write_int(i32 %num) {");
+//        System.out.println("    %buf = alloca [32 x i8], align 1");
+//        System.out.println("    %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
+//        System.out.println("    call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+//        System.out.println("    call i32 @puts(i8* %buf_ptr)");
+        emit("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+        emit("    ret void");
+        emit("}\n");
+
+        // write_char function for printing single chars
+        emit("define void @write_char(i8 %char) {");
+        emit("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @char_fmt, i32 0, i32 0), i8 %char)");
+        emit("    ret void");
+        emit("}");
+
+
+        // write_string function for printing strings
+        emit("define void @write_string(i8* %str) {");
+//        System.out.println("    %str_ptr = alloca i8*");
+//        System.out.println("    store i8* %str, i8** %str_ptr");
+//        System.out.println("    %str_val = load i8*, i8** %str_ptr");
+        emit("    call i32 @puts(i8* %str)");
+        emit("    ret void");
+        emit("}\n");
+
+        // read function for reading input
+//        System.out.println("define i32 @read() {");
+//        System.out.println("  %buf = alloca [32 x i8], align 1");
+//        System.out.println("  %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
+//        System.out.println("  %stdin_val = load %struct._IO_FILE*, %struct._IO_FILE** @stdin");
+//        System.out.println("  %result = call i8* @fgets(i8* %buf_ptr, i32 32, %struct._IO_FILE* %stdin_val)");
+//        System.out.println("  %num = call i32 @atoi(i8* %buf_ptr)");
+//        System.out.println("  ret i32 %num");
+//        System.out.println("}\n");
+
+        // Function declarations for standard library functions
+        emit("declare i32 @atoi(i8*)");
+        emit("declare i32 @sprintf(i8*, i8*, ...)");
+        emit("declare i32 @puts(i8*)");
+        emit("declare i8* @fgets(i8*, i32, %struct._IO_FILE*)");
+        emit("declare void @exit(i32)\n");
+
+// Footer
+        emit("; Function Attrs: noinline nounwind optnone uwtable");
+        emit("declare i32 @printf(i8*, ...) #0");
+        emit("attributes #0 = { noinline nounwind optnone uwtable \"correctly-rounded-divide-sqrt-fp-math\"=\"false\" \"disable-tail-calls\"=\"false\" \"frame-pointer\"=\"all\" \"less-precise-fpmad\"=\"false\" \"min-legal-vector-width\"=\"0\" \"no-infs-fp-math\"=\"false\" \"no-jump-tables\"=\"false\" \"no-nans-fp-math\"=\"false\" \"no-signed-zeros-fp-math\"=\"false\" \"no-trapping-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+cx8,+fxsr,+mmx,+sse,+sse2,+x87\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
+        emit("!llvm.module.flags = !{!0}\n");
+        emit("!llvm.ident = !{!1}");
+        emit("!0 = !{i32 1, !\"wchar_size\", i32 4}");
+        emit("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
+    }
+
 }

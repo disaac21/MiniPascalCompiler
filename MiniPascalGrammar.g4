@@ -327,6 +327,9 @@ relationaloperator
    | LE
    | GE
    | GT
+   | AND
+   | OR
+   | NOT
    ;
 
 simpleExpression
