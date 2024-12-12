@@ -163,7 +163,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             isFunction = true;
         }
 
-        if (tipoEsperado.equals("integer")) {
+        if (tipoEsperado.toLowerCase().equals("integer")) {
             // Expresión que permite números enteros o variables separadas por '+'
             String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
 
@@ -211,11 +211,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 }
             }
             return true; // Todos los componentes son válidos
-        } else if (tipoEsperado.equals("boolean")) {
+        } else if (tipoEsperado.toLowerCase().equals("boolean")) {
             return valor.equals("true") || valor.equals("false"); // Booleano
-        } else if (tipoEsperado.equals("char")) {
+        } else if (tipoEsperado.toLowerCase().equals("char")) {
             return valor.matches("'[^']'"); // Un único carácter entre comillas simples
-        } else if (tipoEsperado.equals("string")) {
+        } else if (tipoEsperado.toLowerCase().equals("string")) {
             return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
         }
 
@@ -226,11 +226,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private boolean verificarValorNoBooleanForFunctions(String valor, String tipoEsperado) {
         // Validación para tipos básicos
-        if (tipoEsperado.equals("integer")) {
+        if (tipoEsperado.toLowerCase().equals("integer")) {
             return true;
-        } else if (tipoEsperado.equals("char")) {
+        } else if (tipoEsperado.toLowerCase().equals("char")) {
             return true;
-        } else if (tipoEsperado.equals("string")) {
+        } else if (tipoEsperado.toLowerCase().equals("string")) {
             return true;
         }
 
@@ -537,7 +537,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     TablaSimbolos.add(binding);
                     String variableName = binding.getNombre();
                     String variableType = binding.getTipo();
-                    switch (variableType) {
+                    switch (variableType.toLowerCase()) {
                         case "integer":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i32", null, variableName));
                             emit("    %" + variableName + " = alloca i32");
@@ -819,20 +819,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                             emit("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
-                            for (Loads load : loads) {
-                                if (load.getVariable().equals(variable)) {
-                                    if (tipoVariable.equals("integer")) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
-                                        emit("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
-                                    } else if (tipoVariable.equals("char")) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
-                                        emit("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
-                                    } else if (tipoVariable.equals("string")) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
-                                        emit("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
-                                    }
-                                    break;
-                                }
+                            Loads load = lastLoad(variable);
+                            if (tipoVariable.toLowerCase().equals("integer")) {
+                                threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
+                                emit("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+                            } else if (tipoVariable.toLowerCase().equals("char")) {
+                                threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
+                                emit("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+                            } else if (tipoVariable.toLowerCase().equals("string")) {
+                                threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
+                                emit("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
                             }
 
                         }
@@ -915,7 +911,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
 
         System.out.println("  Variable: " + variable);
-        System.out.println("  Tipo de Variable: " + tipoVariable);
+        System.out.println("  Tipo de Variable: " + tipoVariable + ".");
 
         if (!encontrarVariable(variable)) {
             System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
@@ -931,13 +927,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
                         scanfdeclared = true;
                     }
-                    switch (tipoVariable) {
+                    String tipovariable_lowercase = tipoVariable.toLowerCase();
+                    System.out.println("  Tipo de Variable lowercase: " + tipovariable_lowercase + ".");
+                    switch (tipovariable_lowercase) {
                         case "integer":
+                            System.out.println("ENTROOOOOOO");
                             llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
 
-                            emit("    %int_ptr" + counter + " = bitcast i32* %int_var to i8* ;");
+                            emit("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
                             emit("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
-                            emit("    %" + variable + "_val" + counter + " = load i32, i32* " + variable);
+                            emit("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
+                            loads.add(new Loads(variable, counter));
                             counter++;
                             break;
                         case "char":
@@ -1016,7 +1016,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
             //esto ya es generando el .ll
             // Generar código LLVM para la asignación
-            switch (tipoVariable) {
+            switch (tipoVariable.toLowerCase()) {
                 case "integer":
                     threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));

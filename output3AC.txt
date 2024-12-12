@@ -1,0 +1,6 @@
+x = alloca i32
+x = 89 store integer
+x_val2 = x load integer
+@.str1 = string respuesta: 
+null = write @.str1
+null = integer write x_val2
