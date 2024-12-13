@@ -11,6 +11,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean intformatdeclared = false;
     private boolean charformatdeclared = false;
     private boolean stringformatdeclared = false;
+    private static ArrayList<String> ThreeAddressCodeTemp = new ArrayList<>();
 
     private int tempCounter = 1;  // Contador de variables temporales
     private static int counter = 1;
@@ -97,12 +98,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     String param = params[i];
                     writer.write(String.format("param %s", param));
                     writer.newLine();
+                    ThreeAddressCodeTemp.add(String.format("param %s", param) + "\n");
                 }
 
                 // Generar código para la llamada a la función
                 String tempVar = getNextTempVar();
                 writer.write(String.format("%s = call %s, %d", tempVar, functionName, params.length));
                 writer.newLine();
+                ThreeAddressCodeTemp.add(String.format("%s = call %s, %d", tempVar, functionName, params.length) + "\n");
 
                 // Guardar el resultado de la función en el stack
                 tempStack.push(tempVar);
@@ -118,6 +121,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 // Escribir la instrucción en el archivo
                 writer.write(instruction);
                 writer.newLine();
+                ThreeAddressCodeTemp.add(instruction + "\n");
 
                 // Guardar el resultado en el stack
                 tempStack.push(tempVar);
@@ -128,6 +132,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String lastTempVar = tempStack.pop();
         writer.write(finalVarName + " = " + lastTempVar);
         writer.newLine();
+        ThreeAddressCodeTemp.add(finalVarName + " = " + lastTempVar + "\n");
     }
 
     private static boolean isNumeric(String str) {
@@ -145,8 +150,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private static String getNextTempVar() {
         return "t" + (counter++);
     }
-
-
 
 
     public Loads lastLoad(String variable) {
@@ -211,38 +214,88 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
     }
 
-    public void generateLLVMFrom3AC() {
-        for (ThreeAddressCode instruction : threeAddressCodeList) {
-            switch (instruction.operation) {
-                case "alloca":
-                    emit("%" + instruction.result + " = alloca " + instruction.arg1);
-                    break;
-                case "=":
-                    emit("%" + instruction.result + " = " + instruction.operation + " " + instruction.arg1);
-                    break;
-                case "store":
-                    emit("store " + instruction.arg1 + ", " + instruction.arg2 + " " + instruction.result);
-                    break;
-                case "call":
-                    emit("call " + instruction.arg1);
-                    break;
-                case "<=":
-                    emit("%" + instruction.result + " = icmp sle " + instruction.arg1 + " " + instruction.arg2);
-                    break;
-                case "if":
-                    emit("br i1 " + instruction.arg1 + ", label %" + instruction.arg2 + ", label %" + instruction.result);
-                    break;
-                case "goto":
-                    emit("br label %" + instruction.result);
-                    break;
-                case "label":
-                    emit("%" + instruction.result + ":");
-                    break;
-                default:
-                    // Manejo de otros tipos de operaciones
-                    break;
+    private static String getLLVMOperator(String operator) {
+        return switch (operator) {
+            case "+" -> "add";
+            case "-" -> "sub";
+            case "*" -> "mul";
+            case "/" -> "sdiv";
+            default -> throw new IllegalArgumentException("Operador no soportado: " + operator);
+        };
+    }
+
+    public void generateLLVMFrom3AC(ArrayList<String> threeAddressCode) {
+        // Escribir el encabezado del archivo LLVM IR
+//            emit("; Código LLVM generado desde tres direcciones\n");
+//            emit("target triple = \"x86_64-pc-linux-gnu\"\n\n");
+
+        // Mapa para almacenar variables temporales declaradas
+        ArrayList<String> declaredVariables = new ArrayList<>();
+
+        for (String instruction : threeAddressCode) {
+            // Dividir la instrucción en sus partes
+            String[] parts = instruction.trim().split(" ");
+
+            if (parts.length == 3 && parts[1].equals("=")) {
+                // Asignación simple: a = b
+                String result = parts[0];
+                String value = parts[2];
+
+//                if (!declaredVariables.contains(result)) {
+//                    emit(String.format("%%s = alloca i32\n", result));
+//                    declaredVariables.add(result);
+//                }
+
+                if (isNumeric(value)) {
+                    emit(String.format("store i32 %s, i32* %%%s", value, result));
+                } else {
+                    emit("store i32 %" + value + ", i32* %" + result);
+                    emit(String.format("%%%s = load i32, i32* %%%s", result + "_val" + counter, result));
+
+                }
+
+            } else if (parts.length == 5 && parts[3].matches("[+\\-*/]") && parts[1].equals("=")) {
+                // Operación binaria: t1 = a + b
+                String tempVar = parts[0];
+                String op1 = parts[2];
+                String operator = parts[3];
+                String op2 = parts[4];
+
+//                if (!declaredVariables.contains(tempVar)) {
+//                    emit(String.format("%%%s = alloca i32\n", tempVar));
+//                    declaredVariables.add(tempVar);
+//                }
+
+                // LLVM equivalente para operadores
+                String llvmOp = getLLVMOperator(operator);
+                System.err.println("op2: " + op2 + " op1: " + op1);
+                if (isNumeric(op1) && isNumeric(op2)) {
+//                    emit(String.format("%%%s = %s i32 %s, %s", tempVar, llvmOp, op1, op2));
+                    emit("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", " + op2);
+                } else if (isNumeric(op1)) {
+//                    emit(String.format("%%%s = %s i32 %s, %%%s", tempVar, llvmOp, op1, op2));
+                    emit("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", %" + op2);
+                } else if (isNumeric(op2)) {
+//                    emit(String.format("%%%s = %s i32 %%%s, %s", tempVar, llvmOp, op1, op2));
+                    emit("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", " + op2);
+                } else {
+//                    emit(String.format("%%%s = %s i32 %%%s, %%%s", tempVar, llvmOp, op1, op2));
+                    emit("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", %" + op2);
+                }
+
+//                emit(String.format("%%%s = %s i32 %%%s, %%%s", tempVar, llvmOp, op1, op2));
+            } else if (instruction.contains("call")) {
+                // Llamada a función: t1 = call func, n
+                String[] callParts = instruction.split("call ");
+                String[] callDetails = callParts[1].split(", ");
+                String tempVar = callDetails[0].trim();
+                String functionName = callDetails[1].trim();
+
+                emit(String.format("%%%s = call i32 @%s()\n", tempVar, functionName));
             }
         }
+
+//            writer.write("\n; Fin del código LLVM\n");
     }
 
 
@@ -256,7 +309,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public void writell() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
             System.out.println("llvmcode -----------------------------------");
-            System.out.println("\n\n\n\n\n"+llvmCode.toString());
+            System.out.println("\n\n\n\n\n" + llvmCode.toString());
             writer.write(llvmCode.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -380,12 +433,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
-        try {
-            generateThreeAddressCode("3 + funcion(variable1, variable2, variable3) - 9 + 10 * 4 / 7 + variable * 4", "output3AC.txt", "variable_final");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            generateThreeAddressCode("3 + funcion(variable1, variable2, variable3) - 9 + 10 * 4 / 7 + variable * 4", "output3AC.txt", "variable_final");
+//            for (int i = 0; i < ThreeAddressCodeTemp.size(); i++) {
+//                System.err.println(ThreeAddressCodeTemp.get(i));
+//            }
+//            ThreeAddressCodeTemp.clear();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         System.out.println("Inicio del Programa:");
         visit(ctx.programHeading());
         System.out.println("\nBloque:");
@@ -1076,7 +1132,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (tipovariable_lowercase) {
                         case "integer":
                             System.out.println("ENTROOOOOOO");
-                            if(!intformatdeclared){
+                            if (!intformatdeclared) {
                                 llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
                                 intformatdeclared = true;
                             }
@@ -1088,7 +1144,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             counter++;
                             break;
                         case "char":
-                            if(!charformatdeclared){
+                            if (!charformatdeclared) {
                                 llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
                                 charformatdeclared = true;
                             }
@@ -1099,7 +1155,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             counter++;
                             break;
                         case "string":
-                            if(!stringformatdeclared){
+                            if (!stringformatdeclared) {
                                 llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
                                         "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
                                 stringformatdeclared = true;
@@ -1241,7 +1297,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     break;
             }
 
-        } else {
+        } else { //childcount > 1
             String statementText = "";
             for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
                 statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
@@ -1258,7 +1314,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String valor = expresionSplit[2];
 
             // Verificar si la variable está definida en el ámbito actual
-            if (!encontrarVariable(variableEnUso)) {
+            if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variableEnUso + "' no está definida en el ámbito '" + scope_actual + "'.");
                 return null;
             }
@@ -1266,51 +1322,73 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // Obtener el tipo de la variable desde la tabla de símbolos
             String tipoVariable = null;
             for (Binding binding : TablaSimbolos) {
-                if (binding.getNombre().equals(variableEnUso) && binding.getScope().equals(scope_actual)) {
+                if (binding.getNombre().equals(variable) && binding.getScope().equals(scope_actual)) {
                     tipoVariable = binding.getTipo();
                     break;
                 }
             }
 
             // Validar el tipo de la expresión
+            System.err.println("tipo de variable: " + tipoVariable);
             if (tipoVariable != null) {
                 if (!verificarValor(valor, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + valor + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variableEnUso + "'.");
                 } else {
                     System.out.println("  Asignando el valor " + valor + " a la variable '" + variableEnUso + "' de tipo '" + tipoVariable + "'.");
-
+                    System.err.println("viendo si aca es el error");
                     // Generar código LLVM para la asignación
-                    switch (tipoVariable) {
+                    switch (tipoVariable.toLowerCase()) {
                         case "integer":
-                            switch (operador) {
-                                case "+":
-                                    threeAddressCodeList.add(new ThreeAddressCode("add", variableEnUso, valor, variableEnUso + "_val" + counter));
-                                    emit("    %" + variableEnUso + "_val" + counter + " = add i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
-                                case "-":
-                                    threeAddressCodeList.add(new ThreeAddressCode("sub", variableEnUso, valor, variableEnUso + "_val" + counter));
-                                    emit("    %" + variableEnUso + "_val" + counter + " = sub i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
-                                case "*":
-                                    threeAddressCodeList.add(new ThreeAddressCode("mul", variableEnUso, valor, variableEnUso + "_val" + counter));
-                                    emit("    %" + variableEnUso + "_val" + counter + " = mul i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
-                                case "/":
-                                    threeAddressCodeList.add(new ThreeAddressCode("sdiv", variableEnUso, valor, variableEnUso + "_val" + counter));
-                                    emit("    %" + variableEnUso + "_val" + counter + " = sdiv i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
+//                            switch (operador) {
+//                                case "+":
+////                                    threeAddressCodeList.add(new ThreeAddressCode("add", variableEnUso, valor, variableEnUso + "_val" + counter));
+////                                    emit("    %" + variableEnUso + "_val" + counter + " = add i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+//                                    try{
+//                                        generateThreeAddressCode(expression, "output3AC.txt", variable + "_val" + counter);
+//                                        counter++;
+//                                        System.err.println(ThreeAddressCodeTemp);
+//                                        generateLLVMFrom3AC(ThreeAddressCodeTemp);
+//                                        ThreeAddressCodeTemp.clear();
+//                                    } catch (IOException e) {
+//                                        throw new RuntimeException(e);
+//                                    }
+//
+//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
+//                                    counter++;
+//                                    break;
+//                                case "-":
+//                                    threeAddressCodeList.add(new ThreeAddressCode("sub", variableEnUso, valor, variableEnUso + "_val" + counter));
+//                                    emit("    %" + variableEnUso + "_val" + counter + " = sub i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
+//                                    counter++;
+//                                    break;
+//                                case "*":
+//                                    threeAddressCodeList.add(new ThreeAddressCode("mul", variableEnUso, valor, variableEnUso + "_val" + counter));
+//                                    emit("    %" + variableEnUso + "_val" + counter + " = mul i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
+//                                    counter++;
+//                                    break;
+//                                case "/":
+//                                    threeAddressCodeList.add(new ThreeAddressCode("sdiv", variableEnUso, valor, variableEnUso + "_val" + counter));
+//                                    emit("    %" + variableEnUso + "_val" + counter + " = sdiv i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
+//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
+//                                    counter++;
+//                                    break;
+//                            }
+//
+////                            emit("    store i32 %" + variableEnUso + "_val" + (counter - 1) + ", i32* %" + variableEnUso);
+                            try {
+                                generateThreeAddressCode(expression, "output3AC.txt", variable);
+                                System.err.println(ThreeAddressCodeTemp);
+                                generateLLVMFrom3AC(ThreeAddressCodeTemp);
+                                ThreeAddressCodeTemp.clear();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
-
-                            emit("    store i32 %" + variableEnUso + "_val" + (counter - 1) + ", i32* %" + variableEnUso);
-                            loads.add(new Loads(variableEnUso, counter, scope_actual));
+                            loads.add(new Loads(variable, counter, scope_actual));
+                            for (int i = 0; i < loads.size(); i++) {
+                                System.err.println(loads.get(i).getVariable() + " " + loads.get(i).getCounter() + " " + loads.get(i).getScope());
+                            }
                             counter++;
                             break;
                         case "boolean":
@@ -1883,7 +1961,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     System.out.println("Line to move: " + lineToMove);
                     System.out.println("Marker: " + marker);
 
-                    int lineIndex  = llvmCode.indexOf(lineToMove);
+                    int lineIndex = llvmCode.indexOf(lineToMove);
                     int markerIndex = llvmCode.indexOf(marker);
 
                     System.out.println("Line index: " + lineIndex);
@@ -2136,7 +2214,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         visit(ctx.statement());
 
 
-
         emit("    br label %while_condition" + whileCounter);
         threeAddressCodeList.add(new ThreeAddressCode("end", "while_end" + whileCounter, null, null));
         emit("while_end" + whileCounter + ":");
@@ -2288,7 +2365,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit("!0 = !{i32 1, !\"wchar_size\", i32 4}");
         emit("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
     }
-
 
 
 }
