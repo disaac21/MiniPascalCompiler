@@ -35,9 +35,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
 
-            if (Character.isDigit(c)) {
-                // Leer números completos
-                while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+            if (Character.isDigit(c) || Character.isLetter(c)) {
+                // Leer números, variables o funciones completas
+                while (i < expression.length() &&
+                        (Character.isLetterOrDigit(expression.charAt(i)) || expression.charAt(i) == '(' || expression.charAt(i) == ',' || expression.charAt(i) == ')')) {
                     postfix.append(expression.charAt(i));
                     i++;
                 }
@@ -83,10 +84,30 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String[] tokens = postfix.split("\\s+");
 
         for (String token : tokens) {
-            if (isNumeric(token)) {
+            if (isNumeric(token) || isIdentifier(token)) {
                 tempStack.push(token);
+            } else if (isFunction(token)) {
+                // Procesar función con parámetros
+                String functionName = token.substring(0, token.indexOf('('));
+                String paramList = token.substring(token.indexOf('(') + 1, token.indexOf(')'));
+                String[] params = paramList.split(",");
+
+                // Generar código para evaluar parámetros
+                for (int i = 0; i < params.length; i++) {
+                    String param = params[i];
+                    writer.write(String.format("param %s", param));
+                    writer.newLine();
+                }
+
+                // Generar código para la llamada a la función
+                String tempVar = getNextTempVar();
+                writer.write(String.format("%s = call %s, %d", tempVar, functionName, params.length));
+                writer.newLine();
+
+                // Guardar el resultado de la función en el stack
+                tempStack.push(tempVar);
             } else {
-                // Extraer dos operandos
+                // Procesar operación binaria
                 String b = tempStack.pop();
                 String a = tempStack.pop();
 
@@ -111,6 +132,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");
+    }
+
+    private static boolean isIdentifier(String str) {
+        return str.matches("[a-zA-Z_][a-zA-Z0-9_]*\\(.*\\)?") || str.matches("[a-zA-Z_][a-zA-Z0-9_]*");
+    }
+
+    private static boolean isFunction(String str) {
+        return str.matches("[a-zA-Z_][a-zA-Z0-9_]*\\(.*\\)");
     }
 
     private static String getNextTempVar() {
@@ -351,6 +380,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
+        try {
+            generateThreeAddressCode("3 + funcion(variable1, variable2, variable3) - 9 + 10 * 4 / 7 + variable * 4", "output3AC.txt", "variable_final");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Inicio del Programa:");
         visit(ctx.programHeading());
         System.out.println("\nBloque:");

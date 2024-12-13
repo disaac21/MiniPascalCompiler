@@ -7,18 +7,8 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str1 = private constant [11 x i8] c"respuesta: "
-@int_format = private constant [3 x i8] c"%d\00"       ; Formato para enteros
-
-declare i32 @scanf(i8*, ...)
 
 define i32 @main() {
-    %x = alloca i32
-    %int_ptr1 = bitcast i32* %x to i8* ;
-    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr1)
-    %x_val1 = load i32, i32* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %x_val1)
   ret i32 0
 }
 
