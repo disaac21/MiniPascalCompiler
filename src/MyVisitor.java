@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
@@ -12,8 +13,112 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean stringformatdeclared = false;
 
     private int tempCounter = 1;  // Contador de variables temporales
-    private int counter = 1;
+    private static int counter = 1;
     ArrayList<Loads> loads = new ArrayList<Loads>();
+
+    public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
+        // Eliminar espacios innecesarios
+        expression = expression.replaceAll("\\s+", "");
+
+        // Convertir la expresión a notación postfija (RPN) respetando la precedencia
+        String postfix = infixToPostfix(expression);
+
+        // Generar código de tres direcciones y escribirlo al archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
+            generateCodeFromPostfix(postfix, writer, finalVarName);
+        }
+    }
+
+    private static String infixToPostfix(String expression) {
+        StringBuilder postfix = new StringBuilder();
+        Stack<Character> operators = new Stack<>();
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+
+            if (Character.isDigit(c)) {
+                // Leer números completos
+                while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+                    postfix.append(expression.charAt(i));
+                    i++;
+                }
+                postfix.append(' ');
+                i--;
+            } else if (c == '(') {
+                operators.push(c);
+            } else if (c == ')') {
+                while (!operators.isEmpty() && operators.peek() != '(') {
+                    postfix.append(operators.pop()).append(' ');
+                }
+                operators.pop(); // Quitar '('
+            } else if (isOperator(c)) {
+                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(c)) {
+                    postfix.append(operators.pop()).append(' ');
+                }
+                operators.push(c);
+            }
+        }
+
+        // Vaciar operadores restantes
+        while (!operators.isEmpty()) {
+            postfix.append(operators.pop()).append(' ');
+        }
+
+        return postfix.toString().trim();
+    }
+
+    private static boolean isOperator(char c) {
+        return "+-*/%".indexOf(c) != -1;
+    }
+
+    private static int precedence(char operator) {
+        return switch (operator) {
+            case '+', '-' -> 1;
+            case '*', '/', '%' -> 2;
+            default -> -1;
+        };
+    }
+
+    private static void generateCodeFromPostfix(String postfix, BufferedWriter writer, String finalVarName) throws IOException {
+        Stack<String> tempStack = new Stack<>();
+        String[] tokens = postfix.split("\\s+");
+
+        for (String token : tokens) {
+            if (isNumeric(token)) {
+                tempStack.push(token);
+            } else {
+                // Extraer dos operandos
+                String b = tempStack.pop();
+                String a = tempStack.pop();
+
+                // Generar código para la operación
+                String tempVar = getNextTempVar();
+                String instruction = String.format("%s = %s %s %s", tempVar, a, token, b);
+
+                // Escribir la instrucción en el archivo
+                writer.write(instruction);
+                writer.newLine();
+
+                // Guardar el resultado en el stack
+                tempStack.push(tempVar);
+            }
+        }
+
+        // Asignar el último valor al nombre de variable final proporcionado
+        String lastTempVar = tempStack.pop();
+        writer.write(finalVarName + " = " + lastTempVar);
+        writer.newLine();
+    }
+
+    private static boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
+
+    private static String getNextTempVar() {
+        return "t" + (counter++);
+    }
+
+
+
 
     public Loads lastLoad(String variable) {
         for (int i = loads.size() - 1; i >= 0; i--) {
@@ -2148,5 +2253,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit("!0 = !{i32 1, !\"wchar_size\", i32 4}");
         emit("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
     }
+
+
 
 }
