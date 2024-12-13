@@ -1,20 +1,4 @@
 x = alloca i32
-br = label while while_condition1
-cond1 = x_val1 <= 3
-cond1 = do1 while else1
-null = do while_body1
-cond2 = x_val1 == 3
-cond2 = then1 if else1
-null = then then1
-@.str1 = string x es 3, entro al if
+@.str1 = string respuesta: 
 null = write @.str1
-null = merge merge1
-null = else else1
-@.str2 = string x es diferente a 3
-null = write @.str2
-null = merge merge1
-null = merge merge1
-null = end while_end1
-@.str3 = string el valor final es: 
-null = write @.str3
-null = integer write x_val2
+null = integer write x_val1

@@ -1007,6 +1007,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println(" Segmento de Asignacion de Variables:");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
+        System.out.println("expresion: " + expression);
 
         if (ctx.expression().simpleExpression().getChildCount() == 1) {
             // Verificar si la variable está definida en el ámbito actual
