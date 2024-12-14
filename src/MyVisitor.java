@@ -991,8 +991,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
         definicionFuncion.append(") {\n" +
                 "entry:\n");
+        definicionFuncion.append("    %" + functionName + " = alloca i32\n");
 
-//        header.append(definicionFuncion.toString());
 
         llvmCode.insert(0, definicionFuncion.toString());
         int offset_funcion = definicionFuncion.toString().length();
@@ -1005,7 +1005,23 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         visit(ctx.block());
 
         int nuevo_para_final = functionBinding.getOffset();
-        llvmCode.insert(nuevo_para_final, "    ret i32\n}\n");
+
+        switch (returnType.toLowerCase()) {
+            case "integer":
+                for (int j = 0; j < loads.size(); j++) {
+                    if (loads.get(j).getVariable().equals(functionName)){
+                        llvmCode.insert(nuevo_para_final, "    ret i32 %"+loads.get(j).getVariable()+ "_val" + loads.get(j).getCounter() +"\n}\n");
+                    }
+                }
+//                llvmCode.insert(nuevo_para_final, "    ret i32 0\n}\n");
+                break;
+            case "boolean":
+                break;
+            case "char":
+                break;
+            case "string":
+                break;
+        }
 
         System.out.println();
 
@@ -1345,8 +1361,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
                     }
 
-                    emit("    store i32 " + expression + ", i32* %" + variable);
-                    emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+//                    emit("    store i32 " + expression + ", i32* %" + variable);
+//                    emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
 
                     loads.add(new Loads(variable, counter, scope_actual));
                     counter++;
@@ -1356,16 +1372,45 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "true":
                             threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
-                            emit("    store i1 1, i1* %" + variable);
-                            emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            if(scope_actual != "global"){
+                                int tempoffset = 0;
+                                for (int i = 0; i < TablaSimbolos.size(); i++) {
+                                    if (TablaSimbolos.get(i).getNombre().equals(variable) && TablaSimbolos.get(i).getScope().equals(scope_actual)) {
+                                        tempoffset = TablaSimbolos.get(i).getOffset();
+                                        String toinsert = "    store i1 1, i1* %" + variable + "\n" +
+                                                "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
+                                        llvmCode.insert(tempoffset, toinsert);
+
+                                        TablaSimbolos.get(i).setOffset(tempoffset + toinsert.length());
+                                        break;
+                                    }
+                                }
+                            }else{
+                                emit("    store i1 1, i1* %" + variable);
+                                emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            }
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
                         case "false":
                             threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variable));
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
-                            emit("    store i1 0, i1* %" + variable);
-                            emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            if(scope_actual != "global"){
+                                int tempoffset = 0;
+                                for (int i = 0; i < TablaSimbolos.size(); i++) {
+                                    if (TablaSimbolos.get(i).getNombre().equals(variable) && TablaSimbolos.get(i).getScope().equals(scope_actual)) {
+                                        tempoffset = TablaSimbolos.get(i).getOffset();
+                                        String toinsert = "    store i1 0, i1* %" + variable + "\n" +
+                                                "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
+                                        llvmCode.insert(tempoffset, toinsert);
+                                        TablaSimbolos.get(i).setOffset(tempoffset + toinsert.length());
+                                        break;
+                                    }
+                                }
+                            }else{
+                                emit("    store i1 0, i1* %" + variable);
+                                emit("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                            }
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;

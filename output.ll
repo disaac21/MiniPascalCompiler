@@ -9,15 +9,14 @@ target triple = "x86_64-pc-microsoft-msvc"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
 define i32 @f(i32 %num, i32 %NUM2, i8 %caracter, i8* %cadena) {
 entry:
+%f = alloca i32
     store i32 3, i32* %f
     %f_val1 = load i32, i32* %f
-ret i32
+    ret i32 %f_val1
 }
 
 define i32 @main() {
     %x = alloca i32
-    store i32 3, i32* %f
-    %f_val1 = load i32, i32* %f
   ret i32 0
 }
 
