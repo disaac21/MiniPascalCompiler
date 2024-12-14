@@ -1,24 +1,10 @@
 program FuncionesParametrosPorValorYReferencia;
 
-{ Este programa implementa una función que recibe parámetros por valor y por referencia }
-
-{ Función que acepta múltiples parámetros y retorna un valor entero }
-function SumarValores(var num1: integer; num2: integer; var resultado: integer): integer;
+{ Función que retorna un valor entero }
+function SumarValores(var resultado: integer): integer;
 begin
-  resultado := num1 + num2;  { El parámetro resultado es pasado por referencia y se modifica }
+  resultado := 2 + 4;  { El parámetro resultado es pasado por referencia y se modifica }
   SumarValores := resultado;  { La función retorna el resultado }
-end;
-
-{ Función que concatena una cadena con un carácter }
-function ConcatenarCharConString(cadena: string; letra: char): string;
-begin
-  ConcatenarCharConString := cadena + letra;  { Retorna una cadena con la letra concatenada }
-end;
-
-{ Función que convierte un entero a string }
-function EnteroAString(valor: integer): string;
-begin
-  Str(valor, EnteroAString);  { Convierte un entero a string usando Str() }
 end;
 
 var
@@ -31,13 +17,18 @@ begin
   numero2 := 10;
   caracter := 'A';
   cadenaFinal := 'Resultado: ';
+  suma := 0; { Inicializar la variable suma }
 
-  { Llamada a la función SumarValores pasando num1 por referencia y num2 por valor }
-  writeln('Suma de ', numero1);
+  { Imprimir las variables iniciales }
+  writeln('Valor de numero1: ', numero1);
+  writeln('Valor de numero2: ', numero2);
+  writeln('Valor de caracter: ', caracter);
+  writeln('Valor inicial de cadenaFinal: ', cadenaFinal);
 
-  { Llamada a la función ConcatenarCharConString }
-  writeln('Cadena concatenada: ');
+  { Llamada a la función SumarValores pasando suma por referencia }
+  writeln('Llamando a la función SumarValores...');
+  writeln('Suma calculada: ', SumarValores(suma));
 
-  { Llamada a la función EnteroAString }
-  writeln('Entero convertido a string: ',numero1);
+  { Imprimir el resultado después de la función }
+  writeln('Valor de suma después de la función: ', suma);
 end.

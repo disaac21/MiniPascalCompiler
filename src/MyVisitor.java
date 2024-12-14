@@ -1142,8 +1142,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                             String currentTempString = generateTempStringVariable();
                             int stringLength = strValue.length();
-//                            stringLength++;
-                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\"\n";
+                            stringLength++;
+                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\\00\"\n";
 
 //                            llvmCode.insert(0, textToPrepend);
                             header.insert(0, textToPrepend);
@@ -1275,11 +1275,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "char":
                             if (!charformatdeclared) {
 //                                llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
-                                emit_header("@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres");
+                                emit_header("@char_format = private constant [4 x i8] c\" %c\\00\"      ; Formato para caracteres");
                                 charformatdeclared = true;
                             }
                             emit_main("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
-                            emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
+                            emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
                             emit_main("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
@@ -2466,7 +2466,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         // Standard library functions + Global declarations
         allHeader += "%struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }\n";
-        allHeader += "@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"\n";
+        allHeader += "@buffer = global [256 x i8] zeroinitializer\n@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"\n";
         allHeader += "@stdin = external global %struct._IO_FILE*\n";
         allHeader += "@double_fmt = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\"\n";
         allHeader += "@char_fmt = private unnamed_addr constant [4 x i8] c\"%c\\0A\\00\"\n";
