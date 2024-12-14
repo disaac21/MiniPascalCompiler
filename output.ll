@@ -7,44 +7,27 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-define i32 @f(i32 %num, i32 %NUM2, i8 %caracter, i8* %cadena) {
-entry:
-    %f = alloca i32
+@.str1 = private constant [8 x i8] c"numero: "
 
-    %numero = alloca i32
-    store i32 40, i32* %numero
-    %numero_val1 = load i32, i32* %numero
-
-    store i32 3, i32* %f
-    %f_val2 = load i32, i32* %f
-
-    ret i32 %f_val2
-}
-
-declare i32 @scanf(i8*, ...)
-@int_format = private constant [3 x i8] c"%d\00"       ; Formato para enteros
-@.str1 = private constant [11 x i8] c"respuesta: "
-
-@.str2 = private constant [31 x i8] c"La suma de los números es par.\00"
-
-@.str3 = private constant [33 x i8] c"La suma de los números es impar.\00"
-
+store i32 %t2, i32* %i
+%i_val3 = load i32, i32* %i
 
 define i32 @main() {
-    %x = alloca i32
-    %int_ptr3 = bitcast i32* %x to i8* ;
-    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr3)
-    %x_val3 = load i32, i32* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %x_val3)
-    br i1 %cond1, label %then1, label %else1
-then1:
-    call void @write_string(i8* getelementptr inbounds ([31 x i8], [31 x i8]* @.str2, i32 0, i32 0))
-    br label %merge1
-else1:
-    call void @write_string(i8* getelementptr inbounds ([33 x i8], [33 x i8]* @.str3, i32 0, i32 0))
-    br label %merge1
-merge1:
+    %i = alloca i32
+    store i32 0, i32* %i
+    
+br label %while_condition1
+while_condition1:
+    %i_val1 = load i32, i32* %i
+
+    %cond1 = icmp sle i32 %i_val1, 10
+    br i1 %cond1, label %while_body1, label %while_end1
+while_body1:
+    call void @write_string(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str1, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
+%t2 = add i32 %i_val2, 1
+    br label %while_condition1
+while_end1:
   ret i32 0
 }
 

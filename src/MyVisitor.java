@@ -23,6 +23,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private StringBuilder header = new StringBuilder();
     StringBuilder llvmCode = new StringBuilder();
 
+//    private static boolean isFunction(){
+//
+//    }
+
 
     public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
         // Eliminar espacios innecesarios
@@ -93,7 +97,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         for (String token : tokens) {
             if (isNumeric(token) || isIdentifier(token)) {
-                tempStack.push(token);
+                if(isIdentifier(token))
+                    tempStack.push(token + "_val" + counter);
+                else
+                    tempStack.push(token);
             } else if (isFunction(token)) {
                 // Procesar función con parámetros
                 String functionName = token.substring(0, token.indexOf('('));
@@ -808,7 +815,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
-                    System.exit(1);
+//                    System.exit(1);
+                    //aca hay que hacer que el programa no siga
                 }
             }
         }
@@ -1379,17 +1387,18 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
             //esto ya es generando el .ll
             // Generar código LLVM para la asignación
+
+
             switch (tipoVariable.toLowerCase()) {
                 case "integer":
                     threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
                     if (scope_actual != "global") {
-                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
+//                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
                         String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
                                 "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
                         emit_header(toinsert);
                     } else {
-
                         emit_main("    store i32 " + expression + ", i32* %" + variable);
                         emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
                     }
@@ -1516,44 +1525,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     // Generar código LLVM para la asignación
                     switch (tipoVariable.toLowerCase()) {
                         case "integer":
-//                            switch (operador) {
-//                                case "+":
-////                                    threeAddressCodeList.add(new ThreeAddressCode("add", variableEnUso, valor, variableEnUso + "_val" + counter));
-////                                    emit("    %" + variableEnUso + "_val" + counter + " = add i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-//                                    try{
-//                                        generateThreeAddressCode(expression, "output3AC.txt", variable + "_val" + counter);
-//                                        counter++;
-//                                        System.err.println(ThreeAddressCodeTemp);
-//                                        generateLLVMFrom3AC(ThreeAddressCodeTemp);
-//                                        ThreeAddressCodeTemp.clear();
-//                                    } catch (IOException e) {
-//                                        throw new RuntimeException(e);
-//                                    }
-//
-//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-//                                    counter++;
-//                                    break;
-//                                case "-":
-//                                    threeAddressCodeList.add(new ThreeAddressCode("sub", variableEnUso, valor, variableEnUso + "_val" + counter));
-//                                    emit("    %" + variableEnUso + "_val" + counter + " = sub i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-//                                    counter++;
-//                                    break;
-//                                case "*":
-//                                    threeAddressCodeList.add(new ThreeAddressCode("mul", variableEnUso, valor, variableEnUso + "_val" + counter));
-//                                    emit("    %" + variableEnUso + "_val" + counter + " = mul i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-//                                    counter++;
-//                                    break;
-//                                case "/":
-//                                    threeAddressCodeList.add(new ThreeAddressCode("sdiv", variableEnUso, valor, variableEnUso + "_val" + counter));
-//                                    emit("    %" + variableEnUso + "_val" + counter + " = sdiv i32 %" + variableEnUso + "_val" + (counter - 1) + ", " + valor);
-//                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-//                                    counter++;
-//                                    break;
-//                            }
-//
-////                            emit("    store i32 %" + variableEnUso + "_val" + (counter - 1) + ", i32* %" + variableEnUso);
                             try {
                                 generateThreeAddressCode(expression, "output3AC.txt", variable);
                                 System.err.println(ThreeAddressCodeTemp);
