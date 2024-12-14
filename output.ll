@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "InlineReadWrite"
+source_filename = "test"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,40 +8,22 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str6 = private constant [25 x i8] c"El nombre ingresado es: \00"
-@.str5 = private constant [24 x i8] c"La letra ingresada es: \00"
-@.str4 = private constant [26 x i8] c"El número ingresado es: \00"
-@.str3 = private constant [20 x i8] c"Ingrese su nombre: \00"
-@.str2 = private constant [20 x i8] c"Ingrese una letra: \00"
-@.str1 = private constant [21 x i8] c"Ingrese un número: \00"
-declare i32 @scanf(i8*, ...)
-@int_format = private constant [3 x i8] c"%d\00"       ; Formato para enteros
-@char_format = private constant [4 x i8] c" %c\00"      ; Formato para caracteres
-@str_format = private constant [3 x i8] c"%s\00"       ; Formato para cadenas
+@.str2 = private constant [4 x i8] c"x: \00"
+@.str1 = private constant [5 x i8] c"x2: \00"
 
 define i32 @main() {
-    %numero = alloca i32
-    %letra = alloca i8
-    %nombre = alloca i8*
-    call void @write_string(i8* getelementptr inbounds ([21 x i8], [21 x i8]* @.str1, i32 0, i32 0))
-    %int_ptr1 = bitcast i32* %numero to i8* ;
-    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr1)
-    %numero_val1 = load i32, i32* %numero
-    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str2, i32 0, i32 0))
-    %char_ptr2 = bitcast i8* %letra to i8* ;
-    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr2)
-    %letra_val2 = load i8, i8* %letra
-    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str3, i32 0, i32 0))
-    %str_ptr3 = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0
-    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr3)
-    store i8* %str_ptr3, i8** %nombre
-    %nombre_val3 = load i8*, i8** %nombre
-    call void @write_string(i8* getelementptr inbounds ([26 x i8], [26 x i8]* @.str4, i32 0, i32 0))
-    call void @write_int(i32 %numero_val1)
-    call void @write_string(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str5, i32 0, i32 0))
-    call void @write_char(i8 %letra_val2)
-    call void @write_string(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str6, i32 0, i32 0))
-    call void @write_string(i8* %nombre_val3)
+    %x = alloca i32
+    %x2 = alloca i32
+%t1 = mul i32 3, 8
+%t2 = sdiv i32 %t1, 4
+store i32 %t2, i32* %x2
+    %x2_val3 = load i32, i32* %x2
+    call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
+    call void @write_int(i32 %x2_val3)
+    store i32 1+2*x2, i32* %x
+    %x_val4 = load i32, i32* %x
+    call void @write_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str2, i32 0, i32 0))
+    call void @write_int(i32 %x_val4)
   ret i32 0
 }
 

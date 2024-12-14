@@ -1,0 +1,12 @@
+program test;
+
+var x, x2: INTEGER;
+
+
+
+Begin
+  x2 := 3 * 8 / 4;
+  writeln('x2: ', x2);
+  x := 1 + 2 * x2;
+  writeln('x: ', x);
+end.

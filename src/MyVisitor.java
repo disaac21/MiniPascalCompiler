@@ -18,7 +18,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private int tempCounter = 1;  // Contador de variables temporales
     private static int counter = 1;
-    ArrayList<Loads> loads = new ArrayList<Loads>();
+    private static ArrayList<Loads> loads = new ArrayList<Loads>();
 
     private StringBuilder header = new StringBuilder();
     StringBuilder llvmCode = new StringBuilder();
@@ -29,6 +29,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
 
     public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
+        System.out.println(CYAN + "Expresión: " + expression + RESET);
         // Eliminar espacios innecesarios
         expression = expression.replaceAll("\\s+", "");
 
@@ -91,16 +92,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         };
     }
 
+
     private static void generateCodeFromPostfix(String postfix, BufferedWriter writer, String finalVarName) throws IOException {
         Stack<String> tempStack = new Stack<>();
         String[] tokens = postfix.split("\\s+");
 
         for (String token : tokens) {
             if (isNumeric(token) || isIdentifier(token)) {
-                if(isIdentifier(token))
-                    tempStack.push(token + "_val" + counter);
-                else
+                if (isIdentifier(token)) {
+                    Loads tempLoad = lastLoad(token);
+                    tempStack.push(tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                } else {
                     tempStack.push(token);
+                }
             } else if (isFunction(token)) {
                 // Procesar función con parámetros
                 String functionName = token.substring(0, token.indexOf('('));
@@ -166,7 +170,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
 
-    public Loads lastLoad(String variable) {
+    public static Loads lastLoad(String variable) {
         for (int i = loads.size() - 1; i >= 0; i--) {
 //            System.out.println("Variable: " + loads.get(i).getVariable() + " counter: " + loads.get(i).getCounter());
             if (loads.get(i).getVariable().equals(variable) && loads.get(i).getScope().equals(scope_actual)) {
@@ -240,8 +244,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     public void generateLLVMFrom3AC(ArrayList<String> threeAddressCode) {
         // Escribir el encabezado del archivo LLVM IR
-//            emit("; Código LLVM generado desde tres direcciones\n");
-//            emit("target triple = \"x86_64-pc-linux-gnu\"\n\n");
 
         // Mapa para almacenar variables temporales declaradas
         ArrayList<String> declaredVariables = new ArrayList<>();
@@ -261,17 +263,24 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                }
 
                 if (isNumeric(value)) {
-                    if(scope_actual != "global")
-                        emit_header(String.format("store i32 %s, i32* %%%s", value, result));
-                    else
+                    if (scope_actual == "global")
                         emit_main(String.format("store i32 %s, i32* %%%s", value, result));
+                    else
+                        emit_header(String.format("store i32 %s, i32* %%%s", value, result));
                 } else {
-                    if(scope_actual != "global"){
+                    if (scope_actual == "global") {
                         emit_main("store i32 %" + value + ", i32* %" + result);
-                        emit_main(String.format("%%%s = load i32, i32* %%%s", result + "_val" + counter, result));
-                    }else{
+//                        emit_main(String.format("%%%s = load i32, i32* %%%s", result + "_val" + counter, result));
+                        emit_main("    %" + result + "_val" + counter + " = load i32, i32* %" + result);
+                        Loads tempload = new Loads(result, counter, scope_actual);
+                        loads.add(tempload);
+                        System.out.println(CYAN + "Variable: " + tempload.getVariable() + " counter: " + tempload.getCounter() + RESET);
+                        counter++;
+                    } else {
                         emit_header("store i32 %" + value + ", i32* %" + result);
                         emit_header(String.format("%%%s = load i32, i32* %%%s", result + "_val" + counter, result));
+                        loads.add(new Loads(result, counter, scope_actual));
+                        counter++;
                     }
 
                 }
@@ -292,22 +301,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String llvmOp = getLLVMOperator(operator);
                 System.err.println("op2: " + op2 + " op1: " + op1);
                 if (isNumeric(op1) && isNumeric(op2)) {
-                    if(scope_actual == "global")
+                    if (scope_actual == "global")
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", " + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", " + op2);
                 } else if (isNumeric(op1)) {
-                    if(scope_actual == "global")
+                    if (scope_actual == "global")
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", %" + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", %" + op2);
                 } else if (isNumeric(op2)) {
-                    if(scope_actual == "global")
+                    if (scope_actual == "global")
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", " + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", " + op2);
                 } else {
-                    if(scope_actual == "global")
+                    if (scope_actual == "global")
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", %" + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", %" + op2);
@@ -321,7 +330,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String tempVar = callDetails[0].trim();
                 String functionName = callDetails[1].trim();
 
-                if(scope_actual == "global")
+                if (scope_actual == "global")
                     emit_main(String.format("%%%s = call i32 @%s()\n", tempVar, functionName));
                 else
                     emit_header(String.format("%%%s = call i32 @%s()\n", tempVar, functionName));
@@ -355,7 +364,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     ArrayList<Binding> TablaSimbolos = new ArrayList<>();
-    String scope_actual = "global";
+    private static String scope_actual = "global";
 
     public void imprimirTablaSimbolos() {
         System.out.println(CYAN + " ------- Tabla de Simbolos ------- ");
@@ -779,28 +788,28 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (variableType.toLowerCase()) {
                         case "integer":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i32", null, variableName));
-                            if(scope_actual == "global")
+                            if (scope_actual == "global")
                                 emit_main("    %" + variableName + " = alloca i32");
                             else
                                 emit_header("    %" + variableName + " = alloca i32");
                             break;
                         case "boolean":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i1", null, variableName));
-                            if(scope_actual == "global")
+                            if (scope_actual == "global")
                                 emit_main("    %" + variableName + " = alloca i1");
                             else
                                 emit_header("    %" + variableName + " = alloca i1");
                             break;
                         case "char":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8", null, variableName));
-                            if(scope_actual == "global")
+                            if (scope_actual == "global")
                                 emit_main("    %" + variableName + " = alloca i8");
                             else
                                 emit_header("    %" + variableName + " = alloca i8");
                             break;
                         case "string":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8*", null, variableName));
-                            if(scope_actual == "global")
+                            if (scope_actual == "global")
                                 emit_main("    %" + variableName + " = alloca i8*");
                             else
                                 emit_header("    %" + variableName + " = alloca i8*");
@@ -1166,6 +1175,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                             Loads load = lastLoad(variable);
                             if (tipoVariable.toLowerCase().equals("integer")) {
+                                for (int i = 0; i < loads.size(); i++) {
+                                    System.out.println(CYAN + loads.get(i).getVariable() + " " + loads.get(i).getCounter() + RESET);
+                                }
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
                                 emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
                             } else if (tipoVariable.toLowerCase().equals("char")) {
@@ -1344,7 +1356,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String expression = ctx.expression().getText();
         System.out.println("expresion: " + expression);
 
-        if (ctx.expression().simpleExpression().getChildCount() == 1) {
+        if (ctx.expression().simpleExpression().getChildCount() == 1) { // x =: 3*4
+            System.out.println(CYAN + "CHILD == 1" + RESET);
             // Verificar si la variable está definida en el ámbito actual
             if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
@@ -1391,8 +1404,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         emit_main("    store i32 " + expression + ", i32* %" + variable);
                         emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
                     }
-
                     loads.add(new Loads(variable, counter, scope_actual));
+                    System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
                     counter++;
                     break;
                 case "boolean":
@@ -1434,7 +1447,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     int asciivalue = expression.charAt(1);
                     threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
-                    if (scope_actual != "global"){
+                    if (scope_actual != "global") {
                         emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
                         emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
                     } else {
@@ -1458,7 +1471,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                     threeAddressCodeList.add(new ThreeAddressCode("store", currentTempString, "string", variable));
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
-                    if(scope_actual != "global"){
+                    if (scope_actual != "global") {
                         emit_header("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                         emit_header("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
                     } else {
@@ -1506,57 +1519,58 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // Validar el tipo de la expresión
             System.err.println("tipo de variable: " + tipoVariable);
             if (tipoVariable != null) {
-                if (!verificarValor(valor, tipoVariable)) { // Ahora se pasan dos parámetros
-                    System.err.println(" Error: El valor '" + valor + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variableEnUso + "'.");
-                } else {
-                    System.out.println("  Asignando el valor " + valor + " a la variable '" + variableEnUso + "' de tipo '" + tipoVariable + "'.");
-                    System.err.println("viendo si aca es el error");
-                    // Generar código LLVM para la asignación
-                    switch (tipoVariable.toLowerCase()) {
-                        case "integer":
-                            try {
-                                generateThreeAddressCode(expression, "output3AC.txt", variable);
-                                System.err.println(ThreeAddressCodeTemp);
-                                generateLLVMFrom3AC(ThreeAddressCodeTemp);
-                                ThreeAddressCodeTemp.clear();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            loads.add(new Loads(variable, counter, scope_actual));
-                            for (int i = 0; i < loads.size(); i++) {
-                                System.err.println(loads.get(i).getVariable() + " " + loads.get(i).getCounter() + " " + loads.get(i).getScope());
-                            }
-                            counter++;
-                            break;
-                        case "boolean":
-                            switch (valor) {
-                                case "true":
-                                    threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variableEnUso));
-                                    threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
-                                    emit_main("    store i1 1, i1* %" + variableEnUso);
-                                    emit_main("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
-                                case "false":
-                                    threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variableEnUso));
-                                    threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
-                                    emit_main("    store i1 0, i1* %" + variableEnUso);
-                                    emit_main("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
-                                    loads.add(new Loads(variableEnUso, counter, scope_actual));
-                                    counter++;
-                                    break;
-                                default:
-                                    emit_main("    store i1 " + valor + ", i1* %" + variableEnUso);
-                                    break;
-                            }
-                            break;
-                        case "char":
-                            int asciivalue = valor.charAt(1);
-                            threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variableEnUso));
-                            threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "char", variableEnUso + "_val" + counter));
+                System.out.println(CYAN + expression + RESET);
+//                if (!verificarValor(valor, tipoVariable)) { // Ahora se pasan dos parámetros
+//                    System.err.println(" Error: El valor '" + valor + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variableEnUso + "'.");
+//                } else {
+                System.out.println("  Asignando el valor " + valor + " a la variable '" + variableEnUso + "' de tipo '" + tipoVariable + "'.");
+                System.err.println("viendo si aca es el error");
+                // Generar código LLVM para la asignación
+                switch (tipoVariable.toLowerCase()) {
+                    case "integer":
+                        try {
+                            generateThreeAddressCode(expression, "output3AC.txt", variable);
+                            System.err.println(ThreeAddressCodeTemp);
+                            generateLLVMFrom3AC(ThreeAddressCodeTemp);
+                            ThreeAddressCodeTemp.clear();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+//                            loads.add(new Loads(variable, counter, scope_actual));
+//                            for (int i = 0; i < loads.size(); i++) {
+//                                System.err.println(loads.get(i).getVariable() + " " + loads.get(i).getCounter() + " " + loads.get(i).getScope());
+//                            }
+//                            counter++;
+                        break;
+                    case "boolean":
+                        switch (valor) {
+                            case "true":
+                                threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variableEnUso));
+                                threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
+                                emit_main("    store i1 1, i1* %" + variableEnUso);
+                                emit_main("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
+                                loads.add(new Loads(variableEnUso, counter, scope_actual));
+                                counter++;
+                                break;
+                            case "false":
+                                threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variableEnUso));
+                                threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "boolean", variableEnUso + "_val" + counter));
+                                emit_main("    store i1 0, i1* %" + variableEnUso);
+                                emit_main("    %" + variableEnUso + "_val" + counter + " = load i1, i1* %" + variableEnUso);
+                                loads.add(new Loads(variableEnUso, counter, scope_actual));
+                                counter++;
+                                break;
+                            default:
+                                emit_main("    store i1 " + valor + ", i1* %" + variableEnUso);
+                                break;
+                        }
+                        break;
+                    case "char":
+                        int asciivalue = valor.charAt(1);
+                        threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variableEnUso));
+                        threeAddressCodeList.add(new ThreeAddressCode("load", variableEnUso, "char", variableEnUso + "_val" + counter));
 
-                    }
+//                    }
                 }
             } else {
                 System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variableEnUso + "'.");
