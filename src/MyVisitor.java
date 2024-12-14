@@ -1146,7 +1146,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\"\n";
 
 //                            llvmCode.insert(0, textToPrepend);
-                            emit_header(textToPrepend);
+                            header.insert(0, textToPrepend);
+//                            emit_header(textToPrepend);
 
                             // 3AC for write('texto', variable)
                             threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
@@ -1186,7 +1187,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + strValue + "\\00\"\n";
 
 //                llvmCode.insert(0, textToPrepend);
-                emit_header(textToPrepend);
+//                emit_header(textToPrepend);
+                header.insert(0, textToPrepend);
+
 
                 // 3AC for write('texto')
                 threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
@@ -1194,20 +1197,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
-
-// Generar código LLVM para la cadena
-//                String strValue = ctx.string().getText().substring(1, ctx.string().getText().length() - 1);
-//                String llvmString = "@.str = private unnamed_addr constant [" + (strValue.length() + 2) + " x i8] c\"" + strValue + "\\0A\\00\"";
-//                emit(llvmString);
-//                emit("declare i32 @puts(ptr nocapture) nounwind");
-//                emit("define i32 @main() {");
-//                emit("    call i32 @puts(ptr @.str)");
-//                emit("    ret i32 0");
-//                emit("}");
-//                emit("!0 = !{i32 42, null, !\"string\"}");
-//                emit("!foo = !{!0}");
-
-//                call void @write_int(i32 %num_val)
             }
         } else {
             visit(ctx.emptyStatement_());
@@ -1452,7 +1441,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                     String currentTempString = generateTempStringVariable();
                     int stringLength = expression.length();
-                    stringLength--;
+//                    stringLength--;
                     String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
 
 //                    llvmCode.insert(0, textToPrepend);

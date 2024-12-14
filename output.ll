@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "test"
+source_filename = "ManejoDeStrings"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -7,44 +7,24 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-define i32 @f(i32 %num, i32 %NUM2, i8 %caracter, i8* %cadena) {
-entry:
-    %f = alloca i32
-
-    %numero = alloca i32
-    store i32 40, i32* %numero
-    %numero_val1 = load i32, i32* %numero
-
-    store i32 3, i32* %f
-    %f_val2 = load i32, i32* %f
-
-    ret i32 %f_val2
-}
-
-declare i32 @scanf(i8*, ...)
-@int_format = private constant [3 x i8] c"%d\00"       ; Formato para enteros
-@.str1 = private constant [11 x i8] c"respuesta: "
-
-@.str2 = private constant [31 x i8] c"La suma de los números es par.\00"
-
-@.str3 = private constant [33 x i8] c"La suma de los números es impar.\00"
+@.str4 = private constant [66 x i8] c"El tipo string maneja hasta 255 caracteres por defecto en Pascal.\00"
+@.str3 = private constant [23 x i8] c"Longitud de la cadena: "
+@.str2 = private constant [8 x i8] c"Cadena: "
+@.str1 = private constant [76 x i8] c"Pascal maneja cadenas de forma eficiente, con un límite de 255 caracteres.\00"
 
 
 define i32 @main() {
-    %x = alloca i32
-    %int_ptr3 = bitcast i32* %x to i8* ;
-    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr3)
-    %x_val3 = load i32, i32* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %x_val3)
-    br i1 %cond1, label %then1, label %else1
-then1:
-    call void @write_string(i8* getelementptr inbounds ([31 x i8], [31 x i8]* @.str2, i32 0, i32 0))
-    br label %merge1
-else1:
-    call void @write_string(i8* getelementptr inbounds ([33 x i8], [33 x i8]* @.str3, i32 0, i32 0))
-    br label %merge1
-merge1:
+    %cadena = alloca i8*
+    %longitud = alloca i32
+    store i8* getelementptr inbounds ([76 x i8], [76 x i8]* @.str1, i32 0, i32 0), i8** %cadena
+    %cadena_val3 = load i8*, i8** %cadena
+    store i32 4, i32* %longitud
+    %longitud_val4 = load i32, i32* %longitud
+    call void @write_string(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str2, i32 0, i32 0))
+    call void @write_string(i8* %cadena_val3)
+    call void @write_string(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %longitud_val4)
+    call void @write_string(i8* getelementptr inbounds ([66 x i8], [66 x i8]* @.str4, i32 0, i32 0))
   ret i32 0
 }
 
