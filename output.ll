@@ -7,17 +7,17 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str1 = private constant [11 x i8] c"respuesta: "
+define i32 @f(i32 %num, i32 %NUM2, i8 %caracter, i8* %cadena) {
+entry:
+    store i32 3, i32* %f
+    %f_val1 = load i32, i32* %f
+ret i32
+}
 
 define i32 @main() {
     %x = alloca i32
-%t1 = add i32 3, 5
-%t2 = mul i32 7, 8
-%t3 = add i32 %t1, %t2
-store i32 %t3, i32* %x
-%x_val4 = load i32, i32* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %x_val4)
+    store i32 3, i32* %f
+    %f_val1 = load i32, i32* %f
   ret i32 0
 }
 

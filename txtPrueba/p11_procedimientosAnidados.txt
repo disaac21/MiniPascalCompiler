@@ -22,6 +22,8 @@ begin
     resultado: integer;
 
     { Procedimiento recursivo para el algoritmo de Euclides }
+
+
     function Euclides(m, n: integer): integer;
     begin
       if n = 0 then
@@ -29,6 +31,8 @@ begin
       else
         Euclides := Euclides(n, m mod n);
     end;
+
+    
 
   begin
     resultado := Euclides(x, y); {4}

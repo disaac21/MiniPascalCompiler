@@ -2,7 +2,19 @@ program test;
 
 var x: INTEGER;
 
+Function f( num, NUM2: integer; caracter: char; cadena: string):Integer;
+    Begin
+        f := 3;
+    end;
+
 begin
     readln(x); {aca tiene que haber un chequeo}
     writeln('respuesta: ', x);
+
+      if suma mod 2 = 0 then
+      begin
+        writeln('La suma de los números es par.')
+      end;
+      else
+        writeln('La suma de los números es impar.');
 end.

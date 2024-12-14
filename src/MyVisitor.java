@@ -13,9 +13,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean stringformatdeclared = false;
     private static ArrayList<String> ThreeAddressCodeTemp = new ArrayList<>();
 
+    public static final String CYAN = "\u001B[36m";
+    public static final String RESET = "\u001B[0m";
+
     private int tempCounter = 1;  // Contador de variables temporales
     private static int counter = 1;
     ArrayList<Loads> loads = new ArrayList<Loads>();
+
+    private StringBuilder header = new StringBuilder();
 
     public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
         // Eliminar espacios innecesarios
@@ -301,6 +306,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     StringBuilder llvmCode = new StringBuilder();
 
+
     private void emit(String line) {
         llvmCode.append(line).append("\n");
     }
@@ -320,11 +326,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     String scope_actual = "global";
 
     public void imprimirTablaSimbolos() {
-        System.out.println(" ------- Tabla de Simbolos ------- ");
+        System.out.println(CYAN + " ------- Tabla de Simbolos ------- ");
         for (Binding binding : TablaSimbolos) {
             System.out.println(binding);
         }
-        System.out.println(" --------------------------------- ");
+        System.out.println(" --------------------------------- " + RESET);
     }
 
     private boolean encontrarVariable(String variable) {
@@ -468,6 +474,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         String previousScope = scope_actual;
         scope_actual = scope_actual;
+        System.out.println(CYAN + "Scope Actual: " + scope_actual + RESET);
         visitChildren(ctx);
         scope_actual = previousScope;
         return null;
@@ -913,8 +920,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String returnType = ctx.varType().getText();
 
         // Agregar la función a la tabla de símbolos
-        Binding functionBinding = new Binding(functionName, returnType, scope_actual);
-        TablaSimbolos.add(functionBinding);
 
         System.out.println("  Identificador: " + functionName);
         System.out.println("  Tipo de Return: " + returnType);
@@ -924,9 +929,84 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             visit(ctx.formalParameterList());
         }
 
+        String parametros = ctx.formalParameterList().getText().substring(1, ctx.formalParameterList().getText().length() - 1);
+        ArrayList<Parametros> parametrosList = new ArrayList<>();
+        String[] paramGroups = parametros.split(";");
+
+        for (String group : paramGroups) {
+            String[] parts = group.split(":");
+            String[] variables = parts[0].split(",");
+            String tipo = parts[1].trim();
+
+            for (String variable : variables) {
+                parametrosList.add(new Parametros(variable.trim(), tipo));
+            }
+        }
+        for (int i = 0; i < parametrosList.size(); i++) {
+            System.out.println(CYAN + "  Parametro: " + parametrosList.get(i).getVariable() + " de tipo " + parametrosList.get(i).getTipo() + RESET);
+        }
+
+
         // Procesar el bloque de la función
         System.out.println("  Bloque:");
+        StringBuilder definicionFuncion = new StringBuilder();
+        switch (returnType.toLowerCase()) {
+            case "integer":
+                definicionFuncion.append("define i32 @" + functionName + "(");
+                break;
+            case "boolean":
+                break;
+            case "char":
+                break;
+            case "string":
+                break;
+        }
+        for (int i = 0; i < parametrosList.size(); i++) {
+            switch (parametrosList.get(i).getTipo().toLowerCase()) {
+                case "integer":
+                    definicionFuncion.append("i32 %" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "boolean":
+                    definicionFuncion.append("i1 %" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "char":
+                    definicionFuncion.append("i8 %" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "string":
+                    definicionFuncion.append("i8* %" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+            }
+        }
+        definicionFuncion.append(") {\n" +
+                "entry:\n");
+
+//        header.append(definicionFuncion.toString());
+
+        llvmCode.insert(0, definicionFuncion.toString());
+        int offset_funcion = definicionFuncion.toString().length();
+
+        Binding functionBinding = new Binding(functionName, returnType, scope_actual, true);
+        functionBinding.setOffset(offset_funcion);
+        TablaSimbolos.add(functionBinding);
+        imprimirTablaSimbolos();
+
         visit(ctx.block());
+
+        int nuevo_para_final = functionBinding.getOffset();
+        llvmCode.insert(nuevo_para_final, "    ret i32\n}\n");
+
         System.out.println();
 
         // Restaurar el ámbito anterior
@@ -1241,8 +1321,33 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 case "integer":
                     threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
+                    if (scope_actual != "global") {
+                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
+
+
+                        int tempoffset = 0;
+                        for (int i = 0; i < TablaSimbolos.size(); i++) {
+                            if (TablaSimbolos.get(i).getNombre().equals(variable) && TablaSimbolos.get(i).getScope().equals(scope_actual)) {
+                                System.out.println(CYAN + "ENTRO AL IF NUEVO" + RESET);
+                                tempoffset = TablaSimbolos.get(i).getOffset();
+                                String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
+                                        "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
+                                llvmCode.insert(tempoffset, toinsert);
+
+                                TablaSimbolos.get(i).setOffset(tempoffset + toinsert.length());
+                                break;
+                            }
+                        }
+
+                    } else {
+
+                        emit("    store i32 " + expression + ", i32* %" + variable);
+                        emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                    }
+
                     emit("    store i32 " + expression + ", i32* %" + variable);
                     emit("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+
                     loads.add(new Loads(variable, counter, scope_actual));
                     counter++;
                     break;

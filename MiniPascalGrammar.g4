@@ -223,7 +223,7 @@ formalParameterSection
 //    | PROCEDURE parameterGroup
    ;
 
-parameterGroup
+    parameterGroup
    : identifierList COLON varType
    | emptyStatement_
    ;
