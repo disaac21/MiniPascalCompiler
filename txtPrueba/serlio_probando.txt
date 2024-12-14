@@ -3,7 +3,9 @@ program test;
 var x: INTEGER;
 
 Function f( num, NUM2: integer; caracter: char; cadena: string):Integer;
+var numero : INTEGER;
     Begin
+        numero := 40;
         f := 3;
     end;
 
@@ -13,8 +15,8 @@ begin
 
       if suma mod 2 = 0 then
       begin
-        writeln('La suma de los números es par.')
-      end;
+        writeln('La suma de los números es par.');
+      end
       else
         writeln('La suma de los números es impar.');
 end.
