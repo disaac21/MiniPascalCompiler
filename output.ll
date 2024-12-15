@@ -18,12 +18,16 @@ define i32 @main() {
 %t2 = sdiv i32 %t1, 4
 store i32 %t2, i32* %x2
     %x2_val3 = load i32, i32* %x2
+    store i32 3*8/4, i32* %x2
+    %x2_val4 = load i32, i32* %x2
     call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %x2_val3)
-    store i32 1+2*x2, i32* %x
-    %x_val4 = load i32, i32* %x
+    call void @write_int(i32 %x2_val4)
+%t5 = mul i32 2, %x2_val4
+%t6 = add i32 1, %t5
+store i32 %t6, i32* %x
+    %x_val7 = load i32, i32* %x
     call void @write_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str2, i32 0, i32 0))
-    call void @write_int(i32 %x_val4)
+    call void @write_int(i32 %x_val7)
   ret i32 0
 }
 

@@ -138,6 +138,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 // Escribir la instrucción en el archivo
                 writer.write(instruction);
+                System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+                System.out.println(instruction);
                 writer.newLine();
                 ThreeAddressCodeTemp.add(instruction + "\n");
 
@@ -1357,8 +1359,105 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("expresion: " + expression);
 
         if (ctx.expression().simpleExpression().getChildCount() == 1) { // x =: 3*4
-            System.out.println(CYAN + "CHILD == 1" + RESET);
-            // Verificar si la variable está definida en el ámbito actual
+            if (ctx.expression().simpleExpression().getChild(0).getChildCount() == 1) {
+                System.out.println("  yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+                System.out.println(CYAN + "CHILD == 1" + RESET);
+                // Verificar si la variable está definida en el ámbito actual
+
+
+                String statementText = "";
+                for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
+                    statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
+                }
+                System.out.println("  Asignacion Operacion: " + statementText);
+                String[] expresionSplit = statementText.split(" ");
+
+                if (expresionSplit.length == 3) {
+                    String operador = expresionSplit[1];
+                    String operando1 = expresionSplit[0];
+                    String operando2 = expresionSplit[2];
+                    System.out.println("  Operador: " + operador);
+                    System.out.println("  Operando 1: " + operando1);
+                    System.out.println("  Operando 2: " + operando2);
+                    if (operador.equals("+")) {
+                        System.out.println("  Suma");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("-")) {
+                        System.out.println("  Resta");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("*")) {
+                        System.out.println("  Multiplicacion");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("/")) {
+                        System.out.println("  Division");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else
+                        System.out.println("  Operador no reconocido");
+                }
+            } else {
+                // DESGLOSAR OPERACION POR PARTES
+                System.out.println(" OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO ");
+                String operacion = ctx.expression().simpleExpression().getChild(0).getText();
+                System.out.println("  Operacion: " + operacion);
+
+                char[] operators = {'+', '-', '*', '/'};
+
+
+                while (operacion.contains("*") || operacion.contains("/") || operacion.contains("+") || operacion.contains("-")) {
+                    for (char operator : operators) {
+                        // Escape special characters for regex
+                        String regexOperator = "\\" + operator;
+
+                        if (operacion.contains(Character.toString(operator))) {
+                            String[] parts = operacion.split(regexOperator, 2); // Split into 2 parts only
+                            System.out.println("  Operador: " + operator);
+                            System.out.println("  Operando 1: " + parts[0].trim());
+                            System.out.println("  Operando 2: " + parts[1].trim());
+
+                            // Continue processing the right side of the expression
+                            operacion = parts[1].trim();
+                            break; // Restart the cycle for the next part
+                        } else {
+                            System.out.println("  Operador " + operator + " no encontrado");
+                        }
+                    }
+                }
+
+                try {
+                    generateThreeAddressCode(ctx.expression().simpleExpression().getChild(0).getText(), "output3AC.txt", variable);
+                    System.err.println(ThreeAddressCodeTemp);
+                    generateLLVMFrom3AC(ThreeAddressCodeTemp);
+                    ThreeAddressCodeTemp.clear();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
             if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
                 return null;
