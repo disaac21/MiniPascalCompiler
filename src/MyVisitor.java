@@ -1048,6 +1048,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 definicionFuncion.append("define i32 @" + functionName + "(");
                 break;
             case "boolean":
+                definicionFuncion.append("define i1 @" + functionName + "(");
                 break;
             case "char":
                 break;
@@ -1128,6 +1129,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 }
                 break;
             case "boolean":
+                Loads tempload = lastLoad(functionName);
+                emit_header("    ret i1 %" + functionName + "_val" + tempload.getCounter() + "\n}\n");
                 break;
             case "char":
                 break;

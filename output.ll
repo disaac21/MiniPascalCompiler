@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "ManejoDeTipos"
+source_filename = "test"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,12 +8,27 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str6 = private constant [28 x i8] c"Valor de mensaje (string): \00"
-@.str5 = private constant [24 x i8] c"Valor de letra (char): \00"
-@.str4 = private constant [25 x i8] c"Valor de num (integer): \00"
-@.str3 = private constant [28 x i8] c"El valor booleano es falso.\00"
-@.str2 = private constant [32 x i8] c"El valor booleano es verdadero.\00"
-@.str1 = private constant [14 x i8] c"Hola, Pascal\00"
+    %x = alloca i32
+    %x2 = alloca i32
+define i1 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
+entry:
+    %f = alloca i32
+    %num = alloca i32
+    store i32 %cont_num, i32* %num
+    %num_val4 = load i32, i32* %num
+    %NUM2 = alloca i32
+    store i32 %cont_NUM2, i32* %NUM2
+    %NUM2_val5 = load i32, i32* %NUM2
+
+    %numero = alloca i32
+    store i32 40, i32* %numero
+    %numero_val6 = load i32, i32* %numero
+
+    store i1 1, i1* %f
+    %f_val7 = load i1, i1* %f
+
+    ret i1 %f_val7
+}
 
 
 define i32 @main() {
