@@ -8,48 +8,17 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str2 = private constant [20 x i8] c"la variable no es 1\00"
-@.str1 = private constant [17 x i8] c"la variable es 1\00"
-define i1 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
-entry:
-    %f = alloca i32
-    %num = alloca i32
-    store i32 %cont_num, i32* %num
-    %num_val1 = load i32, i32* %num
-    %NUM2 = alloca i32
-    store i32 %cont_NUM2, i32* %NUM2
-    %NUM2_val2 = load i32, i32* %NUM2
-
-    %numero = alloca i32
-    store i1 1, i1* %f
-    %f_val3 = load i1, i1* %f
-
-    store i1 0, i1* %f
-    %f_val4 = load i1, i1* %f
-
-    ret i1 %f_val4
-}
-
+@.str1 = private constant [12 x i8] c"respuesta: \00"
 
 define i32 @main() {
-    %x = alloca i1
-    %x2 = alloca i1
-    %cond1 = icmp eq i32 %num_val1, 1
-    br i1 %cond1, label %then1, label %else1
-then1:
-    br label %merge1
-else1:
-    br label %merge1
-merge1:
-    store i1 f(2,3,'c','hola'), i1* %x2
-    br i1 %cond2, label %then2, label %else2
-then2:
-    call void @write_string(i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str1, i32 0, i32 0))
-    br label %merge2
-else2:
-    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str2, i32 0, i32 0))
-    br label %merge2
-merge2:
+    %x = alloca i32
+%t8 = add i32 3, 5
+%t9 = mul i32 7, 8
+%t10 = add i32 %t8, %t9
+store i32 %t10, i32* %x
+    %x_val11 = load i32, i32* %x
+    call void @write_string(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str1, i32 0, i32 0))
+    call void @write_int(i32 %x_val11)
   ret i32 0
 }
 

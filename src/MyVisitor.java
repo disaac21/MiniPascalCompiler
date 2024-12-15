@@ -438,7 +438,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String functionName = parts[0];
             for (int i = 0; i < TablaSimbolos.size(); i++) {
                 if(TablaSimbolos.get(i).getNombre().equals(functionName)){
-                    if(TablaSimbolos.get(i).getTipo().toLowerCase().equals(tipoEsperado.toLowerCase())){
+                    if(TablaSimbolos.get(i).getTipo().equalsIgnoreCase(tipoEsperado.toLowerCase())){
                         return true;
                     }
                     else{
@@ -448,16 +448,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
             return false;
         }
-        JOptionPane.showMessageDialog(null, "valor: " + valor + " tipoEsperado: " + tipoEsperado);
-        if (valor.toLowerCase() == "\'true\'" || valor.toLowerCase() == "\'false\'") {
-            if (tipoEsperado.toLowerCase().equals("boolean")) {
+        if (valor.equalsIgnoreCase("true") || valor.equalsIgnoreCase("false")) {
+            if (tipoEsperado.equalsIgnoreCase("boolean")) {
                 return true;
             } else {
                 return false;
             }
         }
-        if (isNumeric(valor)) {
-            if (tipoEsperado.toLowerCase().equals("integer")) {
+        if (isNumeric(valor.charAt(0) + "")) {
+            if (tipoEsperado.equalsIgnoreCase("integer")) {
                 return true;
             } else {
                 return false;
@@ -465,7 +464,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         }
         if (valor.charAt(0) == '\'' && valor.charAt(2) == '\'') {
-            if (tipoEsperado.toLowerCase().equals("char")) {
+            if (tipoEsperado.equalsIgnoreCase("char")) {
                 return true;
             } else {
                 return false;
@@ -1037,7 +1036,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
         definicionFuncion.append(") {\n" +
                 "entry:\n");
-        definicionFuncion.append("    %" + functionName + " = alloca i32\n");
+        switch (returnType.toLowerCase()){
+            case "integer":
+                definicionFuncion.append("    %" + functionName + " = alloca i32\n");
+                break;
+            case "boolean":
+                definicionFuncion.append("    %" + functionName + " = alloca i1\n");
+                break;
+            case "char":
+
+                break;
+
+        }
+
 
         for (int i = 0; i < parametrosList.size(); i++) {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
@@ -1374,42 +1385,42 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 // Verificar si la variable está definida en el ámbito actual
 
 
-                String statementText = "";
-                for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
-                    statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
-                }
-                String[] expresionSplit = statementText.split(" ");
-
-                if (expresionSplit.length == 3) {
-                    String operador = expresionSplit[1];
-                    String operando1 = expresionSplit[0];
-                    String operando2 = expresionSplit[2];
-
-                    if (operador.equals("+")) {
-
-                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-
-                            int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
-
-                        } else {
-
-                        }
-                    } else if (operador.equals("-")) {
-                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
-                        } else {
-                        }
-                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
-                        } else {
-                        }
-                    } else if (operador.equals("/")) {
-                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
-                        } else {
-                        }
-                    }
-                }
+//                String statementText = "";
+//                for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
+//                    statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
+//                }
+//                String[] expresionSplit = statementText.split(" ");
+//
+//                if (expresionSplit.length == 3) {
+//                    String operador = expresionSplit[1];
+//                    String operando1 = expresionSplit[0];
+//                    String operando2 = expresionSplit[2];
+//
+//                    if (operador.equals("+")) {
+//
+//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+//
+//                            int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
+//
+//                        } else {
+//
+//                        }
+//                    } else if (operador.equals("-")) {
+//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+//                            int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
+//                        } else {
+//                        }
+//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+//                            int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
+//                        } else {
+//                        }
+//                    } else if (operador.equals("/")) {
+//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+//                            int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
+//                        } else {
+//                        }
+//                    }
+//                }
             } else {
                 // DESGLOSAR OPERACION POR PARTES
                 String operacion = ctx.expression().simpleExpression().getChild(0).getText();
@@ -1467,7 +1478,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
                 return null;
-            }
+            }//chequea que este declarada
 
             // Obtener el tipo de la variable desde la tabla de símbolos
             String tipoVariable = null;
@@ -1479,7 +1490,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
 
 
-//        expression = expression.substring(0, expression.indexOf("("));
 
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
@@ -1569,6 +1579,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 }
                         }
 
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Es expresion larga");
                     }
                     break;
                 case "boolean":
