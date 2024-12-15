@@ -448,7 +448,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
             return false;
         }
-        if (valor == "true" || valor == "false") {
+        JOptionPane.showMessageDialog(null, "valor: " + valor + " tipoEsperado: " + tipoEsperado);
+        if (valor.toLowerCase() == "\'true\'" || valor.toLowerCase() == "\'false\'") {
             if (tipoEsperado.toLowerCase().equals("boolean")) {
                 return true;
             } else {
@@ -1483,7 +1484,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
                 System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
-                if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                if (verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                     JOptionPane.showMessageDialog(null, " Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
