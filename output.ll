@@ -8,8 +8,22 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str2 = private constant [4 x i8] c"x: \00"
-@.str1 = private constant [5 x i8] c"x2: \00"
+@.str1 = private constant [9 x i8] c"numero: \00"
+define i32 @f(i32 %num, i32 %NUM2, i8 %caracter, i8* %cadena) {
+entry:
+    %f = alloca i32
+
+    %numero = alloca i32
+    store i32 40, i32* %numero
+    %numero_val23 = load i32, i32* %numero
+
+    store i32 3, i32* %f
+    %f_val24 = load i32, i32* %f
+
+    ret i32 %f_val24
+}
+
+@cadena26 = private constant [5 x i8] c"hola\00"
 
 define i32 @main() {
     %x = alloca i32

@@ -23,6 +23,20 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private StringBuilder header = new StringBuilder();
     StringBuilder llvmCode = new StringBuilder();
 
+    public String analyzeString(String input) {
+        if (input.matches("\\d+")) {
+            return "integer";
+        } else if (input.matches("'(.)'")) {
+            return "char";
+        } else if (input.matches("'([^']*)'")) {
+            return "string";
+        } else if (input.equals("true") || input.equals("false")) {
+            return "boolean";
+        } else {
+            return "unknown";
+        }
+    }
+
 //    private static boolean isFunction(){
 //
 //    }
@@ -360,6 +374,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             System.out.println(CYAN + "\n\n\n\n\n" + header.toString() + RESET);
             writer.write(header.toString());
             writer.write(llvmCode.toString());
+            loads.clear();
+            TablaSimbolos.clear();
+            threeAddressCodeList.clear();;
+            ThreeAddressCodeTemp.clear();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1068,10 +1087,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 for (int j = 0; j < loads.size(); j++) {
                     if (loads.get(j).getVariable().equals(functionName)) {
                         emit_header("    ret i32 %" + loads.get(j).getVariable() + "_val" + loads.get(j).getCounter() + "\n}\n");
-//                        llvmCode.insert(nuevo_para_final, "    ret i32 %"+loads.get(j).getVariable()+ "_val" + loads.get(j).getCounter() +"\n}\n");
                     }
                 }
-//                llvmCode.insert(nuevo_para_final, "    ret i32 0\n}\n");
                 break;
             case "boolean":
                 break;
@@ -1492,20 +1509,76 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
             switch (tipoVariable.toLowerCase()) {
                 case "integer":
-                    threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
-                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
-                    if (scope_actual != "global") {
-//                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
-                        String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
-                                "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
-                        emit_header(toinsert);
-                    } else {
-                        emit_main("    store i32 " + expression + ", i32* %" + variable);
-                        emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                    if (isNumeric(expression)) {
+                        threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
+                        threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
+                        if (scope_actual != "global") {
+                            //                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
+                            String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
+                                    "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
+                            emit_header(toinsert);
+                        } else {
+                            emit_main("    store i32 " + expression + ", i32* %" + variable);
+                            emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                        }
+                        loads.add(new Loads(variable, counter, scope_actual));
+                        System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
+                        counter++;
+                    } else if (isFunction(expression)) {
+                        System.out.println(CYAN + "IS FUNCTION" + RESET);
+                        String nombre_funcion = expression.substring(0, expression.indexOf("("));
+                        System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
+                        String tipo_funcion = "";
+                        for (int i = 0; i < TablaSimbolos.size(); i++) {
+                            if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
+                                tipo_funcion = TablaSimbolos.get(i).getTipo();
+                            }
+                        }
+                        switch (tipo_funcion.toLowerCase()) {
+                            case "integer":
+                                String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
+                                //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
+                                String[] paramGroups = parametros.split(","); // sacando los parametros
+                                StringBuilder mensaje = new StringBuilder();
+
+                                mensaje.delete(0, mensaje.length());
+                                mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+                                loads.add(new Loads(variable, counter, scope_actual));
+                                counter++;
+
+                                for (int i = 0; i < paramGroups.length; i++) {
+                                    System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+                                    switch (analyzeString(paramGroups[i])) {
+                                        case "integer":
+                                            mensaje.append("i32 " + paramGroups[i]);
+                                            break;
+                                        case "char":
+                                            int caracterascii = paramGroups[i].charAt(1);
+                                            mensaje.append("i8 " + caracterascii);
+                                            break;
+                                        case "string":
+                                            emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                                            emit_main("%ptr_cadena" + counter +" = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                                            mensaje.append("i8* " + "%ptr_cadena" + counter);
+                                            counter++;
+                                            break;
+                                    }
+                                    if (i < paramGroups.length - 1) {
+                                        mensaje.append(", ");
+                                    }
+                                }
+
+                                switch (scope_actual) {
+                                    case "global":
+                                        emit_main(mensaje.toString() + ")");
+                                        break;
+                                    default:
+                                        emit_header(mensaje.toString() + ")");
+                                        break;
+                                }
+                        }
+
                     }
-                    loads.add(new Loads(variable, counter, scope_actual));
-                    System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
-                    counter++;
                     break;
                 case "boolean":
                     switch (expression) {
