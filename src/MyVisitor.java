@@ -823,6 +823,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
+                    JOptionPane.showMessageDialog(null, "Error: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'");
 //                    System.exit(1);
                     //aca hay que hacer que el programa no siga
                 }
