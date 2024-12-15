@@ -1,11 +1,5 @@
-t1 = 3 * 8
-t2 = t1 / 4
-x2 = t2
-@.str1 = string x2: 
+t27 = x2_val25 + 3
+x = t27
+@.str1 = string numero: 
 null = write @.str1
-null = integer write x2_val3
-x = 1+2*x2 store integer
-x_val4 = x load integer
-@.str2 = string x: 
-null = write @.str2
-null = integer write x_val4
+null = integer write x_val28

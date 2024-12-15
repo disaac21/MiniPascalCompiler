@@ -2,11 +2,30 @@ program test;
 
 var x, x2: INTEGER;
 
+Function f( num, NUM2: integer; caracter: char; cadena: string):Integer;
+var numero : INTEGER;
+    Begin
+        numero := 40;
+        f := 3;
+    end;
 
 
 Begin
+  x2 := f(2,3,'c', 'hola');
+end.
+
+{Begin
   x2 := 3 * 8 / 4;
   writeln('x2: ', x2);
   x := 1 + 2 * x2;
   writeln('x: ', x);
-end.
+end.}
+
+{Begin
+  x2 := 3 + 8 - 4;
+  writeln('x2: ', x2);
+  x := 1 + 2 * x2;
+  writeln('x: ', x);
+end.}
+
+
