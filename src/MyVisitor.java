@@ -1,3 +1,5 @@
+import org.antlr.runtime.BitSet;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +24,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private StringBuilder header = new StringBuilder();
     StringBuilder llvmCode = new StringBuilder();
+
+    private StringBuilder TACHeader = new StringBuilder();
+    StringBuilder TACCode = new StringBuilder();
 
     public String analyzeString(String input) {
         if (input.matches("\\d+")) {
@@ -152,8 +157,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 // Escribir la instrucción en el archivo
                 writer.write(instruction);
-                System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-                System.out.println(instruction);
                 writer.newLine();
                 ThreeAddressCodeTemp.add(instruction + "\n");
 
@@ -232,7 +235,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return "while" + whileCounter++;  // while1, while2, while3, ...
     }
 
-    ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
+    public static ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<ThreeAddressCode>();
 
     public void clearOutputFiles() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
@@ -279,9 +282,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                }
 
                 if (isNumeric(value)) {
-                    if (scope_actual == "global")
+                    if (scope_actual == "global") {
+
                         emit_main(String.format("store i32 %s, i32* %%%s", value, result));
-                    else
+
+
+//
+//                        ThreeAddressCodeList.add(new ThreeAddressCode("store", "i32", value, result));
+//
+
+
+                    } else
                         emit_header(String.format("store i32 %s, i32* %%%s", value, result));
                 } else {
                     if (scope_actual == "global") {
@@ -365,12 +376,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         header.append(line).append("\n");
     }
 
+    private void emit3AC_main(String line) {
+        llvmCode.append(line).append("\n");
+    }
+
+    private void emit3AC_header(String line) {
+        header.append(line).append("\n");
+    }
+
 
     public void writell() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
-            System.out.println("llvmcode -----------------------------------");
-            System.out.println("\n\n\n\n\n" + llvmCode.toString());
-            System.out.println("header -----------------------------------");
             System.out.println(CYAN + "\n\n\n\n\n" + header.toString() + RESET);
             writer.write(header.toString());
             writer.write(llvmCode.toString());
@@ -393,7 +409,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         for (Binding binding : TablaSimbolos) {
             System.out.println(binding);
         }
-        System.out.println(" --------------------------------- " + RESET);
     }
 
     private boolean encontrarVariable(String variable) {
@@ -440,9 +455,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 // Expresión que permite números enteros o variables separadas por '+'
                 String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
 
-//            for (String component : components) {
-//                System.out.println("COMPONENTE: " + component);
-//            }
 
                 for (String component : components) {
                     component = component.trim(); // Eliminar espacios en blanco
@@ -456,22 +468,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     boolean isIntegerVariable = false;
                     for (Binding binding : TablaSimbolos) {
                         if (binding.getNombre().equals(component)) {
-                            System.out.println("EQUALS COMPONENT");
-                            if (isFunction) {
+                                if (isFunction) {
                                 if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
-                                    System.out.println("EQUALS SCOPE");
-                                    if (binding.getTipo().equals("integer")) {
-                                        System.out.println("EQUALS TIPO");
-                                        isIntegerVariable = true;
+                                        if (binding.getTipo().equals("integer")) {
+                                            isIntegerVariable = true;
                                         break;
                                     }
                                 }
                             } else {
                                 if (binding.getScope().equals(scope_actual)) {
-                                    System.out.println("EQUALS SCOPE");
-                                    if (binding.getTipo().equals("integer")) {
-                                        System.out.println("EQUALS TIPO");
-                                        isIntegerVariable = true;
+                                        if (binding.getTipo().equals("integer")) {
+                                            isIntegerVariable = true;
                                         break;
                                     }
                                 }
@@ -525,19 +532,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
-        System.out.println("Inicio del Programa:");
         visit(ctx.programHeading());
-        System.out.println("\nBloque:");
         emit_main("\ndefine i32 @main() {");
         visit(ctx.block());
-        System.out.println("\nFin del Programa");
         Footer();
         Header(ctx.programHeading());
         return null;
     }
 
     public Object visitProgramHeading(MiniPascalGrammarParser.ProgramHeadingContext ctx) {
-        System.out.println("Identificador/Nombre del Programa: " + ctx.identifier().getText());
         return null;
     }
 
@@ -559,7 +562,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitConstantDefinitionPart(MiniPascalGrammarParser.ConstantDefinitionPartContext ctx) {
-        System.out.println(" Segmento de Declaracion de Constantes:");
         for (MiniPascalGrammarParser.ConstantDefinitionContext varDeclCtx : ctx.constantDefinition()) {
             visit(varDeclCtx);
         }
@@ -568,27 +570,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitConstantDefinition(MiniPascalGrammarParser.ConstantDefinitionContext ctx) {
-        System.out.println("  Declaracion de Constante:");
         MiniPascalGrammarParser.IdentifierContext idCtx = ctx.identifier();
         MiniPascalGrammarParser.ConstantContext typeCtx = ctx.constant();
-        System.out.println("   Identificador: " + idCtx.getText());
-        System.out.println("   Valor: " + typeCtx.getText());
 
         String tipo = "";
         if (typeCtx.getText().charAt(0) == '\'' && typeCtx.getText().charAt(2) == '\'') {
-            System.out.println("   Tipo: char");
             tipo = "char";
         } else if (typeCtx.getText().equals("true") || typeCtx.getText().equals("false")) {
-            System.out.println("   Tipo: boolean");
             tipo = "boolean";
         } else if (typeCtx.getText().matches("-?\\d+")) {
-            System.out.println("   Tipo: integer");
             tipo = "integer";
         } else if (typeCtx.getText().charAt(0) == '\'') {
-            System.out.println("   Tipo: string");
             tipo = "string";
         } else {
-            System.out.println("   Tipo Unknown");
             tipo = "error";
         }
 
@@ -615,13 +609,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitVarType(MiniPascalGrammarParser.VarTypeContext ctx) {
-        System.out.println("Tipo Var: " + ctx.getText());
         return null;
     }
 
     @Override
     public Object visitArrayType(MiniPascalGrammarParser.ArrayTypeContext ctx) {
-        System.out.println("Tipo Arreglo: " + ctx.getChild(2).getText());
         return null;
     }
 
@@ -642,19 +634,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitStringR_(MiniPascalGrammarParser.StringR_Context ctx) {
-        System.out.println("Valor del String: " + ctx.getText());
         return null;
     }
 
     @Override
     public Object visitCharR_(MiniPascalGrammarParser.CharR_Context ctx) {
-        System.out.println("Valor del Char: " + ctx.getText());
         return null;
     }
 
     @Override
     public Object visitIntegerR_(MiniPascalGrammarParser.IntegerR_Context ctx) {
-        System.out.println("Valor del Integer: " + ctx.getText());
         return null;
     }
 
@@ -675,31 +664,30 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitBool_(MiniPascalGrammarParser.Bool_Context ctx) {
-        System.out.println("Valor del Boolean: " + ctx.getText());
         return null;
     }
 
     @Override
     public Object visitString(MiniPascalGrammarParser.StringContext ctx) {
-        System.out.println("Valor del String: " + ctx.getText());
+
         return null;
     }
 
     @Override
     public Object visitBoolean(MiniPascalGrammarParser.BooleanContext ctx) {
-        System.out.println("Valor del Boolean: " + ctx.getText());
+
         return null;
     }
 
     @Override
     public Object visitChar(MiniPascalGrammarParser.CharContext ctx) {
-        System.out.println("Valor del Char: " + ctx.getText());
+
         return null;
     }
 
     @Override
     public Object visitInteger(MiniPascalGrammarParser.IntegerContext ctx) {
-        System.out.println("Valor del Integer: " + ctx.getText());
+
         return null;
     }
 
@@ -792,7 +780,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitVariableDeclarationPart(MiniPascalGrammarParser.VariableDeclarationPartContext ctx) {
-        System.out.println(" Segmento de Declaracion de Variables:");
+
         for (MiniPascalGrammarParser.VariableDeclarationContext varDeclCtx : ctx.variableDeclaration()) {
             visit(varDeclCtx);
         }
@@ -801,13 +789,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitVariableDeclaration(MiniPascalGrammarParser.VariableDeclarationContext ctx) {
-        System.out.println("  Declaracion de Variable:");
+
         MiniPascalGrammarParser.IdentifierListContext idListCtx = ctx.identifierList();
         MiniPascalGrammarParser.TypeIdentifierContext typeCtx = ctx.typeIdentifier();
         MiniPascalGrammarParser.ArrayTypeContext arrayTypeCtx = ctx.arrayType();
         if (idListCtx != null && typeCtx != null) {
-            System.out.println("   Tipo: " + typeCtx.getText());
-            System.out.print("   Identificador: ");
+
             StringBuilder identifiers = new StringBuilder();
             List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
             for (int i = 0; i < idNodes.size(); i++) {
@@ -815,7 +802,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (i < idNodes.size() - 1) {
                     identifiers.append(", ");
                 }
-                System.out.println("   Identificador: " + idNodes.get(i).getText());
+
                 Binding binding = new Binding(idNodes.get(i).getText(), typeCtx.getText(), scope_actual);
                 if (!encontrarVariable(binding.getNombre())) {
                     TablaSimbolos.add(binding);
@@ -868,10 +855,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         if (idListCtx != null && arrayTypeCtx != null) {
 
             if (arrayTypeCtx.indexRanges().getText().contains(",")) {
-                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
-                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3) + " y " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange(1).getText().charAt(3));
-                System.out.println("BIDI");
-                System.out.print("   Identificador: ");
+
                 StringBuilder identifiers = new StringBuilder();
                 List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
 
@@ -910,13 +894,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         }
                     }
                 }
-                System.out.println(identifiers.toString());
 
 
             } else {
-                System.out.println("   Arreglo de Tipo: " + arrayTypeCtx.getChild(5).getText());
-                System.out.println("   Rango: " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(0) + " a " + arrayTypeCtx.indexRanges().indexRange().get(0).getText().charAt(3));
-                System.out.print("   Identificador: ");
+
                 StringBuilder identifiers = new StringBuilder();
                 List<MiniPascalGrammarParser.IdentifierContext> idNodes = idListCtx.identifier();
                 for (int i = 0; i < idNodes.size(); i++) {
@@ -949,7 +930,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         }
                     }
                 }
-                System.out.println(identifiers.toString());
             }
         }
         return null;
@@ -982,7 +962,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String paramName = idCtx.getText();
             Binding binding = new Binding(paramName, paramType, scope_actual);
             TablaSimbolos.add(binding);
-            System.out.println("Parámetro añadido: " + paramName + " de tipo " + paramType + " en el ámbito " + scope_actual);
         }
         return null;
     }
@@ -990,7 +969,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitIdentifierList(MiniPascalGrammarParser.IdentifierListContext ctx) {
         for (MiniPascalGrammarParser.IdentifierContext ctx2 : ctx.identifier()) {
-            System.out.println("Identificador: " + ctx2.getText());
         }
         return null;
     }
@@ -1005,14 +983,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String previousScope = scope_actual;
         scope_actual = ctx.identifier().getText(); // El nuevo ámbito es el nombre de la función
 
-        System.out.println(" Segmento de Declaracion de Funciones:");
         String functionName = ctx.identifier().getText();
         String returnType = ctx.varType().getText();
 
         // Agregar la función a la tabla de símbolos
 
-        System.out.println("  Identificador: " + functionName);
-        System.out.println("  Tipo de Return: " + returnType);
 
         // Procesar parámetros formales
         if (ctx.formalParameterList() != null) {
@@ -1033,14 +1008,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
 
-        System.out.println("  Paaaarametros:");
         for (int i = 0; i < parametrosList.size(); i++) {
             System.out.println(CYAN + "  Parametro: " + parametrosList.get(i).getVariable() + " de tipo " + parametrosList.get(i).getTipo() + RESET);
         }
 
 
         // Procesar el bloque de la función
-        System.out.println("  Bloque:");
         StringBuilder definicionFuncion = new StringBuilder();
         switch (returnType.toLowerCase()) {
             case "integer":
@@ -1058,7 +1031,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
                     definicionFuncion.append("i32 %cont_" + parametrosList.get(i).getVariable());
-                    System.out.println("PPPPPPPPPPPPPPPP" + parametrosList.get(i).getVariable());
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
@@ -1149,12 +1121,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
         String previousScope = scope_actual;
         scope_actual = ctx.identifier().getText();
-        System.out.println(" Segmento de Declaracion de Procedimientos:");
-        System.out.println("  Identificador: " + ctx.identifier().getText());
+
         if (ctx.formalParameterList() != null) {
             visit(ctx.formalParameterList());
         }
-        System.out.println("   Bloque:");
         visit(ctx.block());
         System.out.println();
         scope_actual = previousScope;
@@ -1174,13 +1144,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitWriteStatement(MiniPascalGrammarParser.WriteStatementContext ctx) {
-        System.out.println("Funcion Write:");
         if (ctx.string() != null) {
-            System.out.print(" Write ");
             if (ctx.write() == null) {
-                System.out.print("Sentencia:\n");
             } else {
-                System.out.print("Linea:\n");
             }
             if (ctx.identifier() != null) {
                 visit(ctx.string());
@@ -1197,8 +1163,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     }
                 }
 
-                System.out.println("  Variable: " + variable);
-                System.out.println("  Tipo de Variable: " + tipoVariable);
+
 
                 if (!encontrarVariable(variable)) {
                     System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
@@ -1209,7 +1174,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
                             System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                         } else {
-                            System.out.println("  Asignando el valor " + variable + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
 
 
                             String strValue = ctx.string().getText();
@@ -1273,7 +1237,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 }
 
 
-                System.out.println("  Identificador: " + ctx.identifier().getText());
             } else {
                 visit(ctx.string());
                 String strValue = ctx.string().getText();
@@ -1320,8 +1283,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitReadStatement(MiniPascalGrammarParser.ReadStatementContext ctx) {
-        System.out.println("Funcion Read:");
-        System.out.println(" Parametro: " + ctx.readParam().getText());
+
 
         String variable = ctx.readParam().getText();
         String tipoVariable = "";
@@ -1334,8 +1296,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
 
-        System.out.println("  Variable: " + variable);
-        System.out.println("  Tipo de Variable: " + tipoVariable + ".");
 
         if (!encontrarVariable(variable)) {
             System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
@@ -1346,7 +1306,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (!verificarValorNoBooleanForFunctions(variable, tipoVariable)) {
                     System.err.println(" Error: El valor '" + variable + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
-                    System.out.println("  Asignando el valor a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
                     if (!scanfdeclared) {
 //                        llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
                         emit_header("declare i32 @scanf(i8*, ...)");
@@ -1354,10 +1313,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                     }
                     String tipovariable_lowercase = tipoVariable.toLowerCase();
-                    System.out.println("  Tipo de Variable lowercase: " + tipovariable_lowercase + ".");
                     switch (tipovariable_lowercase) {
                         case "integer":
-                            System.out.println("ENTROOOOOOO");
                             if (!intformatdeclared) {
 //                                llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
                                 emit_header("@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros");
@@ -1429,15 +1386,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) {
-        System.out.println(" Segmento de Asignacion de Variables:");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
-        System.out.println("expresion: " + expression);
 
         if (ctx.expression().simpleExpression().getChildCount() == 1) { // x =: 3*4
             if (ctx.expression().simpleExpression().getChild(0).getChildCount() == 1) {
-                System.out.println("acaaaaaaaaaaaaaaaaaaa" + ctx.expression().simpleExpression().getChild(0).getText());
-                System.out.println("  yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
                 System.out.println(CYAN + "CHILD == 1" + RESET);
                 // Verificar si la variable está definida en el ámbito actual
 
@@ -1446,60 +1399,42 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
                     statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
                 }
-                System.out.println("  Asignacion Operacion: " + statementText);
                 String[] expresionSplit = statementText.split(" ");
 
                 if (expresionSplit.length == 3) {
                     String operador = expresionSplit[1];
                     String operando1 = expresionSplit[0];
                     String operando2 = expresionSplit[2];
-                    System.out.println("  Operador: " + operador);
-                    System.out.println("  Operando 1: " + operando1);
-                    System.out.println("  Operando 2: " + operando2);
+
                     if (operador.equals("+")) {
-                        System.out.println("  Suma");
+
                         if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            System.out.println("  Ambos operandos son enteros");
+
                             int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
-                            System.out.println("  Resultado: " + resultado);
+
                         } else {
-                            System.out.println("  Al menos uno de los operandos no es un entero");
+
                         }
                     } else if (operador.equals("-")) {
-                        System.out.println("  Resta");
                         if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            System.out.println("  Ambos operandos son enteros");
                             int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
-                            System.out.println("  Resultado: " + resultado);
                         } else {
-                            System.out.println("  Al menos uno de los operandos no es un entero");
                         }
-                    } else if (operador.equals("*")) {
-                        System.out.println("  Multiplicacion");
                         if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            System.out.println("  Ambos operandos son enteros");
                             int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
-                            System.out.println("  Resultado: " + resultado);
                         } else {
-                            System.out.println("  Al menos uno de los operandos no es un entero");
                         }
                     } else if (operador.equals("/")) {
-                        System.out.println("  Division");
                         if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-                            System.out.println("  Ambos operandos son enteros");
                             int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
-                            System.out.println("  Resultado: " + resultado);
                         } else {
-                            System.out.println("  Al menos uno de los operandos no es un entero");
                         }
-                    } else
-                        System.out.println("  Operador no reconocido");
+                    }
                 }
             } else {
                 // DESGLOSAR OPERACION POR PARTES
-                System.out.println(" OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO ");
                 String operacion = ctx.expression().simpleExpression().getChild(0).getText();
-                System.out.println("  Operacion: " + operacion);
+
 
                 if (operacion.contains("*") || operacion.contains("/") || operacion.contains("+") || operacion.contains("-")) {
 
@@ -1514,15 +1449,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                             if (operacion.contains(Character.toString(operator))) {
                                 String[] parts = operacion.split(regexOperator, 2); // Split into 2 parts only
-                                System.out.println("  Operador: " + operator);
-                                System.out.println("  Operando 1: " + parts[0].trim());
-                                System.out.println("  Operando 2: " + parts[1].trim());
+
 
                                 // Continue processing the right side of the expression
                                 operacion = parts[1].trim();
                                 break; // Restart the cycle for the next part
                             } else {
-                                System.out.println("  Operador " + operator + " no encontrado");
                             }
                         }
                     }
@@ -1576,7 +1508,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
-                    System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");
                 }
             } else {
                 System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
@@ -1743,7 +1674,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
 
 
-            System.out.println("  Asignacion Operacion: " + statementText);
 
             String[] expresionSplit = statementText.split(" ");
             String currentCounter = generateCondVariable();
@@ -1774,8 +1704,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                if (!verificarValor(valor, tipoVariable)) { // Ahora se pasan dos parámetros
 //                    System.err.println(" Error: El valor '" + valor + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variableEnUso + "'.");
 //                } else {
-                System.out.println("  Asignando el valor " + valor + " a la variable '" + variableEnUso + "' de tipo '" + tipoVariable + "'.");
-                System.err.println("viendo si aca es el error");
                 // Generar código LLVM para la asignación
                 switch (tipoVariable.toLowerCase()) {
                     case "integer":
@@ -1843,7 +1771,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitExpression(MiniPascalGrammarParser.ExpressionContext ctx) {
         if (ctx.relationaloperator() != null) {
-            System.out.println("Operador Relacional: " + ctx.relationaloperator().getText());
             visit(ctx.expression()); // Visitar el nodo de la expresión
         }
         visit(ctx.simpleExpression()); // Visitar el nodo de la expresión simple
@@ -1859,7 +1786,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitSimpleExpression(MiniPascalGrammarParser.SimpleExpressionContext ctx) {
         visit(ctx.term()); // Visitar el nodo del término
         if (ctx.additiveoperator() != null) {
-            System.out.println("Operador Aditivo: " + ctx.additiveoperator().getText());
             visit(ctx.simpleExpression()); // Visitar el nodo de la expresión simple
         }
         return null;
@@ -1874,7 +1800,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitTerm(MiniPascalGrammarParser.TermContext ctx) {
         visit(ctx.signedFactor());
         if (ctx.multiplicativeoperator() != null) {
-            System.out.println("Operador de Multiplicacion: " + ctx.multiplicativeoperator().getText());
             visit(ctx.term()); // Visitar el nodo del término
         }
         return null;
@@ -1887,7 +1812,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitSignedFactor(MiniPascalGrammarParser.SignedFactorContext ctx) {
-        System.out.println("Factor con Signo:" + ctx.getText());
         return null;
     }
 
@@ -1904,10 +1828,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         } else if (ctx.set_() != null) {
             visit(ctx.set_()); // Visitar el nodo del conjunto
         } else if (ctx.NOT() != null) {
-            System.out.println("NOT");
             visit(ctx.factor()); // Visitar el nodo del factor
         } else if (ctx.bool_() != null) {
-            System.out.println("Valor de Boolean: " + ctx.bool_().getText());
         }
         return null;
     }
@@ -1915,23 +1837,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     @Override
     public Object visitUnsignedConstant(MiniPascalGrammarParser.UnsignedConstantContext ctx) {
         if (ctx.unsignedNumber() != null) {
-            System.out.println("Numero sin Signo: " + ctx.unsignedNumber().getText());
         } else if (ctx.constantChr() != null) {
-            System.out.println("constchar: " + ctx.constantChr().getText());
         } else if (ctx.string() != null) {
-            System.out.println("Valor de String: " + ctx.string().getText());
         } else if (ctx.NIL() != null) {
-            System.out.println("NIL");
         }
         return null;
     }
 
     @Override
     public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) {
-        System.out.println("Llamado a Funcion:");
-        System.out.println(" Identificador: " + ctx.identifier().getText());
         if (ctx.parameterList() != null) {
-            System.out.print(" Parametros:");
             visit(ctx.parameterList());
         }
         System.out.println();
@@ -1948,14 +1863,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitSet_(MiniPascalGrammarParser.Set_Context ctx) {
-        System.out.println(" Set:");
         visit(ctx.elementList());
         return null;
     }
 
     @Override
     public Object visitElementList(MiniPascalGrammarParser.ElementListContext ctx) {
-        System.out.println(" Lista de Elementos:");
         for (MiniPascalGrammarParser.ElementContext elementCtx : ctx.element()) {
             visit(elementCtx);
         }
@@ -1965,7 +1878,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitElement(MiniPascalGrammarParser.ElementContext ctx) {
-        System.out.println("  Elemento:");
         visit(ctx.expression(0));
         if (ctx.DOUBLE_DOT() != null) {
             visit(ctx.expression(1));
@@ -1987,7 +1899,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitEmptyStatement_(MiniPascalGrammarParser.EmptyStatement_Context ctx) {
-        System.out.println("Sentencia Vacia");
         return null;
     }
 
@@ -2022,7 +1933,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitIfStatement(MiniPascalGrammarParser.IfStatementContext ctx) {
-        System.out.println(" Caso If:");
 
         String statementText = "";
         if (ctx.expression().getChildCount() == 1) {
@@ -2035,7 +1945,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
 
-        System.out.println("  Condicion: " + statementText);
 
         String[] expresionSplit = statementText.split(" ");
         String currentCounter = generateCondVariable();
@@ -2045,7 +1954,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // aca arreglar detalle de cuando solo hay un argumento en el if
             String variable = expresionSplit[0];
             if (encontrarVariableEnLoads(variable)) {
-                System.out.println("  Valor: " + variable + " es una variable definida.");
 
                 for (Loads load : loads) {
                     if (load.getVariable().equals(variable)) {
@@ -2065,7 +1973,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             String valor = expresionSplit[2];
 
             if (encontrarVariableEnLoads(valor)) {
-                System.out.println("  Valor: " + valor + " es una variable definida.");
 
                 switch (operador) {
                     case ">":
@@ -2190,7 +2097,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             } else {
                 try {
                     Integer.parseInt(valor);
-                    System.out.println("  Valor: " + valor + " es un número.");
 
                     switch (operador) {
                         case ">":
@@ -2290,9 +2196,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
         emit_main("    br label %merge" + ifCounter);
 
-        System.out.println("  Hacer: " + ctx.statement(0).getText());
         if (ctx.ELSE() != null) {
-            System.out.println("  Else: " + ctx.statement(1).getText());
             threeAddressCodeList.add(new ThreeAddressCode("else", "else" + ifCounter, null, null));
             emit_main("else" + ifCounter + ":");
             visit(ctx.statement(1));
@@ -2314,7 +2218,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitWhileStatement(MiniPascalGrammarParser.WhileStatementContext ctx) {
-        System.out.println(" Caso While:");
 
         String statementText = "";
         if (ctx.expression().getChildCount() == 1) {
@@ -2329,7 +2232,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         threeAddressCodeList.add(new ThreeAddressCode("while", "label", "while_condition" + whileCounter, "br"));
         emit_main("br label %while_condition" + whileCounter);
-        System.out.println("  Condicion: " + statementText);
 
         String[] expresionSplit = statementText.split(" ");
         String currentCounter = generateCondVariable();
@@ -2341,7 +2243,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // aca arreglar detalle de cuando solo hay un argumento en el if
             String variable = expresionSplit[0];
             if (encontrarVariableEnLoads(variable)) {
-                System.out.println("  Valor: " + variable + " es una variable definida.");
 
 
             } else {
@@ -2360,14 +2261,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     String lineToMove = "%" + variable + "_val" + load.getCounter() + " = load i32, i32* %" + variable;
                     String marker = "while_condition" + whileCounter + ":";
 
-                    System.out.println("Line to move: " + lineToMove);
-                    System.out.println("Marker: " + marker);
+
 
                     int lineIndex = llvmCode.indexOf(lineToMove);
                     int markerIndex = llvmCode.indexOf(marker);
 
-                    System.out.println("Line index: " + lineIndex);
-                    System.out.println("Marker index: " + markerIndex);
 
                     if (lineIndex != -1 && markerIndex != -1) {
                         // Remove the line from its original position
@@ -2376,7 +2274,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                         // Insert the line after the marker
                     } else {
-                        System.out.println("Line or marker not found.");
                     }
 
                     break;
@@ -2385,7 +2282,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
 
             if (encontrarVariableEnLoads(valor)) {
-                System.out.println("  Valor: " + valor + " es una variable definida.");
 
                 switch (operador) {
                     case ">":
@@ -2510,7 +2406,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             } else {
                 try {
                     Integer.parseInt(valor);
-                    System.out.println("  Valor: " + valor + " es un número.");
 
                     switch (operador) {
                         case ">":
@@ -2627,20 +2522,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitRepeatStatement(MiniPascalGrammarParser.RepeatStatementContext ctx) {
-        System.out.println(" Caso Repeat:");
-        System.out.println("  Limite: " + ctx.expression().getText());
+
 
         String statementText = ctx.statements().getText();
         if (statementText.startsWith("begin") && statementText.endsWith("end")) {
             statementText = statementText.substring(5, statementText.length() - 3).trim();
 
             String[] statements = statementText.split(";");
-            System.out.println("  Sentencia entre begin ... end:");
             for (String stmt : statements) {
                 System.out.println(" " + stmt.trim());
             }
         } else {
-            System.out.println("  Sentencia: " + statementText);
         }
         System.out.println();
         return null;
@@ -2648,22 +2540,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitForStatement(MiniPascalGrammarParser.ForStatementContext ctx) {
-        System.out.println(" Caso For:");
-        System.out.println("  Identificador: " + ctx.identifier().getText());
-        System.out.println("  Valor Suelo: " + ctx.forList().initialValue().getText());
-        System.out.println("  Valor Techo: " + ctx.forList().finalValue().getText());
+
 
         String statementText = ctx.statement().getText();
         if (statementText.startsWith("begin") && statementText.endsWith("end")) {
             statementText = statementText.substring(5, statementText.length() - 3).trim();
 
             String[] statements = statementText.split(";");
-            System.out.println("  Sentencia entre begin ... end:");
             for (String stmt : statements) {
                 System.out.println(" " + stmt.trim());
             }
         } else {
-            System.out.println("  Sentencia: " + statementText);
         }
         System.out.println();
         return null;

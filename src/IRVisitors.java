@@ -354,42 +354,42 @@ public class IRVisitors extends MiniPascalGrammarBaseVisitor<Object> {
         String programName = programHeader.identifier().getText();
 
         // Start of the program with filename header
-        System.out.println("; ModuleID = 'MiniPascal'");
-        System.out.println("source_filename = \"" + programName + "\"");
-        System.out.println("target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\"");
-        System.out.println("target triple = \"x86_64-pc-microsoft-msvc\"");
-
-        // Standard library functions + Global declarations
-        System.out.println("%struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }");
-        System.out.println("@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"");
-        System.out.println("@stdin = external global %struct._IO_FILE*");
-        System.out.println("@double_fmt = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\"");
+//        System.out.println("; ModuleID = 'MiniPascal'");
+//        System.out.println("source_filename = \"" + programName + "\"");
+//        System.out.println("target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\"");
+//        System.out.println("target triple = \"x86_64-pc-microsoft-msvc\"");
+//
+//        // Standard library functions + Global declarations
+//        System.out.println("%struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }");
+//        System.out.println("@str_fmt = unnamed_addr constant [4 x i8] c\"%d\\0A\\00\"");
+//        System.out.println("@stdin = external global %struct._IO_FILE*");
+//        System.out.println("@double_fmt = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\"");
     }
 
     public void Footer() {
         // End of the program
-        System.out.println("  ret i32 0\n}\n");
+//        System.out.println("  ret i32 0\n}\n");
 
         // write_int function for printing integers
-        System.out.println("define void @write_int(i32 %num) {");
+//        System.out.println("define void @write_int(i32 %num) {");
 //        System.out.println("    %buf = alloca [32 x i8], align 1");
 //        System.out.println("    %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
 //        System.out.println("    call i32 (i8*, i8*, ...) @printf(i8* %buf_ptr, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
 //        System.out.println("    call i32 @puts(i8* %buf_ptr)");
-        System.out.println("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
-        System.out.println("    ret void");
-        System.out.println("}\n");
-
-        // write_string function for printing strings
-        System.out.println("define void @write_string(i8* %str) {");
+//        System.out.println("    call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_fmt, i32 0, i32 0), i32 %num)");
+//        System.out.println("    ret void");
+//        System.out.println("}\n");
+//
+//        // write_string function for printing strings
+//        System.out.println("define void @write_string(i8* %str) {");
 //        System.out.println("    %str_ptr = alloca i8*");
 //        System.out.println("    store i8* %str, i8** %str_ptr");
 //        System.out.println("    %str_val = load i8*, i8** %str_ptr");
-        System.out.println("    call i32 @puts(i8* %str)");
-        System.out.println("    ret void");
-        System.out.println("}\n");
-
-        // read function for reading input
+//        System.out.println("    call i32 @puts(i8* %str)");
+//        System.out.println("    ret void");
+//        System.out.println("}\n");
+//
+//        // read function for reading input
 //        System.out.println("define i32 @read() {");
 //        System.out.println("  %buf = alloca [32 x i8], align 1");
 //        System.out.println("  %buf_ptr = getelementptr inbounds [32 x i8], [32 x i8]* %buf, i32 0, i32 0");
@@ -398,21 +398,21 @@ public class IRVisitors extends MiniPascalGrammarBaseVisitor<Object> {
 //        System.out.println("  %num = call i32 @atoi(i8* %buf_ptr)");
 //        System.out.println("  ret i32 %num");
 //        System.out.println("}\n");
-
-        // Function declarations for standard library functions
-        System.out.println("declare i32 @atoi(i8*)");
-        System.out.println("declare i32 @sprintf(i8*, i8*, ...)");
-        System.out.println("declare i32 @puts(i8*)");
-        System.out.println("declare i8* @fgets(i8*, i32, %struct._IO_FILE*)");
-        System.out.println("declare void @exit(i32)\n");
-
-        // Footer
-        System.out.println("; Function Attrs: noinline nounwind optnone uwtable");
-        System.out.println("declare i32 @printf(i8*, ...) #0");
-        System.out.println("attributes #0 = { noinline nounwind optnone uwtable \"correctly-rounded-divide-sqrt-fp-math\"=\"false\" \"disable-tail-calls\"=\"false\" \"frame-pointer\"=\"all\" \"less-precise-fpmad\"=\"false\" \"min-legal-vector-width\"=\"0\" \"no-infs-fp-math\"=\"false\" \"no-jump-tables\"=\"false\" \"no-nans-fp-math\"=\"false\" \"no-signed-zeros-fp-math\"=\"false\" \"no-trapping-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+cx8,+fxsr,+mmx,+sse,+sse2,+x87\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
-        System.out.println("!llvm.module.flags = !{!0}\n");
-        System.out.println("!llvm.ident = !{!1}");
-        System.out.println("!0 = !{i32 1, !\"wchar_size\", i32 4}");
-        System.out.println("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
+//
+//        // Function declarations for standard library functions
+//        System.out.println("declare i32 @atoi(i8*)");
+//        System.out.println("declare i32 @sprintf(i8*, i8*, ...)");
+//        System.out.println("declare i32 @puts(i8*)");
+//        System.out.println("declare i8* @fgets(i8*, i32, %struct._IO_FILE*)");
+//        System.out.println("declare void @exit(i32)\n");
+//
+//        // Footer
+//        System.out.println("; Function Attrs: noinline nounwind optnone uwtable");
+//        System.out.println("declare i32 @printf(i8*, ...) #0");
+//        System.out.println("attributes #0 = { noinline nounwind optnone uwtable \"correctly-rounded-divide-sqrt-fp-math\"=\"false\" \"disable-tail-calls\"=\"false\" \"frame-pointer\"=\"all\" \"less-precise-fpmad\"=\"false\" \"min-legal-vector-width\"=\"0\" \"no-infs-fp-math\"=\"false\" \"no-jump-tables\"=\"false\" \"no-nans-fp-math\"=\"false\" \"no-signed-zeros-fp-math\"=\"false\" \"no-trapping-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+cx8,+fxsr,+mmx,+sse,+sse2,+x87\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
+//        System.out.println("!llvm.module.flags = !{!0}\n");
+//        System.out.println("!llvm.ident = !{!1}");
+//        System.out.println("!0 = !{i32 1, !\"wchar_size\", i32 4}");
+//        System.out.println("!1 = !{!\"clang version 10.0.0-4ubuntu1 \"}\n");
     }
 }
