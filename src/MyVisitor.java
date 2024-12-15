@@ -1,3 +1,5 @@
+import org.antlr.runtime.BitSet;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +24,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     private StringBuilder header = new StringBuilder();
     StringBuilder llvmCode = new StringBuilder();
+
+    private StringBuilder TACHeader = new StringBuilder();
+    StringBuilder TACCode = new StringBuilder();
 
     public String analyzeString(String input) {
         if (input.matches("\\d+")) {
@@ -232,7 +237,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return "while" + whileCounter++;  // while1, while2, while3, ...
     }
 
-    ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<>();
+    public static ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<ThreeAddressCode>();
 
     public void clearOutputFiles() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
@@ -279,9 +284,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                }
 
                 if (isNumeric(value)) {
-                    if (scope_actual == "global")
+                    if (scope_actual == "global") {
+
                         emit_main(String.format("store i32 %s, i32* %%%s", value, result));
-                    else
+                        ThreeAddressCodeList.add(new ThreeAddressCode("store", "i32", value, result));
+                    } else
                         emit_header(String.format("store i32 %s, i32* %%%s", value, result));
                 } else {
                     if (scope_actual == "global") {
@@ -362,6 +369,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     private void emit_header(String line) {
+        header.append(line).append("\n");
+    }
+
+    private void emit3AC_main(String line) {
+        llvmCode.append(line).append("\n");
+    }
+
+    private void emit3AC_header(String line) {
         header.append(line).append("\n");
     }
 

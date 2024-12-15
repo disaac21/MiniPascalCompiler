@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "FuncionesParametrosPorValorYReferencia"
+source_filename = "ManejoDeTipos"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,57 +8,45 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str8 = private constant [40 x i8] c"Valor de suma después de la función: \00"
-@.str7 = private constant [17 x i8] c"Suma calculada: \00"
-@.str6 = private constant [39 x i8] c"Llamando a la función SumarValores...\00"
-@.str5 = private constant [31 x i8] c"Valor inicial de cadenaFinal: \00"
-@.str4 = private constant [20 x i8] c"Valor de caracter: \00"
-@.str3 = private constant [19 x i8] c"Valor de numero2: \00"
-@.str2 = private constant [19 x i8] c"Valor de numero1: \00"
-@.str1 = private constant [12 x i8] c"resultado: \00"
-define i32 @SumarValores(i32 %cont_resultado) {
-entry:
-    %SumarValores = alloca i32
-    %resultado = alloca i32
-    store i32 %cont_resultado, i32* %resultado
-    %resultado_val22 = load i32, i32* %resultado
-
-    call void @write_string(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %resultado_val22)
-%t23 = add i32 3, %resultado_val22
-store i32 %t23, i32* %SumarValores
-%SumarValores_val24 = load i32, i32* %SumarValores
-    ret i32 %SumarValores_val24
-}
+@.str6 = private constant [28 x i8] c"Valor de mensaje (string): \00"
+@.str5 = private constant [24 x i8] c"Valor de letra (char): \00"
+@.str4 = private constant [25 x i8] c"Valor de num (integer): \00"
+@.str3 = private constant [28 x i8] c"El valor booleano es falso.\00"
+@.str2 = private constant [32 x i8] c"El valor booleano es verdadero.\00"
+@.str1 = private constant [14 x i8] c"Hola, Pascal\00"
 
 
 define i32 @main() {
-    %numero1 = alloca i32
-    %numero2 = alloca i32
-    %suma = alloca i32
-    %cadenaFinal = alloca i8*
-    %caracter = alloca i8
-    store i32 5, i32* %numero1
-    %numero1_val25 = load i32, i32* %numero1
-    store i32 10, i32* %numero2
-    %numero2_val26 = load i32, i32* %numero2
-    store i8 65, i8* %caracter
-    %caracter_val27 = load i8, i8* %caracter
-    store i32 0, i32* %suma
-    %suma_val28 = load i32, i32* %suma
-    call void @write_string(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str2, i32 0, i32 0))
-    call void @write_int(i32 %numero1_val25)
-    call void @write_string(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str3, i32 0, i32 0))
-    call void @write_int(i32 %numero2_val26)
-    call void @write_string(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str4, i32 0, i32 0))
-    call void @write_char(i8 %caracter_val27)
-    call void @write_string(i8* getelementptr inbounds ([31 x i8], [31 x i8]* @.str5, i32 0, i32 0))
-    call void @write_string(i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str6, i32 0, i32 0))
-    call void @write_string(i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str7, i32 0, i32 0))
-    call void @write_int(i32 %suma_val28)
-    %suma_val29 = call i32 @SumarValores(i32 5)
-    call void @write_string(i8* getelementptr inbounds ([40 x i8], [40 x i8]* @.str8, i32 0, i32 0))
-    call void @write_int(i32 %suma_val29)
+    %num = alloca i32
+    %letra = alloca i8
+    %prueba = alloca i32
+    %mensaje = alloca i8*
+    %esVerdadero = alloca i1
+    store i32 42, i32* %num
+    %num_val1 = load i32, i32* %num
+    store i8 65, i8* %letra
+    %letra_val2 = load i8, i8* %letra
+    store i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str1, i32 0, i32 0), i8** %mensaje
+    %mensaje_val3 = load i8*, i8** %mensaje
+    store i1 1, i1* %esVerdadero
+    %esVerdadero_val4 = load i1, i1* %esVerdadero
+%t5 = add i32 %num_val1, 10
+store i32 %t5, i32* %num
+    %num_val6 = load i32, i32* %num
+    br i1 %esVerdadero_val4, label %then1, label %else1
+then1:
+    call void @write_string(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @.str2, i32 0, i32 0))
+    br label %merge1
+else1:
+    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str3, i32 0, i32 0))
+    br label %merge1
+merge1:
+    call void @write_string(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str4, i32 0, i32 0))
+    call void @write_int(i32 %num_val6)
+    call void @write_string(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str5, i32 0, i32 0))
+    call void @write_char(i8 %letra_val2)
+    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str6, i32 0, i32 0))
+    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str6, i32 0, i32 0))
   ret i32 0
 }
 
