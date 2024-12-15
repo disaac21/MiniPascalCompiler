@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import javax.swing.JOptionPane;
 
 public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
@@ -432,77 +433,52 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
 
-        boolean isFunction = false;
-        if (valor.contains("(")) {
-            valor = valor.substring(0, valor.indexOf("("));
-            isFunction = true;
-            String nombre_funcion = valor.substring(0, valor.indexOf("("));
+        if(valor.contains("(") && valor.contains(")")){
+            String[] parts = valor.split("\\(");
+            String functionName = parts[0];
             for (int i = 0; i < TablaSimbolos.size(); i++) {
-                if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
-                    if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("integer") && tipoEsperado.toLowerCase().equals("integer")) {
+                if(TablaSimbolos.get(i).getNombre().equals(functionName)){
+                    if(TablaSimbolos.get(i).getTipo().toLowerCase().equals(tipoEsperado.toLowerCase())){
                         return true;
-                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("char") && tipoEsperado.toLowerCase().equals("char")) {
-                        return true;
-                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("string") && tipoEsperado.toLowerCase().equals("string")) {
-                        return true;
-                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("boolean") && tipoEsperado.toLowerCase().equals("boolean")) {
-                        return true;
+                    }
+                    else{
+                        return false;
                     }
                 }
             }
-        } else {
-            if (tipoEsperado.toLowerCase().equals("integer")) {
-                // Expresión que permite números enteros o variables separadas por '+'
-                String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
-
-
-                for (String component : components) {
-                    component = component.trim(); // Eliminar espacios en blanco
-
-                    // Verificar si es un número entero
-                    if (component.matches("-?\\d+")) {
-                        continue;
-                    }
-
-                    // Verificar si es una variable definida como tipo 'integer'
-                    boolean isIntegerVariable = false;
-                    for (Binding binding : TablaSimbolos) {
-                        if (binding.getNombre().equals(component)) {
-                                if (isFunction) {
-                                if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
-                                        if (binding.getTipo().equals("integer")) {
-                                            isIntegerVariable = true;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                if (binding.getScope().equals(scope_actual)) {
-                                        if (binding.getTipo().equals("integer")) {
-                                            isIntegerVariable = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (!isIntegerVariable) {
-                        return false; // Si no es número ni variable válida, la expresión no es válida
-                    }
-                }
-                return true; // Todos los componentes son válidos
-            } else if (tipoEsperado.toLowerCase().equals("boolean")) {
-                return valor.equals("true") || valor.equals("false"); // Booleano
-            } else if (tipoEsperado.toLowerCase().equals("char")) {
-                return valor.matches("'[^']'"); // Un único carácter entre comillas simples
-            } else if (tipoEsperado.toLowerCase().equals("string")) {
-                return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
+            return false;
+        }
+        if (valor == "true" || valor == "false") {
+            if (tipoEsperado.toLowerCase().equals("boolean")) {
+                return true;
+            } else {
+                return false;
             }
         }
+        if (isNumeric(valor)) {
+            if (tipoEsperado.toLowerCase().equals("integer")) {
+                return true;
+            } else {
+                return false;
+            }
 
+        }
+        if (valor.charAt(0) == '\'' && valor.charAt(2) == '\'') {
+            if (tipoEsperado.toLowerCase().equals("char")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if(valor.length() >= 4 && valor.charAt(0) == '\'' && valor.charAt(valor.length() - 1) == '\''){
+            if (tipoEsperado.toLowerCase().equals("string")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
         // Tipo no reconocido
         return false;
-
     }
 
     private boolean verificarValorNoBooleanForFunctions(String valor, String tipoEsperado) {
@@ -936,12 +912,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitProcedureAndFunctionDeclarationPart(MiniPascalGrammarParser.ProcedureAndFunctionDeclarationPartContext ctx) {
+    public Object visitProcedureAndFunctionDeclarationPart
+            (MiniPascalGrammarParser.ProcedureAndFunctionDeclarationPartContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Object visitProcedureOrFunctionDeclaration(MiniPascalGrammarParser.ProcedureOrFunctionDeclarationContext ctx) {
+    public Object visitProcedureOrFunctionDeclaration(MiniPascalGrammarParser.ProcedureOrFunctionDeclarationContext
+                                                              ctx) {
         return visitChildren(ctx);
     }
 
@@ -1162,7 +1140,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         break;
                     }
                 }
-
 
 
                 if (!encontrarVariable(variable)) {
@@ -1505,9 +1482,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
                 System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
-                if (verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                    JOptionPane.showMessageDialog(null, " Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
+                    System.out.println(CYAN + " paso el test ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
                 }
             } else {
                 System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
@@ -1672,7 +1651,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
                 statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
             }
-
 
 
             String[] expresionSplit = statementText.split(" ");
@@ -2260,7 +2238,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 if (load.getVariable().equals(variable)) {
                     String lineToMove = "%" + variable + "_val" + load.getCounter() + " = load i32, i32* %" + variable;
                     String marker = "while_condition" + whileCounter + ":";
-
 
 
                     int lineIndex = llvmCode.indexOf(lineToMove);

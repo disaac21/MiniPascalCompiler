@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "ManejoDeTipos"
+source_filename = "test"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,29 +8,11 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str1 = private constant [5 x i8] c"hola\00"
-define i1 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
-entry:
-    %f = alloca i32
-    %num = alloca i32
-    store i32 %cont_num, i32* %num
-    %num_val1 = load i32, i32* %num
-    %NUM2 = alloca i32
-    store i32 %cont_NUM2, i32* %NUM2
-    %NUM2_val2 = load i32, i32* %NUM2
-
-    %numero = alloca i32
-    store i1 1, i1* %f
-    %f_val3 = load i1, i1* %f
-
-    ret i1 %f_val3
-}
-
 
 define i32 @main() {
     %x = alloca i32
-    %x2 = alloca i32
-    call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
+    store i32 3, i32* %x
+    %x_val1 = load i32, i32* %x
   ret i32 0
 }
 
