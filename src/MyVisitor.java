@@ -421,6 +421,20 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         if (valor.contains("(")) {
             valor = valor.substring(0, valor.indexOf("("));
             isFunction = true;
+            String nombre_funcion = valor.substring(0, valor.indexOf("("));
+            for (int i = 0; i < TablaSimbolos.size(); i++) {
+                if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
+                    if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("integer") && tipoEsperado.toLowerCase().equals("integer")) {
+                        return true;
+                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("char") && tipoEsperado.toLowerCase().equals("char")) {
+                        return true;
+                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("string") && tipoEsperado.toLowerCase().equals("string")) {
+                        return true;
+                    } else if (TablaSimbolos.get(i).getTipo().toLowerCase().equals("boolean") && tipoEsperado.toLowerCase().equals("boolean")) {
+                        return true;
+                    }
+                }
+            }
         } else {
             if (tipoEsperado.toLowerCase().equals("integer")) {
                 // Expresión que permite números enteros o variables separadas por '+'
@@ -1559,7 +1573,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
                 System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
-                if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
+                if (verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
                     System.out.println("  Asignando el valor " + expression + " a la variable '" + variable + "' de tipo '" + tipoVariable + "'.");

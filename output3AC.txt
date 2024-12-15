@@ -1,7 +1,7 @@
 x = alloca i32
 x2 = alloca i32
 numero = alloca i32
-@.str1 = string hola
-null = write @.str1
+numero = 40 store integer
+numero_val3 = numero load integer
 f = 1 store boolean
-f_val3 = f load boolean
+f_val4 = f load boolean
