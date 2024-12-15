@@ -152,6 +152,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 // Escribir la instrucción en el archivo
                 writer.write(instruction);
+                System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+                System.out.println(instruction);
                 writer.newLine();
                 ThreeAddressCodeTemp.add(instruction + "\n");
 
@@ -374,7 +376,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             writer.write(llvmCode.toString());
             loads.clear();
             TablaSimbolos.clear();
-            threeAddressCodeList.clear();;
+            threeAddressCodeList.clear();
+            ;
             ThreeAddressCodeTemp.clear();
 
         } catch (IOException e) {
@@ -1015,6 +1018,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 parametrosList.add(new Parametros(variable.trim(), tipo));
             }
         }
+
+        System.out.println("  Paaaarametros:");
         for (int i = 0; i < parametrosList.size(); i++) {
             System.out.println(CYAN + "  Parametro: " + parametrosList.get(i).getVariable() + " de tipo " + parametrosList.get(i).getTipo() + RESET);
         }
@@ -1037,25 +1042,26 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         for (int i = 0; i < parametrosList.size(); i++) {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
-                    definicionFuncion.append("i32 %" + parametrosList.get(i).getVariable());
+                    definicionFuncion.append("i32 %cont_" + parametrosList.get(i).getVariable());
+                    System.out.println("PPPPPPPPPPPPPPPP" + parametrosList.get(i).getVariable());
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "boolean":
-                    definicionFuncion.append("i1 %" + parametrosList.get(i).getVariable());
+                    definicionFuncion.append("i1 %cont_" + parametrosList.get(i).getVariable());
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "char":
-                    definicionFuncion.append("i8 %" + parametrosList.get(i).getVariable());
+                    definicionFuncion.append("i8 %cont_" + parametrosList.get(i).getVariable());
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "string":
-                    definicionFuncion.append("i8* %" + parametrosList.get(i).getVariable());
+                    definicionFuncion.append("i8* %cont_" + parametrosList.get(i).getVariable());
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
@@ -1065,6 +1071,24 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         definicionFuncion.append(") {\n" +
                 "entry:\n");
         definicionFuncion.append("    %" + functionName + " = alloca i32\n");
+
+        for (int i = 0; i < parametrosList.size(); i++) {
+            switch (parametrosList.get(i).getTipo().toLowerCase()) {
+                case "integer":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
+                    definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i32, i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
+                    break;
+                case "boolean":
+                    break;
+                case "char":
+                    break;
+                case "string":
+                    break;
+            }
+        }
 
 
 //        llvmCode.insert(0, definicionFuncion.toString());
@@ -1188,7 +1212,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 //                            threeAddressCodeList.add(new ThreeAddressCode("write", variable, null, null));
 
-                            emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                            if (scope_actual == "global")
+                                emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                            else
+                                emit_header("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+//                            emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
                             Loads load = lastLoad(variable);
                             if (tipoVariable.toLowerCase().equals("integer")) {
@@ -1196,13 +1224,29 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     System.out.println(CYAN + loads.get(i).getVariable() + " " + loads.get(i).getCounter() + RESET);
                                 }
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
-                                emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+//                                emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+                                if (scope_actual == "global")
+                                    emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+                                else
+                                    emit_header("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
+
+
                             } else if (tipoVariable.toLowerCase().equals("char")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
-                                emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+//                                emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+                                if (scope_actual == "global")
+                                    emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+                                else
+                                    emit_header("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
+
+
                             } else if (tipoVariable.toLowerCase().equals("string")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
-                                emit_main("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
+//                                emit_main("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
+                                if (scope_actual == "global")
+                                    emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                                else
+                                    emit_header("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
                             }
 
                         }
@@ -1374,8 +1418,123 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         System.out.println("expresion: " + expression);
 
         if (ctx.expression().simpleExpression().getChildCount() == 1) { // x =: 3*4
-            System.out.println(CYAN + "CHILD == 1" + RESET);
-            // Verificar si la variable está definida en el ámbito actual
+            if (ctx.expression().simpleExpression().getChild(0).getChildCount() == 1) {
+                System.out.println("  yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+                System.out.println(CYAN + "CHILD == 1" + RESET);
+                // Verificar si la variable está definida en el ámbito actual
+
+
+                String statementText = "";
+                for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
+                    statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
+                }
+                System.out.println("  Asignacion Operacion: " + statementText);
+                String[] expresionSplit = statementText.split(" ");
+
+                if (expresionSplit.length == 3) {
+                    String operador = expresionSplit[1];
+                    String operando1 = expresionSplit[0];
+                    String operando2 = expresionSplit[2];
+                    System.out.println("  Operador: " + operador);
+                    System.out.println("  Operando 1: " + operando1);
+                    System.out.println("  Operando 2: " + operando2);
+                    if (operador.equals("+")) {
+                        System.out.println("  Suma");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("-")) {
+                        System.out.println("  Resta");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("*")) {
+                        System.out.println("  Multiplicacion");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else if (operador.equals("/")) {
+                        System.out.println("  Division");
+                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
+                            System.out.println("  Ambos operandos son enteros");
+                            int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
+                            System.out.println("  Resultado: " + resultado);
+                        } else {
+                            System.out.println("  Al menos uno de los operandos no es un entero");
+                        }
+                    } else
+                        System.out.println("  Operador no reconocido");
+                }
+            } else {
+                // DESGLOSAR OPERACION POR PARTES
+                System.out.println(" OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO ");
+                String operacion = ctx.expression().simpleExpression().getChild(0).getText();
+                System.out.println("  Operacion: " + operacion);
+
+                if (operacion.contains("*") || operacion.contains("/") || operacion.contains("+") || operacion.contains("-")) {
+
+
+                    char[] operators = {'+', '-', '*', '/'};
+
+
+                    while (operacion.contains("*") || operacion.contains("/") || operacion.contains("+") || operacion.contains("-")) {
+                        for (char operator : operators) {
+                            // Escape special characters for regex
+                            String regexOperator = "\\" + operator;
+
+                            if (operacion.contains(Character.toString(operator))) {
+                                String[] parts = operacion.split(regexOperator, 2); // Split into 2 parts only
+                                System.out.println("  Operador: " + operator);
+                                System.out.println("  Operando 1: " + parts[0].trim());
+                                System.out.println("  Operando 2: " + parts[1].trim());
+
+                                // Continue processing the right side of the expression
+                                operacion = parts[1].trim();
+                                break; // Restart the cycle for the next part
+                            } else {
+                                System.out.println("  Operador " + operator + " no encontrado");
+                            }
+                        }
+                    }
+
+                    try {
+                        generateThreeAddressCode(ctx.expression().simpleExpression().getChild(0).getText(), "output3AC.txt", variable);
+                        System.err.println(ThreeAddressCodeTemp);
+                        generateLLVMFrom3AC(ThreeAddressCodeTemp);
+                        ThreeAddressCodeTemp.clear();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else {
+                    if (!scope_actual.equals("global")) {
+                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
+                        String toinsert = "    store i32 " + expression + ", i32 %" + variable + "\n" +
+                                "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
+                        emit_header(toinsert);
+                        loads.add(new Loads(variable, counter, scope_actual));
+                        counter++;
+                    } else {
+                        emit_main("    store i32 " + expression + ", i32 %" + variable);
+                        emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                        loads.add(new Loads(variable, counter, scope_actual));
+                        counter++;
+                    }
+                }
+            }
+
             if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
                 return null;
@@ -1459,7 +1618,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                             break;
                                         case "string":
                                             emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
-                                            emit_main("%ptr_cadena" + counter +" = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                                            emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
                                             mensaje.append("i8* " + "%ptr_cadena" + counter);
                                             counter++;
                                             break;
