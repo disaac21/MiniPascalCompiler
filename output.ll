@@ -8,45 +8,29 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str6 = private constant [28 x i8] c"Valor de mensaje (string): \00"
-@.str5 = private constant [24 x i8] c"Valor de letra (char): \00"
-@.str4 = private constant [25 x i8] c"Valor de num (integer): \00"
-@.str3 = private constant [28 x i8] c"El valor booleano es falso.\00"
-@.str2 = private constant [32 x i8] c"El valor booleano es verdadero.\00"
-@.str1 = private constant [14 x i8] c"Hola, Pascal\00"
+@.str1 = private constant [5 x i8] c"hola\00"
+define i1 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
+entry:
+    %f = alloca i32
+    %num = alloca i32
+    store i32 %cont_num, i32* %num
+    %num_val1 = load i32, i32* %num
+    %NUM2 = alloca i32
+    store i32 %cont_NUM2, i32* %NUM2
+    %NUM2_val2 = load i32, i32* %NUM2
+
+    %numero = alloca i32
+    store i1 1, i1* %f
+    %f_val3 = load i1, i1* %f
+
+    ret i1 %f_val3
+}
 
 
 define i32 @main() {
-    %num = alloca i32
-    %letra = alloca i8
-    %prueba = alloca i32
-    %mensaje = alloca i8*
-    %esVerdadero = alloca i1
-    store i32 42, i32* %num
-    %num_val1 = load i32, i32* %num
-    store i8 65, i8* %letra
-    %letra_val2 = load i8, i8* %letra
-    store i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str1, i32 0, i32 0), i8** %mensaje
-    %mensaje_val3 = load i8*, i8** %mensaje
-    store i1 1, i1* %esVerdadero
-    %esVerdadero_val4 = load i1, i1* %esVerdadero
-%t5 = add i32 %num_val1, 10
-store i32 %t5, i32* %num
-    %num_val6 = load i32, i32* %num
-    br i1 %esVerdadero_val4, label %then1, label %else1
-then1:
-    call void @write_string(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @.str2, i32 0, i32 0))
-    br label %merge1
-else1:
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str3, i32 0, i32 0))
-    br label %merge1
-merge1:
-    call void @write_string(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str4, i32 0, i32 0))
-    call void @write_int(i32 %num_val6)
-    call void @write_string(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str5, i32 0, i32 0))
-    call void @write_char(i8 %letra_val2)
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str6, i32 0, i32 0))
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str6, i32 0, i32 0))
+    %x = alloca i32
+    %x2 = alloca i32
+    call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
   ret i32 0
 }
 

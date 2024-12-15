@@ -436,54 +436,54 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         if (valor.contains("(")) {
             valor = valor.substring(0, valor.indexOf("("));
             isFunction = true;
-        }
+        } else {
+            if (tipoEsperado.toLowerCase().equals("integer")) {
+                // Expresión que permite números enteros o variables separadas por '+'
+                String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
 
-        if (tipoEsperado.toLowerCase().equals("integer")) {
-            // Expresión que permite números enteros o variables separadas por '+'
-            String[] components = valor.split("\\s*(\\+|-|\\*|/|div|mod)\\s*");
 
+                for (String component : components) {
+                    component = component.trim(); // Eliminar espacios en blanco
 
-            for (String component : components) {
-                component = component.trim(); // Eliminar espacios en blanco
+                    // Verificar si es un número entero
+                    if (component.matches("-?\\d+")) {
+                        continue;
+                    }
 
-                // Verificar si es un número entero
-                if (component.matches("-?\\d+")) {
-                    continue;
-                }
-
-                // Verificar si es una variable definida como tipo 'integer'
-                boolean isIntegerVariable = false;
-                for (Binding binding : TablaSimbolos) {
-                    if (binding.getNombre().equals(component)) {
-                        if (isFunction) {
-                            if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
-                                if (binding.getTipo().equals("integer")) {
-                                    isIntegerVariable = true;
-                                    break;
+                    // Verificar si es una variable definida como tipo 'integer'
+                    boolean isIntegerVariable = false;
+                    for (Binding binding : TablaSimbolos) {
+                        if (binding.getNombre().equals(component)) {
+                                if (isFunction) {
+                                if (binding.getScope().equals(scope_actual) || binding.getScope().equals("global") || binding.getScope().equals(binding.getNombre())) {
+                                        if (binding.getTipo().equals("integer")) {
+                                            isIntegerVariable = true;
+                                        break;
+                                    }
                                 }
-                            }
-                        } else {
-                            if (binding.getScope().equals(scope_actual)) {
-                                if (binding.getTipo().equals("integer")) {
-                                    isIntegerVariable = true;
-                                    break;
+                            } else {
+                                if (binding.getScope().equals(scope_actual)) {
+                                        if (binding.getTipo().equals("integer")) {
+                                            isIntegerVariable = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                if (!isIntegerVariable) {
-                    return false; // Si no es número ni variable válida, la expresión no es válida
+                    if (!isIntegerVariable) {
+                        return false; // Si no es número ni variable válida, la expresión no es válida
+                    }
                 }
+                return true; // Todos los componentes son válidos
+            } else if (tipoEsperado.toLowerCase().equals("boolean")) {
+                return valor.equals("true") || valor.equals("false"); // Booleano
+            } else if (tipoEsperado.toLowerCase().equals("char")) {
+                return valor.matches("'[^']'"); // Un único carácter entre comillas simples
+            } else if (tipoEsperado.toLowerCase().equals("string")) {
+                return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
             }
-            return true; // Todos los componentes son válidos
-        } else if (tipoEsperado.toLowerCase().equals("boolean")) {
-            return valor.equals("true") || valor.equals("false"); // Booleano
-        } else if (tipoEsperado.toLowerCase().equals("char")) {
-            return valor.matches("'[^']'"); // Un único carácter entre comillas simples
-        } else if (tipoEsperado.toLowerCase().equals("string")) {
-            return valor.matches("'[^']*'"); // Cadena entre comillas simples (permite vacías)
         }
 
         // Tipo no reconocido
@@ -1490,6 +1490,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
+                System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
                 if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
