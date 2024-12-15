@@ -8,30 +8,29 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-    %x = alloca i32
-    %x2 = alloca i32
+@.str1 = private constant [5 x i8] c"hola\00"
 define i1 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
 entry:
     %f = alloca i32
     %num = alloca i32
     store i32 %cont_num, i32* %num
-    %num_val4 = load i32, i32* %num
+    %num_val1 = load i32, i32* %num
     %NUM2 = alloca i32
     store i32 %cont_NUM2, i32* %NUM2
-    %NUM2_val5 = load i32, i32* %NUM2
+    %NUM2_val2 = load i32, i32* %NUM2
 
     %numero = alloca i32
-    store i32 40, i32* %numero
-    %numero_val6 = load i32, i32* %numero
-
     store i1 1, i1* %f
-    %f_val7 = load i1, i1* %f
+    %f_val3 = load i1, i1* %f
 
-    ret i1 %f_val7
+    ret i1 %f_val3
 }
 
 
 define i32 @main() {
+    %x = alloca i32
+    %x2 = alloca i32
+    call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
   ret i32 0
 }
 
