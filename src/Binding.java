@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 
 public class Binding {
     // Atributos
@@ -7,6 +7,7 @@ public class Binding {
     private String scope = "";
     private boolean isFunctionOrProcedure = false;
     private int offset = 0;
+    private ArrayList <Parametros> parametros = null;
 
     // Constructor
     public Binding(String nombre, String tipo, String scope) {
@@ -25,7 +26,13 @@ public class Binding {
     }
 
     // Getters y Setters
+    public ArrayList<Parametros> getParametros() {
+        return parametros;
+    }
 
+    public void setParametros(ArrayList<Parametros> parametros) {
+        this.parametros = parametros;
+    }
 
     public boolean isFunctionOrProcedure() {
         return isFunctionOrProcedure;
@@ -76,6 +83,7 @@ public class Binding {
                 ", scope='" + scope + '\'' +
                 ", isFunctionOrProcedure=" + isFunctionOrProcedure +
                 ", offset=" + offset +
+                ", parametros=" + parametros +
                 " }";
     }
 }

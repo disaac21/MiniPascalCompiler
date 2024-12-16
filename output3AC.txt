@@ -1,3 +1,9 @@
+@cadena10 = constantchocolate 
 x = alloca i32
-call @write_string @.str1
-for br = label for_condition2
+x = alloca i32
+x = alloca i32
+call void @f()
+3 = load i32, 3
+%ptr_cadena10 = 10
+'H' = load i8, 72
+true = load i1, 1

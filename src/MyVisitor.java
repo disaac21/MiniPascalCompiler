@@ -61,112 +61,134 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         String nombre_funcion = expression.substring(0, expression.indexOf("("));
         System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
         String tipo_funcion = "";
+        ArrayList <Parametros> parametrosList = new ArrayList<>();
+
         for (int i = 0; i < TablaSimbolos.size(); i++) {
             if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
                 tipo_funcion = TablaSimbolos.get(i).getTipo();
+                parametrosList = TablaSimbolos.get(i).getParametros();
             }
         }
 
         String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
         //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
         String[] paramGroups = parametros.split(","); // sacando los parametros
-        StringBuilder mensaje = new StringBuilder();
-
-        mensaje.delete(0, mensaje.length());
-        switch (tipo_funcion.toLowerCase()) {
-            case "integer":
-                mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
-                emit3AC_main(variable + "_val" + counter + " = call integer @" + nombre_funcion + "()");
-                break;
-            case "boolean":
-                mensaje.append("    %" + variable + "_val" + counter + " = call i1 @" + nombre_funcion + "(");
-                emit3AC_main(variable + "_val" + counter + " = call boolean @" + nombre_funcion + "()");
-                break;
-            case "char":
-                mensaje.append("    %" + variable + "_val" + counter + " = call i8 @" + nombre_funcion + "(");
-                emit3AC_main(variable + "_val" + counter + " = call char @" + nombre_funcion + "()");
-                break;
-            case "void":
-                JOptionPane.showMessageDialog(null, "ENTRO");
-                mensaje.append("    call void @" + nombre_funcion + "(");
-                emit3AC_main("call void @" + nombre_funcion + "()");
-                break;
+        System.out.println( paramGroups.length + " paramGroups.length");
+        System.out.println( tipo_funcion + " tipo_funcion");
+        System.out.println( parametrosList + " parametrosList.size()");
+        imprimirTablaSimbolos();
+        boolean flag = true;
+        if(paramGroups.length != parametrosList.size()){
+            JOptionPane.showMessageDialog(null, "Error en la cantidad de parametros");
+        }else{
+            for (int i = 0; i < paramGroups.length; i++) {
+                System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+                System.out.println(CYAN + "PARAMETRO TIPO: " + parametrosList.get(i).getTipo() + RESET);
+                if (!verificarValor(paramGroups[i].toLowerCase(), parametrosList.get(i).getTipo().toLowerCase())) {
+                    JOptionPane.showMessageDialog(null, "Error en el tipo de parametro" + parametrosList.get(i).getTipo().toLowerCase());
+                    flag = false;
+                }
+            }
         }
-//        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
-        if (!variable.equals("")) {
-            loads.add(new Loads(variable, counter, scope_actual));
-            counter++;
-        }
+        if (flag) {
+            StringBuilder mensaje = new StringBuilder();
 
-        for (int i = 0; i < paramGroups.length; i++) {
-            System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
-//            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
-//            JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
-            switch (analyzeString(paramGroups[i])) {
+            mensaje.delete(0, mensaje.length());
+            switch (tipo_funcion.toLowerCase()) {
                 case "integer":
-                    if (Character.isLetter(paramGroups[i].charAt(0))) {
-                        Loads tempLoad = lastLoad(paramGroups[i]);
-                        mensaje.append("i32 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
-                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i32, " + tempLoad.getVariable());
-                    } else {
-                        mensaje.append("i32 " + paramGroups[i]);
-                        emit3AC_main(paramGroups[i] + " = " + "load" + " i32, " + paramGroups[i]);
-                    }
-//                    mensaje.append("i32 " + paramGroups[i]);
+                    mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+                    emit3AC_main(variable + "_val" + counter + " = call integer @" + nombre_funcion + "()");
                     break;
                 case "boolean":
-                    if (Character.isLetter(paramGroups[i].charAt(0)) && !paramGroups[i].equalsIgnoreCase("true") && !paramGroups[i].equalsIgnoreCase("false")) {
-                        Loads tempLoad = lastLoad(paramGroups[i]);
-                        mensaje.append("i1 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
-                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i1, " + tempLoad.getVariable());
-                    } else {
-                        if (paramGroups[i].equalsIgnoreCase("true")) {
-
-                            mensaje.append("i1 1");
-                            emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 1);
-                        } else {
-                            mensaje.append("i1 0");
-                            emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 2);
-                        }
-                    }
+                    mensaje.append("    %" + variable + "_val" + counter + " = call i1 @" + nombre_funcion + "(");
+                    emit3AC_main(variable + "_val" + counter + " = call boolean @" + nombre_funcion + "()");
                     break;
                 case "char":
-                    if (Character.isLetter(paramGroups[i].charAt(0))) {
-                        for (int j = 0; j < loads.size(); j++) {
-                            System.out.println(CYAN + "Variable: " + loads.get(j).getVariable() + " counter: " + loads.get(j).getCounter() + RESET);
-                        }
-                        System.out.println(CYAN + "paramGroups[i]: " + paramGroups[i] + RESET);
-                        Loads tempLoad = lastLoad(paramGroups[i]);
-                        mensaje.append("i8 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
-                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i8, " + tempLoad.getVariable());
-                    } else {
-                        int caracterascii = paramGroups[i].charAt(1);
-                        mensaje.append("i8 " + caracterascii);
-                        emit3AC_main(paramGroups[i] + " = " + "load" + " i8, " + caracterascii);
-                    }
-//                    mensaje.append("i8 " + caracterascii);
+                    mensaje.append("    %" + variable + "_val" + counter + " = call i8 @" + nombre_funcion + "(");
+                    emit3AC_main(variable + "_val" + counter + " = call char @" + nombre_funcion + "()");
                     break;
-                case "string":
-                    emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
-                    emit3AC_header("@cadena" + counter + " = constant" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + " ");
-                    emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
-                    emit3AC_main("%ptr_cadena" + counter + " = " + (paramGroups[i].length() - 1));
-                    mensaje.append("i8* " + "%ptr_cadena" + counter);
-                    counter++;
+                case "void":
+                    JOptionPane.showMessageDialog(null, "ENTRO");
+                    mensaje.append("    call void @" + nombre_funcion + "(");
+                    emit3AC_main("call void @" + nombre_funcion + "()");
                     break;
             }
-            if (i < paramGroups.length - 1) {
-                mensaje.append(", ");
+//        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+            if (!variable.equals("")) {
+                loads.add(new Loads(variable, counter, scope_actual));
+                counter++;
             }
-        }
 
-        switch (scope_actual) {
-            case "global":
-                emit_main(mensaje.toString() + ")");
-                break;
-            default:
-                emit_header(mensaje.toString() + ")");
-                break;
+            for (int i = 0; i < paramGroups.length; i++) {
+                System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+    //            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
+    //            JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
+                switch (analyzeString(paramGroups[i])) {
+                    case "integer":
+                        if (Character.isLetter(paramGroups[i].charAt(0))) {
+                            Loads tempLoad = lastLoad(paramGroups[i]);
+                            mensaje.append("i32 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                            emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i32, " + tempLoad.getVariable());
+                        } else {
+                            mensaje.append("i32 " + paramGroups[i]);
+                            emit3AC_main(paramGroups[i] + " = " + "load" + " i32, " + paramGroups[i]);
+                        }
+    //                    mensaje.append("i32 " + paramGroups[i]);
+                        break;
+                    case "boolean":
+                        if (Character.isLetter(paramGroups[i].charAt(0)) && !paramGroups[i].equalsIgnoreCase("true") && !paramGroups[i].equalsIgnoreCase("false")) {
+                            Loads tempLoad = lastLoad(paramGroups[i]);
+                            mensaje.append("i1 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                            emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i1, " + tempLoad.getVariable());
+                        } else {
+                            if (paramGroups[i].equalsIgnoreCase("true")) {
+
+                                mensaje.append("i1 1");
+                                emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 1);
+                            } else {
+                                mensaje.append("i1 0");
+                                emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 2);
+                            }
+                        }
+                        break;
+                    case "char":
+                        if (Character.isLetter(paramGroups[i].charAt(0))) {
+                            for (int j = 0; j < loads.size(); j++) {
+                                System.out.println(CYAN + "Variable: " + loads.get(j).getVariable() + " counter: " + loads.get(j).getCounter() + RESET);
+                            }
+                            System.out.println(CYAN + "paramGroups[i]: " + paramGroups[i] + RESET);
+                            Loads tempLoad = lastLoad(paramGroups[i]);
+                            mensaje.append("i8 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                            emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i8, " + tempLoad.getVariable());
+                        } else {
+                            int caracterascii = paramGroups[i].charAt(1);
+                            mensaje.append("i8 " + caracterascii);
+                            emit3AC_main(paramGroups[i] + " = " + "load" + " i8, " + caracterascii);
+                        }
+    //                    mensaje.append("i8 " + caracterascii);
+                        break;
+                    case "string":
+                        emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                        emit3AC_header("@cadena" + counter + " = constant" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + " ");
+                        emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                        emit3AC_main("%ptr_cadena" + counter + " = " + (paramGroups[i].length() - 1));
+                        mensaje.append("i8* " + "%ptr_cadena" + counter);
+                        counter++;
+                        break;
+                }
+                if (i < paramGroups.length - 1) {
+                    mensaje.append(", ");
+                }
+            }
+
+            switch (scope_actual) {
+                case "global":
+                    emit_main(mensaje.toString() + ")");
+                    break;
+                default:
+                    emit_header(mensaje.toString() + ")");
+                    break;
+            }
         }
     }
 
@@ -545,7 +567,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     static ArrayList<Binding> TablaSimbolos = new ArrayList<>();
     private static String scope_actual = "global";
 
-    public void imprimirTablaSimbolos() {
+    public static void imprimirTablaSimbolos() {
         System.out.println(CYAN + " ------- Tabla de Simbolos ------- ");
         for (Binding binding : TablaSimbolos) {
             System.out.println(binding);
@@ -570,7 +592,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return false;
     }
 
-    private boolean verificarValor(String valor, String tipoEsperado) {
+    private static boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
 
         if (valor.contains("(") && valor.contains(")")) {
@@ -1126,7 +1148,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
 
         String parametros = ctx.formalParameterList().getText().substring(1, ctx.formalParameterList().getText().length() - 1);
-        ArrayList<Parametros> parametrosList = new ArrayList<>();
+        ArrayList<Parametros> parametrosList = new ArrayList<Parametros>();
         String[] paramGroups = parametros.split(";");
 
         for (String group : paramGroups) {
@@ -1247,6 +1269,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         int offset_funcion = definicionFuncion.toString().length();
 
         Binding functionBinding = new Binding(functionName, returnType, scope_actual, true);
+        functionBinding.setParametros(parametrosList);
         functionBinding.setOffset(offset_funcion);
         TablaSimbolos.add(functionBinding);
         imprimirTablaSimbolos();
@@ -1283,6 +1306,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         // Restaurar el ámbito anterior
         scope_actual = previousScope;
+//        parametrosList.clear();
         return null;
     }
 
@@ -1299,7 +1323,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
 
         String parametros = ctx.formalParameterList().getText().substring(1, ctx.formalParameterList().getText().length() - 1);
-        ArrayList<Parametros> parametrosList = new ArrayList<>();
+        ArrayList<Parametros> parametrosList = new ArrayList<Parametros>();
         String[] paramGroups = parametros.split(";");
 
         for (String group : paramGroups) {
@@ -1384,6 +1408,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         Binding functionBinding = new Binding(ctx.identifier().getText(), "void", scope_actual, true);
         functionBinding.setOffset(offset_funcion);
+        functionBinding.setParametros(parametrosList);
         TablaSimbolos.add(functionBinding);
         imprimirTablaSimbolos();
 
@@ -1392,6 +1417,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         emit_header("    ret void\n}\n");
         System.out.println();
         scope_actual = previousScope;
+//        parametrosList.clear();
         return null;
     }
 
