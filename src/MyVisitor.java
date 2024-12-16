@@ -148,13 +148,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
 
     public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
-        System.out.println(CYAN + "Expresión: " + expression + RESET);
         // Eliminar espacios innecesarios
         expression = expression.replaceAll("\\s+", "");
+        System.out.println(CYAN + "Expresión: " + expression + RESET);
 
         // Convertir la expresión a notación postfija (RPN) respetando la precedencia
         String postfix = infixToPostfix(expression);
 
+        JOptionPane.showMessageDialog(null, "Expresion: " + expression + "\nPostfix: " + postfix);
         // Generar código de tres direcciones y escribirlo al archivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
             generateCodeFromPostfix(postfix, writer, finalVarName);
@@ -2086,15 +2087,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             visit(ctx.parameterList());
         }
         llamado_a_funcion(ctx.getText(), "");
-//        String parametros = ctx.parameterList().getText();
-//        String[] paramGroups = parametros.split(","); // sacando los parametros
-//        System.out.println("Llamado a la función '" + nombre_funcion + "' con los parámetros: " + parametros);
-//
-//        if (scope_actual.equals("global")) {
-//            emit_main("    call void @" + nombre_funcion + "(" + parametros + ")");
-//        } else {
-//            emit_header("    call void @" + nombre_funcion + "(" + parametros + ")");
-//        }
 
         System.out.println();
         return null;

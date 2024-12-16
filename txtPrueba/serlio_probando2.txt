@@ -1,16 +1,16 @@
 program test;
 
-var x: char;
+var x: integer;
 
-Function f( num, NUM2: integer; caracter: char; cadena: string):char;
+Function f( num, NUM2: integer; caracter: char; cadena: string):integer;
 var numero : INTEGER;
     Begin
         numero := 40;
-        f := 'c';
+        f := 1;
     end;
 
 begin
 	
-	x := f(3,2,'c','hola');
-    writeln('caracter: ', x);
+	x := f(3,2,'c','hola') + 2;
+    writeln('resultado: ', x);
 end.
