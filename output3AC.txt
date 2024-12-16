@@ -1,6 +1,12 @@
 x = alloca i8
 numero = alloca i32
-@.str1 = string hola desde la funcion
+@.str1 = string numero: 
 null = write @.str1
+null = integer write num_val1
+@.str2 = string caracter: 
+null = write @.str2
+null = char write caracter_val3
 numero = 40 store integer
-numero_val3 = numero load integer
+numero_val4 = numero load integer
+x = 83 store char
+x_val5 = x load char

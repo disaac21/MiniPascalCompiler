@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 
@@ -30,7 +31,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     StringBuilder TACCode = new StringBuilder();
 
     public static String analyzeString(String input) {
-        if (input.matches("\\d+")) {
+        if (Character.isLetter(input.charAt(0))) {
+            for (int i = 0; i < TablaSimbolos.size(); i++) {
+                if (TablaSimbolos.get(i).getNombre().equals(input)) {
+                    return (TablaSimbolos.get(i).getTipo());
+                }
+            }
+        } else if (input.matches("\\d+")) {
             return "integer";
         } else if (input.matches("'(.)'")) {
             return "char";
@@ -41,6 +48,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         } else {
             return "unknown";
         }
+        return input;
     }
 
     public static void llamado_a_funcion(String expression, String variable) {
@@ -76,18 +84,33 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 break;
         }
 //        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
-        loads.add(new Loads(variable, counter, scope_actual));
-        counter++;
+        if (!variable.equals("")) {
+            loads.add(new Loads(variable, counter, scope_actual));
+            counter++;
+        }
 
         for (int i = 0; i < paramGroups.length; i++) {
             System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
             switch (analyzeString(paramGroups[i])) {
                 case "integer":
-                    mensaje.append("i32 " + paramGroups[i]);
+                    if (Character.isLetter(paramGroups[i].charAt(0))) {
+                        Loads tempLoad = lastLoad(paramGroups[i]);
+                        mensaje.append("i32 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                    } else {
+                        mensaje.append("i32 " + paramGroups[i]);
+                    }
+//                    mensaje.append("i32 " + paramGroups[i]);
                     break;
                 case "char":
-                    int caracterascii = paramGroups[i].charAt(1);
-                    mensaje.append("i8 " + caracterascii);
+                    if (Character.isLetter(paramGroups[i].charAt(0))) {
+                        Loads tempLoad = lastLoad(paramGroups[i]);
+                        mensaje.append("i8 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                    } else {
+                        int caracterascii = paramGroups[i].charAt(1);
+                        mensaje.append("i8 " + caracterascii);
+                    }
+//                    mensaje.append("i8 " + caracterascii);
                     break;
                 case "string":
                     emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
@@ -1116,7 +1139,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
 
 
-        for (int i = 0; i < parametrosList.size(); i++) {
+        for (int i = 0; i < parametrosList.size(); i++) {// aca tengo que trabajar
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
@@ -1126,8 +1149,18 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     counter++;
                     break;
                 case "boolean":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i1\n");
+                    definicionFuncion.append("    store i1 %cont_" + parametrosList.get(i).getVariable() + ", i1* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i1, i1* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
                     break;
                 case "char":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i8\n");
+                    definicionFuncion.append("    store i8 %cont_" + parametrosList.get(i).getVariable() + ", i8* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i8, i8* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
                     break;
                 case "string":
                     break;
@@ -1250,8 +1283,18 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     counter++;
                     break;
                 case "boolean":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i1\n");
+                    definicionFuncion.append("    store i1 %cont_" + parametrosList.get(i).getVariable() + ", i1* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i1, i1* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
                     break;
                 case "char":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i8\n");
+                    definicionFuncion.append("    store i8 %cont_" + parametrosList.get(i).getVariable() + ", i8* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i8, i8* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
                     break;
                 case "string":
                     break;
@@ -1680,9 +1723,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             }
                             break;
                         case "char":
-                            if (isFunction(expression)){
+                            if (isFunction(expression)) {
                                 llamado_a_funcion(expression, variable);
-                            }else{
+                            } else {
                                 int asciivalue = expression.charAt(1);
                                 threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
                                 threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));

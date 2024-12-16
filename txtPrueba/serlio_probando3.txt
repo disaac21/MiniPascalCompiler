@@ -5,7 +5,7 @@ var x: char;
 Procedure f( num, NUM2: integer; caracter: char; cadena: string);
 var numero : INTEGER;
     Begin
-	writeln('hola desde la funcion');
+	writeln('hola desde la funcion: ', num);
         numero := 40;
     end;
 
