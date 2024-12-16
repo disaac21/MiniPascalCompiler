@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "test"
+source_filename = "WhileLoopExample"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,6 +8,44 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
+<<<<<<< HEAD
+@.str4 = private constant [41 x i8] c"While loop completed. Final value of i: \00"
+@.str3 = private constant [54 x i8] c"i is greater than or equal to 3. Current value of i: \00"
+@.str2 = private constant [21 x i8] c"Current value of i: \00"
+@.str1 = private constant [27 x i8] c"Starting the while loop...\00"
+
+define i32 @main() {
+    %i = alloca i32
+    %num = alloca i32
+    store i32 0, i32* %i
+    
+    call void @write_string(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str1, i32 0, i32 0))
+br label %while_condition1
+while_condition1:
+    %i_val1 = load i32, i32* %i
+
+    %cond1 = icmp slt i32 %i_val1, 10
+    br i1 %cond1, label %while_body1, label %while_end1
+while_body1:
+    %cond2 = icmp slt i32 %i_val1, 3
+    br i1 %cond2, label %then1, label %else1
+then1:
+    call void @write_string(i8* getelementptr inbounds ([21 x i8], [21 x i8]* @.str2, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
+    br label %merge1
+else1:
+    call void @write_string(i8* getelementptr inbounds ([54 x i8], [54 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %i_val1)
+    br label %merge1
+merge1:
+%t2 = add i32 %i_val1, 1
+store i32 %t2, i32* %i
+    %i_val3 = load i32, i32* %i
+    br label %while_condition1
+while_end1:
+    call void @write_string(i8* getelementptr inbounds ([41 x i8], [41 x i8]* @.str4, i32 0, i32 0))
+    call void @write_int(i32 %i_val3)
+=======
 @.str8 = private constant [10 x i8] c"read --> \00"
 @.str7 = private constant [20 x i8] c"escriba un numero: \00"
 @.str6 = private constant [9 x i8] c"numero: \00"
@@ -92,6 +130,7 @@ define i32 @main() {
     call void @write_string(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str8, i32 0, i32 0))
     call void @write_int(i32 %prueba_numero_val24)
     call void @leer_imprimir(i32 3)
+>>>>>>> f5929ae145c112b0600cf34194093c416ff98caa
   ret i32 0
 }
 

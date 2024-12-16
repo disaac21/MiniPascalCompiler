@@ -1,3 +1,31 @@
+<<<<<<< HEAD
+call @write_string @.str2
+call @write_string @.str3
+call @write_string @.str4
+i = alloca i32
+num = alloca i32
+i = store integer0
+i_val1 = load integer
+i = store integer0
+i_val1 = load integer
+call @write_string @.str1
+ while br = label while_condition1
+while_condition1:
+i = load i_val1
+while_condition1:
+cond1 = i_val1 < 10
+while br = do1 else else1 goto cond1
+while_body1:
+cond2 = i_val1 < 3
+if then1 else else1 goto cond2
+then1:
+call @write_int i_val1
+merge1:
+call @write_int i_val1
+while br = label while_condition1
+while_end1:
+call @write_int i_val3
+=======
 numero_read = alloca i32
 declare @scanf i8*
 @int_format
@@ -124,3 +152,4 @@ prueba_numero_val24 = load i32
 call @write_int prueba_numero_val24
 call void @leer_imprimir()
 3 = load i32, 3
+>>>>>>> f5929ae145c112b0600cf34194093c416ff98caa
