@@ -43,7 +43,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
     }
 
-    public static void llamado_a_funcion(String expression, String variable){
+    public static void llamado_a_funcion(String expression, String variable) {
         JOptionPane.showMessageDialog(null, "Es funcion");
         System.out.println(CYAN + "IS FUNCTION" + RESET);
         String nombre_funcion = expression.substring(0, expression.indexOf("("));
@@ -54,47 +54,57 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 tipo_funcion = TablaSimbolos.get(i).getTipo();
             }
         }
-        if (tipo_funcion.equalsIgnoreCase("integer")) { //aca solo asegura, siempre va a entrar, solo asegura el tipo de la funcion
-            String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
-            //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
-            String[] paramGroups = parametros.split(","); // sacando los parametros
-            StringBuilder mensaje = new StringBuilder();
 
-            mensaje.delete(0, mensaje.length());
-            mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
-            loads.add(new Loads(variable, counter, scope_actual));
-            counter++;
+        String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
+        //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
+        String[] paramGroups = parametros.split(","); // sacando los parametros
+        StringBuilder mensaje = new StringBuilder();
 
-            for (int i = 0; i < paramGroups.length; i++) {
-                System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
-                switch (analyzeString(paramGroups[i])) {
-                    case "integer":
-                        mensaje.append("i32 " + paramGroups[i]);
-                        break;
-                    case "char":
-                        int caracterascii = paramGroups[i].charAt(1);
-                        mensaje.append("i8 " + caracterascii);
-                        break;
-                    case "string":
-                        emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
-                        emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
-                        mensaje.append("i8* " + "%ptr_cadena" + counter);
-                        counter++;
-                        break;
-                }
-                if (i < paramGroups.length - 1) {
-                    mensaje.append(", ");
-                }
-            }
+        mensaje.delete(0, mensaje.length());
+        switch (tipo_funcion.toLowerCase()) {
+            case "integer":
+                mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+                break;
+            case "boolean":
+                mensaje.append("    %" + variable + "_val" + counter + " = call i1 @" + nombre_funcion + "(");
+                break;
+            case "char":
+                mensaje.append("    %" + variable + "_val" + counter + " = call i8 @" + nombre_funcion + "(");
+                break;
+        }
+//        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+        loads.add(new Loads(variable, counter, scope_actual));
+        counter++;
 
-            switch (scope_actual) {
-                case "global":
-                    emit_main(mensaje.toString() + ")");
+        for (int i = 0; i < paramGroups.length; i++) {
+            System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+            switch (analyzeString(paramGroups[i])) {
+                case "integer":
+                    mensaje.append("i32 " + paramGroups[i]);
                     break;
-                default:
-                    emit_header(mensaje.toString() + ")");
+                case "char":
+                    int caracterascii = paramGroups[i].charAt(1);
+                    mensaje.append("i8 " + caracterascii);
+                    break;
+                case "string":
+                    emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                    emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                    mensaje.append("i8* " + "%ptr_cadena" + counter);
+                    counter++;
                     break;
             }
+            if (i < paramGroups.length - 1) {
+                mensaje.append(", ");
+            }
+        }
+
+        switch (scope_actual) {
+            case "global":
+                emit_main(mensaje.toString() + ")");
+                break;
+            default:
+                emit_header(mensaje.toString() + ")");
+                break;
         }
     }
 
@@ -485,15 +495,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
 
-        if(valor.contains("(") && valor.contains(")")){
+        if (valor.contains("(") && valor.contains(")")) {
             String[] parts = valor.split("\\(");
             String functionName = parts[0];
             for (int i = 0; i < TablaSimbolos.size(); i++) {
-                if(TablaSimbolos.get(i).getNombre().equals(functionName)){
-                    if(TablaSimbolos.get(i).getTipo().equalsIgnoreCase(tipoEsperado.toLowerCase())){
+                if (TablaSimbolos.get(i).getNombre().equals(functionName)) {
+                    if (TablaSimbolos.get(i).getTipo().equalsIgnoreCase(tipoEsperado.toLowerCase())) {
                         return true;
-                    }
-                    else{
+                    } else {
                         return false;
                     }
                 }
@@ -522,7 +531,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 return false;
             }
         }
-        if(valor.length() >= 4 && valor.charAt(0) == '\'' && valor.charAt(valor.length() - 1) == '\''){
+        if (valor.length() >= 4 && valor.charAt(0) == '\'' && valor.charAt(valor.length() - 1) == '\'') {
             if (tipoEsperado.toLowerCase().equals("string")) {
                 return true;
             } else {
@@ -1054,6 +1063,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 definicionFuncion.append("define i1 @" + functionName + "(");
                 break;
             case "char":
+                definicionFuncion.append("define i8 @" + functionName + "(");
                 break;
             case "string":
                 break;
@@ -1088,7 +1098,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
         definicionFuncion.append(") {\n" +
                 "entry:\n");
-        switch (returnType.toLowerCase()){
+        switch (returnType.toLowerCase()) {
             case "integer":
                 definicionFuncion.append("    %" + functionName + " = alloca i32\n");
                 break;
@@ -1096,7 +1106,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 definicionFuncion.append("    %" + functionName + " = alloca i1\n");
                 break;
             case "char":
-
+                definicionFuncion.append("    %" + functionName + " = alloca i8\n");
                 break;
 
         }
@@ -1149,6 +1159,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 emit_header("    ret i1 %" + functionName + "_val" + tempload.getCounter() + "\n}\n");
                 break;
             case "char":
+                Loads tempload2 = lastLoad(functionName);
+                emit_header("    ret i8 %" + functionName + "_val" + tempload2.getCounter() + "\n}\n");
                 break;
             case "string":
                 break;
@@ -1545,7 +1557,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
 
 
-
             // Validar el tipo de la expresión
             if (tipoVariable != null) {
                 System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
@@ -1554,115 +1565,116 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     JOptionPane.showMessageDialog(null, " Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
                     System.out.println(CYAN + " paso el test ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
+                    //esto ya es generando el .ll
+                    // Generar código LLVM para la asignación
+
+                    JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
+                    switch (tipoVariable.toLowerCase()) {
+                        case "integer":
+                            if (isNumeric(expression)) {
+                                threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
+                                threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
+                                if (scope_actual != "global") {
+                                    //                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
+                                    String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
+                                            "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
+                                    emit_header(toinsert);
+                                } else {
+                                    emit_main("    store i32 " + expression + ", i32* %" + variable);
+                                    emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                                }
+                                loads.add(new Loads(variable, counter, scope_actual));
+                                System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
+                                counter++;
+                            } else if (isFunction(expression)) {
+                                llamado_a_funcion(expression, variable);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Es expresion larga");
+                            }
+                            break;
+                        case "boolean":// aca tengo que trabajar
+                            switch (expression) {
+                                case "true":
+                                    threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
+                                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
+                                    if (scope_actual != "global") {
+                                        String toinsert = "    store i1 1, i1* %" + variable + "\n" +
+                                                "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
+                                        emit_header(toinsert);
+                                    } else {
+                                        emit_main("    store i1 1, i1* %" + variable);
+                                        emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                                    }
+                                    loads.add(new Loads(variable, counter, scope_actual));
+                                    counter++;
+                                    break;
+                                case "false":
+                                    threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variable));
+                                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
+                                    if (scope_actual != "global") {
+                                        String toinsert = "    store i1 0, i1* %" + variable + "\n" +
+                                                "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
+                                        emit_header(toinsert);
+                                    } else {
+                                        emit_main("    store i1 0, i1* %" + variable);
+                                        emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                                    }
+                                    loads.add(new Loads(variable, counter, scope_actual));
+                                    counter++;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (isFunction(expression)) {
+                                llamado_a_funcion(expression, variable);
+                            }
+                            break;
+                        case "char":
+                            int asciivalue = expression.charAt(1);
+                            threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
+                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
+                            if (scope_actual != "global") {
+                                emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
+                                emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                            } else {
+                                emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
+                                emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                            }
+//                    emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
+//                    emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                            loads.add(new Loads(variable, counter, scope_actual));
+                            counter++;
+                            break;
+                        case "string":
+
+                            String currentTempString = generateTempStringVariable();
+                            int stringLength = expression.length();
+//                    stringLength--;
+                            String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
+
+//                    llvmCode.insert(0, textToPrepend);
+                            emit_header(textToPrepend);
+//                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                            threeAddressCodeList.add(new ThreeAddressCode("store", currentTempString, "string", variable));
+                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
+                            if (scope_actual != "global") {
+                                emit_header("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                                emit_header("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                            } else {
+                                emit_main("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+                                emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                            }
+//                    emit_main("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
+//                    emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                            loads.add(new Loads(variable, counter, scope_actual));
+                            counter++;
+                            break;
+                    }
                 }
             } else {
                 System.err.println(" Error: No se pudo determinar el tipo de la variable '" + variable + "'.");
             }
 
-            //esto ya es generando el .ll
-            // Generar código LLVM para la asignación
-
-            JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
-            switch (tipoVariable.toLowerCase()) {
-                case "integer":
-                    if (isNumeric(expression)) {
-                        threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
-                        threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
-                        if (scope_actual != "global") {
-                            //                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
-                            String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
-                                    "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
-                            emit_header(toinsert);
-                        } else {
-                            emit_main("    store i32 " + expression + ", i32* %" + variable);
-                            emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
-                        }
-                        loads.add(new Loads(variable, counter, scope_actual));
-                        System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
-                        counter++;
-                    } else if (isFunction(expression)) {
-                        llamado_a_funcion(expression, variable);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Es expresion larga");
-                    }
-                    break;
-                case "boolean":// aca tengo que trabajar
-                    switch (expression) {
-                        case "true":
-                            threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
-                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
-                            if (scope_actual != "global") {
-                                String toinsert = "    store i1 1, i1* %" + variable + "\n" +
-                                        "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
-                                emit_header(toinsert);
-                            } else {
-                                emit_main("    store i1 1, i1* %" + variable);
-                                emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                            }
-                            loads.add(new Loads(variable, counter, scope_actual));
-                            counter++;
-                            break;
-                        case "false":
-                            threeAddressCodeList.add(new ThreeAddressCode("store", "0", "boolean", variable));
-                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
-                            if (scope_actual != "global") {
-                                String toinsert = "    store i1 0, i1* %" + variable + "\n" +
-                                        "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
-                                emit_header(toinsert);
-                            } else {
-                                emit_main("    store i1 0, i1* %" + variable);
-                                emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
-                            }
-                            loads.add(new Loads(variable, counter, scope_actual));
-                            counter++;
-                            break;
-                        default:
-                            break;
-                    }
-                    if (isFunction(expression)){
-                    }
-                    break;
-                case "char":
-                    int asciivalue = expression.charAt(1);
-                    threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
-                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
-                    if (scope_actual != "global") {
-                        emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
-                        emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                    } else {
-                        emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
-                        emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                    }
-//                    emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
-//                    emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                    loads.add(new Loads(variable, counter, scope_actual));
-                    counter++;
-                    break;
-                case "string":
-
-                    String currentTempString = generateTempStringVariable();
-                    int stringLength = expression.length();
-//                    stringLength--;
-                    String textToPrepend = "" + currentTempString + " = private constant [" + stringLength + " x i8] c\"" + expression.substring(1, expression.length() - 1) + "\\00\"\n";
-
-//                    llvmCode.insert(0, textToPrepend);
-                    emit_header(textToPrepend);
-//                emit("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                    threeAddressCodeList.add(new ThreeAddressCode("store", currentTempString, "string", variable));
-                    threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
-                    if (scope_actual != "global") {
-                        emit_header("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                        emit_header("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                    } else {
-                        emit_main("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-                        emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                    }
-//                    emit_main("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
-//                    emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                    loads.add(new Loads(variable, counter, scope_actual));
-                    counter++;
-                    break;
-            }
 
         } else { //childcount > 1
             String statementText = "";
