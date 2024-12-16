@@ -91,6 +91,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             }
         }
         if (flag) {
+            JOptionPane.showMessageDialog(null, "Paso la flag");
             StringBuilder mensaje = new StringBuilder();
 
             mensaje.delete(0, mensaje.length());
@@ -116,6 +117,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
             if (!variable.equals("")) {
                 loads.add(new Loads(variable, counter, scope_actual));
+                imprimirTablaSimbolos();
                 counter++;
             }
 
@@ -595,6 +597,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private static boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
 
+
         if (valor.contains("(") && valor.contains(")")) {
             String[] parts = valor.split("\\(");
             String functionName = parts[0];
@@ -638,6 +641,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 return false;
             }
         }
+
+        for (int i = 0; i < TablaSimbolos.size(); i++) {
+            Binding temp = TablaSimbolos.get(i);
+            if(temp.getNombre().equalsIgnoreCase(valor) && temp.getTipo().equalsIgnoreCase(tipoEsperado))
+                return true;
+        }
+
         // Tipo no reconocido
         return false;
     }
@@ -1872,6 +1882,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 counter++;
                             } else if (isFunction(expression)) {
                                 llamado_a_funcion(expression, variable);
+//                                loads.add(new Loads())
                             } else {
 //                                JOptionPane.showMessageDialog(null, "Es expresion larga");
                             }

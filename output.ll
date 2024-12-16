@@ -8,27 +8,47 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-define void @f(i32 %cont_numero, i8* %cont_cadena, i8 %cont_caracter, i1 %cont_booleano) {
+@.str3 = private constant [9 x i8] c"numero: \00"
+@.str2 = private constant [11 x i8] c"caracter: \00"
+@.str1 = private constant [9 x i8] c"numero: \00"
+define i32 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
 entry:
-    %numero = alloca i32
-    store i32 %cont_numero, i32* %numero
-    %numero_val7 = load i32, i32* %numero
+    %f = alloca i32
+    %num = alloca i32
+    store i32 %cont_num, i32* %num
+    %num_val1 = load i32, i32* %num
+    %NUM2 = alloca i32
+    store i32 %cont_NUM2, i32* %NUM2
+    %NUM2_val2 = load i32, i32* %NUM2
     %caracter = alloca i8
     store i8 %cont_caracter, i8* %caracter
-    %caracter_val8 = load i8, i8* %caracter
-    %booleano = alloca i1
-    store i1 %cont_booleano, i1* %booleano
-    %booleano_val9 = load i1, i1* %booleano
+    %caracter_val3 = load i8, i8* %caracter
 
-    ret void
+    %numero = alloca i32
+    call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str1, i32 0, i32 0))
+    call void @write_int(i32 %num_val1)
+    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str2, i32 0, i32 0))
+    call void @write_char(i8 %caracter_val3)
+    store i32 40, i32* %numero
+    %numero_val4 = load i32, i32* %numero
+
+    store i32 11, i32* %f
+    %f_val5 = load i32, i32* %f
+
+    ret i32 %f_val5
 }
 
-@cadena10 = private constant [10 x i8] c"chocolate\00"
+@cadena8 = private constant [5 x i8] c"hola\00"
 
 define i32 @main() {
-    %x = alloca i32
-%ptr_cadena10 = bitcast [10 x i8]* @cadena10 to i8*
-    call void @f(i32 3, i8* %ptr_cadena10, i8 72, i1 1)
+    %x = alloca i8
+    %numero = alloca i32
+    store i8 83, i8* %x
+    %x_val6 = load i8, i8* %x
+%ptr_cadena8 = bitcast [5 x i8]* @cadena8 to i8*
+    %numero_val7 = call i32 @f(i32 3, i32 2, i8 %x_val6, i8* %ptr_cadena8)
+    call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %numero_val7)
   ret i32 0
 }
 

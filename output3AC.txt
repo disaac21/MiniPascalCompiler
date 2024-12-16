@@ -1,9 +1,38 @@
-@cadena10 = constantchocolate 
-x = alloca i32
-x = alloca i32
-x = alloca i32
-call void @f()
+f = define i32
+%cont_num = param i32
+%cont_NUM2 = param i32
+%cont_caracter = param i8
+%cont_cadena = param i8*
+%num = alloca i32
+%cont_num = store i32 %cont_num
+%num_val1 = load i32
+%NUM2 = alloca i32
+%cont_NUM2 = store i32 %cont_NUM2
+%NUM2_val2 = load i32
+numero = alloca i32
+call @write_int num_val1
+call @write_char caracter_val3
+numero = store integer40
+numero_val4 = load integer
+f = store integer11
+f_val5 = load integer
+@cadena8 = constanthola 
+call @write_string @.str3
+x = alloca i8
+numero = alloca i32
+call @write_string @.str1
+call @write_string @.str2
+numero = store integer40
+numero_val4 = load integer
+f = store integer11
+f_val5 = load integer
+x = store char 83
+x_val6 = load char
+x = store char 83
+x_val6 = load char
+numero_val7 = call integer @f()
 3 = load i32, 3
-%ptr_cadena10 = 10
-'H' = load i8, 72
-true = load i1, 1
+2 = load i32, 2
+x_val6 = load i8, x
+%ptr_cadena8 = 5
+call @write_int numero_val7
