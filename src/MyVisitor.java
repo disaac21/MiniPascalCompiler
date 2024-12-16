@@ -3180,43 +3180,67 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //            suma := suma + numeros[i];
         if(scope_actual.equals("global")){
             emit_main("    %" + ctx.identifier().getText() + " = alloca i32");
+            emit3AC_main(ctx.identifier().getText() + " = alloca i32");
             emit_main("    store i32 " + ctx.forList().initialValue().getText() + ", i32* %" + ctx.identifier().getText());
+            emit3AC_main(ctx.identifier().getText() + " = store " + ctx.forList().initialValue().getText());
             emit_main("    br label %for_condition" + counter);
+            emit3AC_main("for br = " + "label" + " for_condition" + counter);
 
             String temp_cond = generateCondVariable();
             emit_main("\nfor_condition" + counter + ":");
+            emit3AC_main("for_condition" + counter + ":");
             emit_main("    %" + ctx.identifier().getText() + "_val"+counter+" = load i32, i32* %" + ctx.identifier().getText());
+            emit3AC_main(ctx.identifier().getText() + "_val"+counter+" = load " + ctx.identifier().getText());
             emit_main("    %" + temp_cond + " = icmp slt i32 %" + ctx.identifier().getText() + "_val"+counter+", " + ctx.forList().finalValue().getText());
+            emit3AC_main(temp_cond + " = " + ctx.identifier().getText() + "_val"+counter + " < " + ctx.forList().finalValue().getText());
             emit_main("    br i1 %" + temp_cond + ", label %for_body" + counter + ", label %for_end" + counter);
+            emit3AC_main("for br = " + "label" + " for_body" + counter + " else " + "label" + " for_end" + counter);
 
             emit_main("\nfor_body" + counter + ":");
+            emit3AC_main("for_body" + counter + ":");
             visit(ctx.statement());
             emit_main("   %next_" + ctx.identifier().getText() + "_val"+counter+" = add i32 %" + ctx.identifier().getText() + "_val"+counter+", 1");
+            emit3AC_main("next_" + ctx.identifier().getText() + "_val"+counter+" = " + ctx.identifier().getText() + "_val"+counter + " + 1");
             emit_main("   store i32 %next_" + ctx.identifier().getText() + "_val"+counter+", i32* %" + ctx.identifier().getText());
+            emit3AC_main("next_" + ctx.identifier().getText() + "_val"+counter + " = store " + ctx.identifier().getText());
             emit_main("   br label %for_condition" + counter);
+            emit3AC_main("br = " + "label" + " for_condition" + counter);
 
             emit_main("\nfor_end" + counter + ":");
+            emit3AC_main("for_end" + counter + ":");
             counter++;
 
 //            emit3AC_main("for br = " + "label" + " for_condition" + counter);
         }else{
             emit_header("    %" + ctx.identifier().getText() + " = alloca i32");
+            emit3AC_header(ctx.identifier().getText() + " = alloca i32");
             emit_header("    store i32 " + ctx.forList().initialValue().getText() + ", i32* %" + ctx.identifier().getText());
+            emit3AC_header(ctx.identifier().getText() + " = store " + ctx.forList().initialValue().getText());
             emit_header("    br label %for_condition" + counter);
+            emit3AC_header("for br = " + "label" + " for_condition" + counter);
 
             String temp_cond = generateCondVariable();
             emit_header("\nfor_condition" + counter + ":");
+            emit3AC_header("for_condition" + counter + ":");
             emit_header("    %" + ctx.identifier().getText() + "_val"+counter+" = load i32, i32* %" + ctx.identifier().getText());
+            emit3AC_header(ctx.identifier().getText() + "_val"+counter+" = load " + ctx.identifier().getText());
             emit_header("    %" + temp_cond + " = icmp slt i32 %" + ctx.identifier().getText() + "_val"+counter+", " + ctx.forList().finalValue().getText());
+            emit3AC_header(temp_cond + " = " + ctx.identifier().getText() + "_val"+counter + " < " + ctx.forList().finalValue().getText());
             emit_header("    br i1 %" + temp_cond + ", label %for_body" + counter + ", label %for_end" + counter);
+            emit3AC_header("for br = " + "label" + " for_body" + counter + " else " + "label" + " for_end" + counter);
 
             emit_header("\nfor_body" + counter + ":");
+            emit3AC_header("for_body" + counter + ":");
             visit(ctx.statement());
             emit_header("   %next_" + ctx.identifier().getText() + "_val"+counter+" = add i32 %" + ctx.identifier().getText() + "_val"+counter+", 1");
+            emit3AC_header("next_" + ctx.identifier().getText() + "_val"+counter+" = " + ctx.identifier().getText() + "_val"+counter + " + 1");
             emit_header("   store i32 %next_" + ctx.identifier().getText() + "_val"+counter+", i32* %" + ctx.identifier().getText());
+            emit3AC_header("next_" + ctx.identifier().getText() + "_val"+counter + " = store " + ctx.identifier().getText());
             emit_header("   br label %for_condition" + counter);
+            emit3AC_header("br = " + "label" + " for_condition" + counter);
 
             emit_header("\nfor_end" + counter + ":");
+            emit3AC_header("for_end" + counter + ":");
             counter++;
 //            emit3AC_header("for br = " + "label" + " for_condition" + counter);
         }
