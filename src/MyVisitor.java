@@ -1630,20 +1630,24 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             }
                             break;
                         case "char":
-                            int asciivalue = expression.charAt(1);
-                            threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
-                            threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
-                            if (scope_actual != "global") {
-                                emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
-                                emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                            } else {
-                                emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
-                                emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                            }
+                            if (isFunction(expression)){
+                                llamado_a_funcion(expression, variable);
+                            }else{
+                                int asciivalue = expression.charAt(1);
+                                threeAddressCodeList.add(new ThreeAddressCode("store", "" + asciivalue, "char", variable));
+                                threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
+                                if (scope_actual != "global") {
+                                    emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
+                                    emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                                } else {
+                                    emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
+                                    emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
+                                }
 //                    emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
 //                    emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
-                            loads.add(new Loads(variable, counter, scope_actual));
-                            counter++;
+                                loads.add(new Loads(variable, counter, scope_actual));
+                                counter++;
+                            }
                             break;
                         case "string":
 
