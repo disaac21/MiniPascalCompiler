@@ -8,40 +8,30 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str3 = private constant [7 x i8] c"prueba\00"
-@.str2 = private constant [28 x i8] c"Valor de mensaje (string): \00"
-@.str1 = private constant [14 x i8] c"Hola, Pascal\00"
+@.str1 = private constant [22 x i8] c"hola desde la funcion\00"
+define void @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
+entry:
+    %num = alloca i32
+    store i32 %cont_num, i32* %num
+    %num_val1 = load i32, i32* %num
+    %NUM2 = alloca i32
+    store i32 %cont_NUM2, i32* %NUM2
+    %NUM2_val2 = load i32, i32* %NUM2
 
+    %numero = alloca i32
+    store i32 40, i32* %numero
+    %numero_val3 = load i32, i32* %numero
+
+    ret void
+}
+
+@cadena5 = private constant [5 x i8] c"hola\00"
 
 define i32 @main() {
-    %num = alloca i32
-    %letra = alloca i8
-    %prueba = alloca i32
-    %mensaje = alloca i8*
-    %esVerdadero = alloca i1
-    %esFalso = alloca i1
-    store i32 42, i32* %num
-    %num_val1 = load i32, i32* %num
-    store i8 65, i8* %letra
-    %letra_val2 = load i8, i8* %letra
-    store i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str1, i32 0, i32 0), i8** %mensaje
-    %mensaje_val3 = load i8*, i8** %mensaje
-    store i1 1, i1* %esVerdadero
-    %esVerdadero_val4 = load i1, i1* %esVerdadero
-    store i1 0, i1* %esFalso
-    %esFalso_val5 = load i1, i1* %esFalso
-    store i32 50, i32* %prueba
-    %prueba_val6 = load i32, i32* %prueba
-    %cond1 = and i1 %esVerdadero_val4, %esFalso_val5
-    br i1 %cond1, label %then1, label %else1
-then1:
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str2, i32 0, i32 0))
-    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str2, i32 0, i32 0))
-    br label %merge1
-else1:
-    call void @write_string(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str3, i32 0, i32 0))
-    br label %merge1
-merge1:
+    %x = alloca i8
+    call void @write_string(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str1, i32 0, i32 0))
+%ptr_cadena5 = bitcast [5 x i8]* @cadena5 to i8*
+    call void @f(i32 3, i32 2, i8 99, i8* %ptr_cadena5)
   ret i32 0
 }
 

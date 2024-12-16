@@ -5,13 +5,20 @@ var x, x2: INTEGER;
 Function f( num, NUM2: integer; caracter: char; cadena: string):BOOLEAN;
 var numero : INTEGER;
     Begin
-        numero := 40;
-        f := 3;
+        if num = 1 then
+          f := true
+        else
+          f := false
     end;
 
 
 Begin
   x2 := f(2,3,'c', 'hola');
+  if x2 = true then
+    writeln('la variable es 1');
+  else
+    writeln('la variable no es 1');
+
 end.
 
 {Begin
