@@ -404,7 +404,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                }
 
                 if (isNumeric(value)) {
-                    if (scope_actual == "global") {
+                    if (scope_actual.equals("global")) {
 
                         emit_main(String.format("store i32 %s, i32* %%%s", value, result));
 
@@ -417,7 +417,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     } else
                         emit_header(String.format("store i32 %s, i32* %%%s", value, result));
                 } else {
-                    if (scope_actual == "global") {
+                    if (scope_actual.equals("global")) {
                         emit_main("store i32 %" + value + ", i32* %" + result);
 //                        emit_main(String.format("%%%s = load i32, i32* %%%s", result + "_val" + counter, result));
                         emit_main("    %" + result + "_val" + counter + " = load i32, i32* %" + result);
@@ -450,22 +450,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String llvmOp = getLLVMOperator(operator);
                 System.err.println("op2: " + op2 + " op1: " + op1);
                 if (isNumeric(op1) && isNumeric(op2)) {
-                    if (scope_actual == "global")
+                    if (scope_actual.equals("global"))
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", " + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", " + op2);
                 } else if (isNumeric(op1)) {
-                    if (scope_actual == "global")
+                    if (scope_actual.equals("global"))
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", %" + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 " + op1 + ", %" + op2);
                 } else if (isNumeric(op2)) {
-                    if (scope_actual == "global")
+                    if (scope_actual.equals("global"))
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", " + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", " + op2);
                 } else {
-                    if (scope_actual == "global")
+                    if (scope_actual.equals("global"))
                         emit_main("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", %" + op2);
                     else
                         emit_header("%" + tempVar + " = " + llvmOp + " i32 %" + op1 + ", %" + op2);
@@ -479,7 +479,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 String tempVar = callDetails[0].trim();
                 String functionName = callDetails[1].trim();
 
-                if (scope_actual == "global")
+                if (scope_actual.equals("global"))
                     emit_main(String.format("%%%s = call i32 @%s()\n", tempVar, functionName));
                 else
                     emit_header(String.format("%%%s = call i32 @%s()\n", tempVar, functionName));
@@ -926,7 +926,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (variableType.toLowerCase()) {
                         case "integer":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i32", null, variableName));
-                            if (scope_actual == "global") {
+                            if (scope_actual.equals("global")) {
                                 emit_main("    %" + variableName + " = alloca i32");
                                 emit3AC_main(variableName + " = " + "alloca" + " i32");
                             } else {
@@ -936,7 +936,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             break;
                         case "boolean":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i1", null, variableName));
-                            if (scope_actual == "global") {
+                            if (scope_actual.equals("global")) {
                                 emit_main("    %" + variableName + " = alloca i1");
                                 emit3AC_main(variableName + " = " + "alloca" + " i1");
                             } else {
@@ -946,7 +946,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             break;
                         case "char":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8", null, variableName));
-                            if (scope_actual == "global") {
+                            if (scope_actual.equals("global")) {
                                 emit_main("    %" + variableName + " = alloca i8");
                                 emit3AC_main(variableName + " = " + "alloca" + " i8");
                             } else {
@@ -956,7 +956,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             break;
                         case "string":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8*", null, variableName));
-                            if (scope_actual == "global") {
+                            if (scope_actual.equals("global")) {
                                 emit_main("    %" + variableName + " = alloca i8*");
                                 emit3AC_main(variableName + " = " + "alloca" + " i8*");
                             } else {
@@ -1455,7 +1455,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 //                            threeAddressCodeList.add(new ThreeAddressCode("write", variable, null, null));
 
-                            if (scope_actual == "global") {
+                            if (scope_actual.equals("global")) {
                                 emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
                                 emit3AC_header("call @write_string " + currentTempString);
                             } else {
@@ -1471,7 +1471,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 }
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global") {
+                                if (scope_actual.equals("global")) {
                                     emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
                                     emit3AC_main("call @write_int " + variable + "_val" + load.getCounter());
                                 } else {
@@ -1482,7 +1482,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             } else if (tipoVariable.toLowerCase().equals("char")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global") {
+                                if (scope_actual.equals("global")) {
                                     emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
                                     emit3AC_main("call @write_char " + variable + "_val" + load.getCounter());
                                 } else {
@@ -1493,7 +1493,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             } else if (tipoVariable.toLowerCase().equals("string")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global") {
+                                if (scope_actual.equals("global")) {
                                     emit_main("%casted_" + currentTempString + " = bitcast i8* " + currentTempString + " to i8*");
                                     emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
                                     emit3AC_main("call @write_string " + variable + "_val" + load.getCounter());
@@ -1530,8 +1530,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
                 threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 
-                emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
-                emit3AC_main("call @write_string " + currentTempString);
+                if (scope_actual.equals("global")) {
+                    emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                    emit3AC_main("call @write_string " + currentTempString);
+                } else {
+                    emit_header("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                    emit3AC_header("call @write_string " + currentTempString);
+                }
+//                emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+//                emit3AC_main("call @write_string " + currentTempString);
 
             }
         } else {
@@ -1782,7 +1789,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
                                 emit3AC_main(variable + "_val" + counter + " = " + "load" + " integer");
 
-                                if (scope_actual != "global") {
+                                if (!(scope_actual.equals("global"))) {
                                     //                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
                                     String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
                                             "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
@@ -1813,7 +1820,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     emit3AC_main(variable + " = " + "store" + " boolean" + " 1");
                                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
                                     emit3AC_main(variable + "_val" + counter + " = " + "load" + " boolean");
-                                    if (scope_actual != "global") {
+                                    if (!(scope_actual.equals("global"))) {
                                         String toinsert = "    store i1 1, i1* %" + variable + "\n" +
                                                 "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
                                         emit_header(toinsert);
@@ -1833,7 +1840,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     emit3AC_main(variable + " = " + "store" + " boolean" + " 0");
                                     threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
                                     emit3AC_main(variable + "_val" + counter + " = " + "load" + " boolean");
-                                    if (scope_actual != "global") {
+                                    if (!(scope_actual.equals("global"))) {
                                         String toinsert = "    store i1 0, i1* %" + variable + "\n" +
                                                 "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
                                         emit_header(toinsert);
@@ -1864,7 +1871,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 emit3AC_main(variable + " = " + "store" + " char" + " " + asciivalue);
                                 threeAddressCodeList.add(new ThreeAddressCode("load", variable, "char", variable + "_val" + counter));
                                 emit3AC_main(variable + "_val" + counter + " = " + "load" + " char");
-                                if (scope_actual != "global") {
+                                if (!(scope_actual.equals("global"))) {
                                     emit_header("    store i8 " + asciivalue + ", i8* %" + variable);
                                     emit3AC_header(variable + " = " + "store" + " char" + " " + asciivalue);
                                     emit_header("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
@@ -1893,7 +1900,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             emit3AC_main(variable + " = " + "store" + " string" + " " + currentTempString);
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "string", variable + "_val" + counter));
                             emit3AC_main(variable + "_val" + counter + " = " + "load" + " string");
-                            if (scope_actual != "global") {
+                            if (!(scope_actual.equals("global"))) {
                                 emit_header("    store i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0), i8** %" + variable);
                                 emit_header("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
                                 emit3AC_header(variable + " = " + "store" + " string" + " " + currentTempString);
@@ -2217,11 +2224,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                 for (Loads load : loads) {
                     if (load.getVariable().equals(variable)) {
-                        threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
-                        emit3AC_main("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
-                        emit_main("    br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
-                        emit3AC_main("br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
-                        break;
+                        if (scope_actual.equals("global")) {
+                            threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+                            emit3AC_main("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
+                            emit_main("    br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
+                            emit3AC_main("br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
+                            break;
+                        } else {
+                            threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+                            emit3AC_header("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
+                            emit_header("    br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
+                            emit3AC_header("br i1 %" + variable + "_val" + load.getCounter() + ", label %then" + ifCounter + ", label %else" + ifCounter);
+                            break;
+                        }
                     }
                 }
             } else {
@@ -2242,10 +2257,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
-
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2257,9 +2277,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2271,9 +2297,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2285,9 +2317,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2299,9 +2337,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2313,9 +2357,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2327,9 +2377,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2341,9 +2397,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", %" + valor + "_val" + load2.getCounter());
+                                        }
                                         break;
                                     }
                                 }
@@ -2355,9 +2417,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (load.getVariable().equals(variable)) {
                                 for (Loads load2 : loads) {
                                     if (load2.getVariable().equals(valor)) {
-                                        threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
-                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor + "_val" + load2.getCounter());
-                                        emit_main("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                        if (scope_actual.equals("global")) {
+                                            threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor + "_val" + load2.getCounter());
+                                            emit_main("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                        } else {
+                                            threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor + "_val" + load2.getCounter(), currentCounter));
+                                            emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor + "_val" + load2.getCounter());
+                                            emit_header("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                        }
                                         break;
                                     }
                                 }
@@ -2374,9 +2442,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case ">":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " > " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp sgt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2384,9 +2458,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "<":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " < " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp slt i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2394,9 +2474,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "=":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("==", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " == " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp eq i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2404,9 +2490,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "<>":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("!=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " <> " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp ne i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2414,9 +2506,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case ">=":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode(">=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " >= " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp sge i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2424,9 +2522,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "<=":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor);
-                                    emit_main("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor);
+                                        emit_main("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("<=", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " <= " + valor);
+                                        emit_header("    %" + currentCounter + " = icmp sle i32 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2434,9 +2538,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "and":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor);
-                                    emit_main("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor);
+                                        emit_main("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("and", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " and " + valor);
+                                        emit_header("    %" + currentCounter + " = and i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2444,9 +2554,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "or":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor);
-                                    emit_main("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor);
+                                        emit_main("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("or", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " or " + valor);
+                                        emit_header("    %" + currentCounter + " = or i1 %" + variable + "_val" + load.getCounter() + ", " + valor);
+                                    }
                                     break;
                                 }
                             }
@@ -2454,9 +2570,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "not":
                             for (Loads load : loads) {
                                 if (load.getVariable().equals(variable)) {
-                                    threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor, currentCounter));
-                                    emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor);
-                                    emit_main("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    if (scope_actual.equals("global")) {
+                                        threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_main(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor);
+                                        emit_main("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    } else {
+                                        threeAddressCodeList.add(new ThreeAddressCode("not", variable + "_val" + load.getCounter(), valor, currentCounter));
+                                        emit3AC_header(currentCounter + " = " + variable + "_val" + load.getCounter() + " not " + valor);
+                                        emit_header("    %" + currentCounter + " = xor i1 %" + variable + "_val" + load.getCounter() + ", 1");
+                                    }
                                     break;
                                 }
                             }
@@ -2467,29 +2589,60 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     System.err.println("  Valor: " + valor + " no es una variable definida ni un número.");
                 }
             }
-            threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
-            emit3AC_main("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
-            emit_main("    br i1 %" + currentCounter + ", label %then" + ifCounter + ", label %else" + ifCounter);
+            if (scope_actual.equals("global")) {
+                threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+                emit3AC_main("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
+                emit_main("    br i1 %" + currentCounter + ", label %then" + ifCounter + ", label %else" + ifCounter);
+            } else {
+                threeAddressCodeList.add(new ThreeAddressCode("if", "then" + ifCounter, "else" + ifCounter, currentCounter));
+                emit3AC_header("if " + "then" + ifCounter + " else " + "else" + ifCounter + " goto " + currentCounter);
+                emit_header("    br i1 %" + currentCounter + ", label %then" + ifCounter + ", label %else" + ifCounter);
+            }
         }
 
-        threeAddressCodeList.add(new ThreeAddressCode("then", "then" + ifCounter, null, null));
-        emit3AC_main("then" + ifCounter + ":");
-        emit_main("then" + ifCounter + ":");
-        visit(ctx.statement(0));
-        threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
-        emit3AC_main("merge" + ifCounter + ":");
-        emit_main("    br label %merge" + ifCounter);
+        if (scope_actual.equals("global")) {
+            threeAddressCodeList.add(new ThreeAddressCode("then", "then" + ifCounter, null, null));
+            emit3AC_main("then" + ifCounter + ":");
+            emit_main("then" + ifCounter + ":");
+            visit(ctx.statement(0));
+            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+            emit3AC_main("merge" + ifCounter + ":");
+            emit_main("    br label %merge" + ifCounter);
+        } else {
+            threeAddressCodeList.add(new ThreeAddressCode("then", "then" + ifCounter, null, null));
+            emit3AC_header("then" + ifCounter + ":");
+            emit_header("then" + ifCounter + ":");
+            visit(ctx.statement(0));
+            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+            emit3AC_header("merge" + ifCounter + ":");
+            emit_header("    br label %merge" + ifCounter);
+        }
 
         if (ctx.ELSE() != null) {
-            threeAddressCodeList.add(new ThreeAddressCode("else", "else" + ifCounter, null, null));
-            emit_main("else" + ifCounter + ":");
-            visit(ctx.statement(1));
-            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
-            emit_main("    br label %merge" + ifCounter);
+            if (scope_actual.equals("global")) {
+                threeAddressCodeList.add(new ThreeAddressCode("else", "else" + ifCounter, null, null));
+                emit_main("else" + ifCounter + ":");
+                visit(ctx.statement(1));
+                threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+                emit_main("    br label %merge" + ifCounter);
+            } else {
+                threeAddressCodeList.add(new ThreeAddressCode("else", "else" + ifCounter, null, null));
+                emit_header("else" + ifCounter + ":");
+                visit(ctx.statement(1));
+                threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+                emit_header("    br label %merge" + ifCounter);
+            }
         }
-        threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
-        emit_main("merge" + ifCounter + ":");
-        ifCounter++;
+
+        if (scope_actual.equals("global")) {
+            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+            emit_main("merge" + ifCounter + ":");
+            ifCounter++;
+        } else {
+            threeAddressCodeList.add(new ThreeAddressCode("merge", "merge" + ifCounter, null, null));
+            emit_header("merge" + ifCounter + ":");
+            ifCounter++;
+        }
 
         System.out.println();
         return null;

@@ -13,42 +13,25 @@ target triple = "x86_64-pc-microsoft-msvc"
 @.str3 = private constant [9 x i8] c"numero: \00"
 @.str2 = private constant [9 x i8] c"no entro\00"
 @.str1 = private constant [6 x i8] c"entro\00"
-define i32 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena, i1 %cont_flag) {
+define i32 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
 entry:
     %f = alloca i32
     %num = alloca i32
     store i32 %cont_num, i32* %num
-    %num_val1 = load i32, i32* %num
+    %num_val10 = load i32, i32* %num
     %NUM2 = alloca i32
     store i32 %cont_NUM2, i32* %NUM2
-    %NUM2_val2 = load i32, i32* %NUM2
+    %NUM2_val11 = load i32, i32* %NUM2
     %caracter = alloca i8
     store i8 %cont_caracter, i8* %caracter
-    %caracter_val3 = load i8, i8* %caracter
+    %caracter_val12 = load i8, i8* %caracter
+
+    %numero = alloca i32
     %flag = alloca i1
-    store i1 %cont_flag, i1* %flag
-    %flag_val4 = load i1, i1* %flag
+    store i1 0, i1* %flag
+    %flag_val13 = load i1, i1* %flag
 
-    %numero = alloca i32
-    call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str3, i32 0, i32 0))
-    call void @write_int(i32 %num_val1)
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str4, i32 0, i32 0))
-    call void @write_char(i8 %caracter_val3)
-    store i32 40, i32* %numero
-    %numero_val5 = load i32, i32* %numero
-
-    store i32 11, i32* %f
-    %f_val6 = load i32, i32* %f
-
-    ret i32 %f_val6
-}
-
-@cadena9 = private constant [5 x i8] c"hola\00"
-
-define i32 @main() {
-    %x = alloca i8
-    %numero = alloca i32
-    br i1 %flag_val4, label %then1, label %else1
+    br i1 %flag_val13, label %then1, label %else1
 then1:
     call void @write_string(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str1, i32 0, i32 0))
     br label %merge1
@@ -56,12 +39,30 @@ else1:
     call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str2, i32 0, i32 0))
     br label %merge1
 merge1:
+    call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str3, i32 0, i32 0))
+    call void @write_int(i32 %num_val10)
+    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str4, i32 0, i32 0))
+    call void @write_char(i8 %caracter_val12)
+    store i32 40, i32* %numero
+    %numero_val14 = load i32, i32* %numero
+
+    store i32 11, i32* %f
+    %f_val15 = load i32, i32* %f
+
+    ret i32 %f_val15
+}
+
+@cadena18 = private constant [5 x i8] c"hola\00"
+
+define i32 @main() {
+    %x = alloca i8
+    %numero = alloca i32
     store i8 83, i8* %x
-    %x_val7 = load i8, i8* %x
-%ptr_cadena9 = bitcast [5 x i8]* @cadena9 to i8*
-    %numero_val8 = call i32 @f(i32 3, i32 2, i8 %x_val7, i8* %ptr_cadena9, i1 1)
+    %x_val16 = load i8, i8* %x
+%ptr_cadena18 = bitcast [5 x i8]* @cadena18 to i8*
+    %numero_val17 = call i32 @f(i32 3, i32 2, i8 %x_val16, i8* %ptr_cadena18)
     call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str5, i32 0, i32 0))
-    call void @write_int(i32 %numero_val8)
+    call void @write_int(i32 %numero_val17)
   ret i32 0
 }
 
