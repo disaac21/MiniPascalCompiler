@@ -23,13 +23,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private static int counter = 1;
     private static ArrayList<Loads> loads = new ArrayList<Loads>();
 
-    private StringBuilder header = new StringBuilder();
-    StringBuilder llvmCode = new StringBuilder();
+    private static StringBuilder header = new StringBuilder();
+    static StringBuilder llvmCode = new StringBuilder();
 
     private StringBuilder TACHeader = new StringBuilder();
     StringBuilder TACCode = new StringBuilder();
 
-    public String analyzeString(String input) {
+    public static String analyzeString(String input) {
         if (input.matches("\\d+")) {
             return "integer";
         } else if (input.matches("'(.)'")) {
@@ -43,9 +43,60 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         }
     }
 
-//    private static boolean isFunction(){
-//
-//    }
+    public static void llamado_a_funcion(String expression, String variable){
+        JOptionPane.showMessageDialog(null, "Es funcion");
+        System.out.println(CYAN + "IS FUNCTION" + RESET);
+        String nombre_funcion = expression.substring(0, expression.indexOf("("));
+        System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
+        String tipo_funcion = "";
+        for (int i = 0; i < TablaSimbolos.size(); i++) {
+            if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
+                tipo_funcion = TablaSimbolos.get(i).getTipo();
+            }
+        }
+        if (tipo_funcion.equalsIgnoreCase("integer")) { //aca solo asegura, siempre va a entrar, solo asegura el tipo de la funcion
+            String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
+            //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
+            String[] paramGroups = parametros.split(","); // sacando los parametros
+            StringBuilder mensaje = new StringBuilder();
+
+            mensaje.delete(0, mensaje.length());
+            mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+            loads.add(new Loads(variable, counter, scope_actual));
+            counter++;
+
+            for (int i = 0; i < paramGroups.length; i++) {
+                System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
+                switch (analyzeString(paramGroups[i])) {
+                    case "integer":
+                        mensaje.append("i32 " + paramGroups[i]);
+                        break;
+                    case "char":
+                        int caracterascii = paramGroups[i].charAt(1);
+                        mensaje.append("i8 " + caracterascii);
+                        break;
+                    case "string":
+                        emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                        emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                        mensaje.append("i8* " + "%ptr_cadena" + counter);
+                        counter++;
+                        break;
+                }
+                if (i < paramGroups.length - 1) {
+                    mensaje.append(", ");
+                }
+            }
+
+            switch (scope_actual) {
+                case "global":
+                    emit_main(mensaje.toString() + ")");
+                    break;
+                default:
+                    emit_header(mensaje.toString() + ")");
+                    break;
+            }
+        }
+    }
 
 
     public static void generateThreeAddressCode(String expression, String outputFileName, String finalVarName) throws IOException {
@@ -369,11 +420,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
 
-    private void emit_main(String line) {
+    private static void emit_main(String line) {
         llvmCode.append(line).append("\n");
     }
 
-    private void emit_header(String line) {
+    private static void emit_header(String line) {
         header.append(line).append("\n");
     }
 
@@ -394,15 +445,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             loads.clear();
             TablaSimbolos.clear();
             threeAddressCodeList.clear();
-            ;
             ThreeAddressCodeTemp.clear();
+            header.delete(0, header.length());
+            llvmCode.delete(0, llvmCode.length());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    ArrayList<Binding> TablaSimbolos = new ArrayList<>();
+    static ArrayList<Binding> TablaSimbolos = new ArrayList<>();
     private static String scope_actual = "global";
 
     public void imprimirTablaSimbolos() {
@@ -1529,64 +1581,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
                         counter++;
                     } else if (isFunction(expression)) {
-                        JOptionPane.showMessageDialog(null, "Es funcion");
-                        System.out.println(CYAN + "IS FUNCTION" + RESET);
-                        String nombre_funcion = expression.substring(0, expression.indexOf("("));
-                        System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
-                        String tipo_funcion = "";
-                        for (int i = 0; i < TablaSimbolos.size(); i++) {
-                            if (TablaSimbolos.get(i).getNombre().equals(nombre_funcion)) {
-                                tipo_funcion = TablaSimbolos.get(i).getTipo();
-                            }
-                        }
-                        if (tipo_funcion.equalsIgnoreCase("integer")) {
-                                String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
-                                //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
-                                String[] paramGroups = parametros.split(","); // sacando los parametros
-                                StringBuilder mensaje = new StringBuilder();
-
-                                mensaje.delete(0, mensaje.length());
-                                mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
-                                loads.add(new Loads(variable, counter, scope_actual));
-                                counter++;
-
-                                for (int i = 0; i < paramGroups.length; i++) {
-                                    System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
-                                    switch (analyzeString(paramGroups[i])) {
-                                        case "integer":
-                                            mensaje.append("i32 " + paramGroups[i]);
-                                            break;
-                                        case "char":
-                                            int caracterascii = paramGroups[i].charAt(1);
-                                            mensaje.append("i8 " + caracterascii);
-                                            break;
-                                        case "string":
-                                            emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
-                                            emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
-                                            mensaje.append("i8* " + "%ptr_cadena" + counter);
-                                            counter++;
-                                            break;
-                                    }
-                                    if (i < paramGroups.length - 1) {
-                                        mensaje.append(", ");
-                                    }
-                                }
-
-                                switch (scope_actual) {
-                                    case "global":
-                                        emit_main(mensaje.toString() + ")");
-                                        break;
-                                    default:
-                                        emit_header(mensaje.toString() + ")");
-                                        break;
-                                }
-                        }
-
+                        llamado_a_funcion(expression, variable);
                     }else{
                         JOptionPane.showMessageDialog(null, "Es expresion larga");
                     }
                     break;
-                case "boolean":
+                case "boolean":// aca tengo que trabajar
                     switch (expression) {
                         case "true":
                             threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
@@ -1617,8 +1617,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             counter++;
                             break;
                         default:
-                            emit_main("    store i1 " + expression + ", i1* %" + variable);
                             break;
+                    }
+                    if (isFunction(expression)){
                     }
                     break;
                 case "char":

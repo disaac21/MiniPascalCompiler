@@ -1,10 +1,10 @@
 x = alloca i32
 numero = alloca i32
 numero = 40 store integer
-numero_val3 = numero load integer
-f = 3 store integer
-f_val4 = f load integer
-cond1 = x_val5 == 3
+numero_val9 = numero load integer
+f = 1 store integer
+f_val10 = f load integer
+cond1 = x_val11 == 3
 cond1 = then1 if else1
 null = then then1
 @.str1 = string x es 3
