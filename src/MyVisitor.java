@@ -1539,8 +1539,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 tipo_funcion = TablaSimbolos.get(i).getTipo();
                             }
                         }
-                        switch (tipo_funcion.toLowerCase()) {
-                            case "integer":
+                        if (tipo_funcion.equalsIgnoreCase("integer")) {
                                 String parametros = expression.substring(expression.indexOf("(") + 1, expression.indexOf(")"));
                                 //                        ArrayList<Parametros> parametrosList = new ArrayList<>();
                                 String[] paramGroups = parametros.split(","); // sacando los parametros
