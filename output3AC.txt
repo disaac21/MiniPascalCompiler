@@ -1,98 +1,126 @@
+numero_read = alloca i32
+declare @scanf i8*
+@int_format
+%int_ptr2 = numero_read to i8*
+call @scanf i8*
+numero_read_val2 = load i32
+call @write_int numero_read_val2
 f = define i32
 %cont_num = param i32
 %cont_NUM2 = param i32
 %cont_caracter = param i8
 %cont_cadena = param i8*
+%cont_flag = param i1
 %num = alloca i32
 %cont_num = store i32 %cont_num
-%num_val1 = load i32
+%num_val3 = load i32
 %NUM2 = alloca i32
 %cont_NUM2 = store i32 %cont_NUM2
-%NUM2_val2 = load i32
+%NUM2_val4 = load i32
 numero = alloca i32
-flag = alloca i1
-flag = store boolean 1
-flag_val4 = load boolean
 if then1 else else1 goto cond1
-br i1 %flag_val4, label %then1, label %else1
+br i1 %flag_val6, label %then1, label %else1
 then1:
-call @write_string @.str1
-merge1:
 call @write_string @.str2
-call @write_int num_val1
-call @write_char caracter_val3
+merge1:
+call @write_string @.str3
+call @write_int num_val3
+call @write_char caracter_val5
 numero = store integer40
-numero_val5 = load integer
+numero_val7 = load integer
 f = store integer11
-f_val6 = load integer
-@cadena9 = constanthola 
-call @write_string @.str5
+f_val8 = load integer
+@cadena11 = constanthola 
+call @write_string @.str6
+call @write_string @.str8
+numero_read = alloca i32
+declare @scanf i8*
+@int_format
+%int_ptr14 = numero_read to i8*
+call @scanf i8*
+numero_read_val14 = load i32
+call @write_int numero_read_val14
 f = define i32
 %cont_num = param i32
 %cont_NUM2 = param i32
 %cont_caracter = param i8
 %cont_cadena = param i8*
+%cont_flag = param i1
 %num = alloca i32
 %cont_num = store i32 %cont_num
-%num_val10 = load i32
+%num_val15 = load i32
 %NUM2 = alloca i32
 %cont_NUM2 = store i32 %cont_NUM2
-%NUM2_val11 = load i32
+%NUM2_val16 = load i32
 numero = alloca i32
-flag = alloca i1
-flag = store boolean 0
-flag_val13 = load boolean
 if then1 else else1 goto cond1
-br i1 %flag_val13, label %then1, label %else1
+br i1 %flag_val18, label %then1, label %else1
 then1:
-call @write_string @.str1
-merge1:
 call @write_string @.str2
-call @write_int num_val10
-call @write_char caracter_val12
+merge1:
+call @write_string @.str3
+call @write_int num_val15
+call @write_char caracter_val17
 numero = store integer40
-numero_val14 = load integer
+numero_val19 = load integer
 f = store integer11
-f_val15 = load integer
-@cadena18 = constanthola 
+f_val20 = load integer
+@cadena23 = constanthola 
+call @write_string @.str6
+call @write_string @.str8
+x = alloca i8
+numero = alloca i32
+prueba_numero = alloca i32
+call @write_string @.str1
+call @write_string @.str4
 call @write_string @.str5
-x = alloca i8
-numero = alloca i32
-flag = store boolean 1
-flag_val4 = load boolean
-call @write_string @.str3
-call @write_string @.str4
 numero = store integer40
-numero_val5 = load integer
+numero_val7 = load integer
 f = store integer11
-f_val6 = load integer
+f_val8 = load integer
 x = store char 83
-x_val7 = load char
+x_val9 = load char
 x = store char 83
-x_val7 = load char
-numero_val8 = call integer @f()
+x_val9 = load char
+numero_val10 = call integer @f()
 3 = load i32, 3
 2 = load i32, 2
-x_val7 = load i8, x
-%ptr_cadena9 = 5
-call @write_int numero_val8
+x_val9 = load i8, x
+%ptr_cadena11 = 5
+true = load i1, 1
+call @write_int numero_val10
+call @write_string @.str7
+%int_ptr12 = prueba_numero to i8*
+call @scanf i8*
+prueba_numero_val12 = load i32
+call @write_int prueba_numero_val12
+call void @leer_imprimir()
+3 = load i32, 3
 x = alloca i8
 numero = alloca i32
-flag = store boolean 0
-flag_val13 = load boolean
-call @write_string @.str3
+prueba_numero = alloca i32
+call @write_string @.str1
 call @write_string @.str4
+call @write_string @.str5
 numero = store integer40
-numero_val14 = load integer
+numero_val19 = load integer
 f = store integer11
-f_val15 = load integer
-x = store char 83
-x_val16 = load char
-x = store char 83
-x_val16 = load char
-numero_val17 = call integer @f()
+f_val20 = load integer
+x = store char 65
+x_val21 = load char
+x = store char 65
+x_val21 = load char
+numero_val22 = call integer @f()
 3 = load i32, 3
 2 = load i32, 2
-x_val16 = load i8, x
-%ptr_cadena18 = 5
-call @write_int numero_val17
+x_val21 = load i8, x
+%ptr_cadena23 = 5
+true = load i1, 1
+call @write_int numero_val22
+call @write_string @.str7
+%int_ptr24 = prueba_numero to i8*
+call @scanf i8*
+prueba_numero_val24 = load i32
+call @write_int prueba_numero_val24
+call void @leer_imprimir()
+3 = load i32, 3
