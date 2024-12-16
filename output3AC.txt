@@ -1,13 +1,7 @@
-call @write_string @.str2
-num = alloca i32
-letra = alloca i8
-prueba = alloca i32
-mensaje = alloca i8*
-esVerdadero = alloca i1
-esFalso = alloca i1
-num = store integer42
-num_val1 = load integer
-prueba = store integer50
-prueba_val6 = load integer
-call @write_string mensaje_val3
-call @write_string @.str3
+numero = alloca i32
+numero = store integer40
+numero_val3 = load integer
+x = alloca i8
+call @write_string @.str1
+numero = store integer40
+numero_val3 = load integer
