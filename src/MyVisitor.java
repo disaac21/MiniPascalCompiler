@@ -33,7 +33,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public static StringBuilder TACCode = new StringBuilder();
 
     public static String analyzeString(String input) {
-        if (Character.isLetter(input.charAt(0))) {
+        if(input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")){
+            JOptionPane.showMessageDialog(null, " ENTROOOOOOOOOOOO Es boolean");
+            return "boolean";
+        }
+        else if (Character.isLetter(input.charAt(0))) {
             for (int i = 0; i < TablaSimbolos.size(); i++) {
                 if (TablaSimbolos.get(i).getNombre().equals(input)) {
                     return (TablaSimbolos.get(i).getTipo());
@@ -45,8 +49,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             return "char";
         } else if (input.matches("'([^']*)'")) {
             return "string";
-        } else if (input.equals("true") || input.equals("false")) {
-            return "boolean";
         } else {
             return "unknown";
         }
@@ -85,8 +87,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 emit3AC_main(variable + "_val" + counter + " = call char @" + nombre_funcion + "()");
                 break;
             case "void":
+                JOptionPane.showMessageDialog(null, "ENTRO");
                 mensaje.append("    call void @" + nombre_funcion + "(");
-                emit_main("call void @" + nombre_funcion + "()");
+                emit3AC_main("call void @" + nombre_funcion + "()");
                 break;
         }
 //        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
@@ -97,7 +100,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         for (int i = 0; i < paramGroups.length; i++) {
             System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
-            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
+//            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
+//            JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
             switch (analyzeString(paramGroups[i])) {
                 case "integer":
                     if (Character.isLetter(paramGroups[i].charAt(0))) {
@@ -110,8 +114,28 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     }
 //                    mensaje.append("i32 " + paramGroups[i]);
                     break;
+                case "boolean":
+                    if (Character.isLetter(paramGroups[i].charAt(0)) && !paramGroups[i].equalsIgnoreCase("true") && !paramGroups[i].equalsIgnoreCase("false")) {
+                        Loads tempLoad = lastLoad(paramGroups[i]);
+                        mensaje.append("i1 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i1, " + tempLoad.getVariable());
+                    } else {
+                        if (paramGroups[i].equalsIgnoreCase("true")) {
+
+                            mensaje.append("i1 1");
+                            emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 1);
+                        } else {
+                            mensaje.append("i1 0");
+                            emit3AC_main(paramGroups[i] + " = " + "load" + " i1, " + 2);
+                        }
+                    }
+                    break;
                 case "char":
                     if (Character.isLetter(paramGroups[i].charAt(0))) {
+                        for (int j = 0; j < loads.size(); j++) {
+                            System.out.println(CYAN + "Variable: " + loads.get(j).getVariable() + " counter: " + loads.get(j).getCounter() + RESET);
+                        }
+                        System.out.println(CYAN + "paramGroups[i]: " + paramGroups[i] + RESET);
                         Loads tempLoad = lastLoad(paramGroups[i]);
                         mensaje.append("i8 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
                         emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i8, " + tempLoad.getVariable());
@@ -155,7 +179,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         // Convertir la expresión a notación postfija (RPN) respetando la precedencia
         String postfix = infixToPostfix(expression);
 
-        JOptionPane.showMessageDialog(null, "Expresion: " + expression + "\nPostfix: " + postfix);
+//        JOptionPane.showMessageDialog(null, "Expresion: " + expression + "\nPostfix: " + postfix);
         // Generar código de tres direcciones y escribirlo al archivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
             generateCodeFromPostfix(postfix, writer, finalVarName);
@@ -1567,7 +1591,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 } else {
                     if (!scanfdeclared) {
 //                        llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
-                        emit_header("declare i32 @scanf(i8*, ...)");
+//                        emit_header("declare i32 @scanf(i8*, ...)");
+                        header.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
                         emit3AC_header("declare @scanf i8*");
                         scanfdeclared = true;
 
@@ -1577,33 +1602,54 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         case "integer":
                             if (!intformatdeclared) {
 //                                llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
-                                emit_header("@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros");
+//                                emit_header("@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros");
+                                header.insert(0, "\n@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
                                 emit3AC_header("@int_format");
                                 intformatdeclared = true;
                             }
 
-                            emit_main("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
-                            emit3AC_main("%int_ptr" + counter + " = " + variable + " to i8*");
-                            emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
-                            emit3AC_main("call @scanf i8*");
-                            emit_main("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
-                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i32");
+                            if (scope_actual.equals("global")) {
+                                emit_main("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
+                                emit3AC_main("%int_ptr" + counter + " = " + variable + " to i8*");
+                                emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
+                                emit3AC_main("call @scanf i8*");
+                                emit_main("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
+                                emit3AC_main(variable + "_val" + counter + " = " + "load" + " i32");
+                            }else {
+                                emit_header("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
+                                emit3AC_header("%int_ptr" + counter + " = " + variable + " to i8*");
+                                emit_header("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
+                                emit3AC_header("call @scanf i8*");
+                                emit_header("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
+                                emit3AC_header(variable + "_val" + counter + " = " + "load" + " i32");
+                            }
+
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
                         case "char":
                             if (!charformatdeclared) {
 //                                llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
-                                emit_header("@char_format = private constant [4 x i8] c\" %c\\00\"      ; Formato para caracteres");
+//                                emit_header("@char_format = private constant [4 x i8] c\" %c\\00\"      ; Formato para caracteres");
+                                header.insert(0, "\n@char_format = private constant [4 x i8] c\" %c\\00\"      ; Formato para caracteres\n");
                                 emit3AC_header("@char_format");
                                 charformatdeclared = true;
                             }
-                            emit_main("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
-                            emit3AC_main("%char_ptr" + counter + " = " + variable + " to i8*");
-                            emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
-                            emit3AC_main("call @scanf i8*");
-                            emit_main("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
-                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8");
+                            if (scope_actual.equals("global")) {
+                                emit_main("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
+                                emit3AC_main("%char_ptr" + counter + " = " + variable + " to i8*");
+                                emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
+                                emit3AC_main("call @scanf i8*");
+                                emit_main("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
+                                emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8");
+                            }else{
+                                emit_header("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
+                                emit3AC_header("%char_ptr" + counter + " = " + variable + " to i8*");
+                                emit_header("    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
+                                emit3AC_header("call @scanf i8*");
+                                emit_header("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
+                                emit3AC_header(variable + "_val" + counter + " = " + "load" + " i8");
+                            }
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
@@ -1611,18 +1657,32 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (!stringformatdeclared) {
 //                                llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
 //                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
-                                emit_header("@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas");
+//                                emit_header("@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas");
+                                header.insert(0, "\n@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
+                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
                                 emit3AC_header("@str_format");
                                 stringformatdeclared = true;
                             }
-                            emit_main("    %str_ptr" + counter + " = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0");
-                            emit3AC_main("%str_ptr" + counter + " = @buffer");
-                            emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr" + counter + ")");
-                            emit3AC_main("call @scanf i8*");
-                            emit_main("    store i8* %str_ptr" + counter + ", i8** %" + variable);
-                            emit3AC_main("store i8* " + " %str_ptr" + counter + ", i8** " + variable);
-                            emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
-                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8*");
+                            if (scope_actual.equals("global")) {
+                                emit_main("    %str_ptr" + counter + " = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0");
+                                emit3AC_main("%str_ptr" + counter + " = @buffer");
+                                emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr" + counter + ")");
+                                emit3AC_main("call @scanf i8*");
+                                emit_main("    store i8* %str_ptr" + counter + ", i8** %" + variable);
+                                emit3AC_main("store i8* " + " %str_ptr" + counter + ", i8** " + variable);
+                                emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                                emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8*");
+                            }else{
+                                emit_header("    %str_ptr" + counter + " = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0");
+                                emit3AC_header("%str_ptr" + counter + " = @buffer");
+                                emit_header("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr" + counter + ")");
+                                emit3AC_header("call @scanf i8*");
+                                emit_header("    store i8* %str_ptr" + counter + ", i8** %" + variable);
+                                emit3AC_header("store i8* " + " %str_ptr" + counter + ", i8** " + variable);
+                                emit_header("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                                emit3AC_header(variable + "_val" + counter + " = " + "load" + " i8*");
+                            }
+
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
@@ -1756,7 +1816,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     //esto ya es generando el .ll
                     // Generar código LLVM para la asignación
 
-                    JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
+//                    JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
                     switch (tipoVariable.toLowerCase()) {
                         case "integer":
                             if (isNumeric(expression)) {
@@ -1787,7 +1847,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             } else if (isFunction(expression)) {
                                 llamado_a_funcion(expression, variable);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Es expresion larga");
+//                                JOptionPane.showMessageDialog(null, "Es expresion larga");
                             }
                             break;
                         case "boolean":// aca tengo que trabajar
@@ -1859,8 +1919,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                     emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
                                     emit3AC_main(variable + "_val" + counter + " = " + "load" + " char");
                                 }
-//                    emit_main("    store i8 " + asciivalue + ", i8* %" + variable);
-//                    emit_main("    %" + variable + "_val" + counter + " = load i8, i8* %" + variable);
                                 loads.add(new Loads(variable, counter, scope_actual));
                                 counter++;
                             }
