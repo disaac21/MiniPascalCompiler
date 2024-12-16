@@ -181,6 +181,7 @@ public class GUI extends javax.swing.JFrame {
 //                    visitor.lastLoad("main");
 //                    visitor.generateLLVMFrom3AC();
                     visitor.writell();
+                    visitor.write3ac();
 
                     // COMPI 2
                     IRVisitors irVisitor = new IRVisitors();
@@ -246,7 +247,7 @@ public class GUI extends javax.swing.JFrame {
         // all constants here (aca iria la idea de los arraylists de constantes)
         // cosas que vayan surgiendo
         // Main function declaration
-        System.out.println("\ndefine i32 @main() {");
+//        System.out.println("\ndefine i32 @main() {");
         irVisitor.Footer();
     }
 

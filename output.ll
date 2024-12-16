@@ -1,5 +1,5 @@
 ; ModuleID = 'MiniPascal'
-source_filename = "test"
+source_filename = "ManejoDeTipos"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-microsoft-msvc"
 %struct._IO_FILE = type { i8*, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i32, i32, i32, i32, i8*, i8*, i8*, i32, i32, i32 }
@@ -8,11 +8,40 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
+@.str3 = private constant [7 x i8] c"prueba\00"
+@.str2 = private constant [28 x i8] c"Valor de mensaje (string): \00"
+@.str1 = private constant [14 x i8] c"Hola, Pascal\00"
+
 
 define i32 @main() {
-    %x = alloca i32
-    store i32 3, i32* %x
-    %x_val1 = load i32, i32* %x
+    %num = alloca i32
+    %letra = alloca i8
+    %prueba = alloca i32
+    %mensaje = alloca i8*
+    %esVerdadero = alloca i1
+    %esFalso = alloca i1
+    store i32 42, i32* %num
+    %num_val1 = load i32, i32* %num
+    store i8 65, i8* %letra
+    %letra_val2 = load i8, i8* %letra
+    store i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str1, i32 0, i32 0), i8** %mensaje
+    %mensaje_val3 = load i8*, i8** %mensaje
+    store i1 1, i1* %esVerdadero
+    %esVerdadero_val4 = load i1, i1* %esVerdadero
+    store i1 0, i1* %esFalso
+    %esFalso_val5 = load i1, i1* %esFalso
+    store i32 50, i32* %prueba
+    %prueba_val6 = load i32, i32* %prueba
+    %cond1 = and i1 %esVerdadero_val4, %esFalso_val5
+    br i1 %cond1, label %then1, label %else1
+then1:
+    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str2, i32 0, i32 0))
+    call void @write_string(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @.str2, i32 0, i32 0))
+    br label %merge1
+else1:
+    call void @write_string(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str3, i32 0, i32 0))
+    br label %merge1
+merge1:
   ret i32 0
 }
 

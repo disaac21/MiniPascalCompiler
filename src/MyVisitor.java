@@ -15,6 +15,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean charformatdeclared = false;
     private boolean stringformatdeclared = false;
     private static ArrayList<String> ThreeAddressCodeTemp = new ArrayList<>();
+    public static ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<ThreeAddressCode>();
+
 
     public static final String CYAN = "\u001B[36m";
     public static final String RESET = "\u001B[0m";
@@ -236,8 +238,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         return "while" + whileCounter++;  // while1, while2, while3, ...
     }
 
-    public static ArrayList<ThreeAddressCode> threeAddressCodeList = new ArrayList<ThreeAddressCode>();
-
     public void clearOutputFiles() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.ll"))) {
             writer.write("");
@@ -378,11 +378,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     private void emit3AC_main(String line) {
-        llvmCode.append(line).append("\n");
+        TACCode.append(line).append("\n");
     }
 
     private void emit3AC_header(String line) {
-        header.append(line).append("\n");
+        TACHeader.append(line).append("\n");
     }
 
 
@@ -396,6 +396,22 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             threeAddressCodeList.clear();
             ;
             ThreeAddressCodeTemp.clear();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write3ac() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output3AC.txt"))) {
+//            System.out.println(CYAN + "\n\n\n\n\n" + header.toString() + RESET);
+            writer.write(TACHeader.toString());
+            writer.write(TACCode.toString());
+//            loads.clear();
+//            TablaSimbolos.clear();
+//            threeAddressCodeList.clear();
+            ;
+//            ThreeAddressCodeTemp.clear();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -433,15 +449,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private boolean verificarValor(String valor, String tipoEsperado) {
         // Validación para tipos básicos
 
-        if(valor.contains("(") && valor.contains(")")){
+        if (valor.contains("(") && valor.contains(")")) {
             String[] parts = valor.split("\\(");
             String functionName = parts[0];
             for (int i = 0; i < TablaSimbolos.size(); i++) {
-                if(TablaSimbolos.get(i).getNombre().equals(functionName)){
-                    if(TablaSimbolos.get(i).getTipo().toLowerCase().equals(tipoEsperado.toLowerCase())){
+                if (TablaSimbolos.get(i).getNombre().equals(functionName)) {
+                    if (TablaSimbolos.get(i).getTipo().toLowerCase().equals(tipoEsperado.toLowerCase())) {
                         return true;
-                    }
-                    else{
+                    } else {
                         return false;
                     }
                 }
@@ -470,7 +485,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 return false;
             }
         }
-        if(valor.length() >= 4 && valor.charAt(0) == '\'' && valor.charAt(valor.length() - 1) == '\''){
+        if (valor.length() >= 4 && valor.charAt(0) == '\'' && valor.charAt(valor.length() - 1) == '\'') {
             if (tipoEsperado.toLowerCase().equals("string")) {
                 return true;
             } else {
@@ -787,31 +802,43 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (variableType.toLowerCase()) {
                         case "integer":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i32", null, variableName));
-                            if (scope_actual == "global")
+                            if (scope_actual == "global") {
                                 emit_main("    %" + variableName + " = alloca i32");
-                            else
+                                emit3AC_main(variableName + " = " + "alloca" + " i32");
+                            } else {
                                 emit_header("    %" + variableName + " = alloca i32");
+                                emit3AC_header(variableName + " = " + "alloca" + " i32");
+                            }
                             break;
                         case "boolean":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i1", null, variableName));
-                            if (scope_actual == "global")
+                            if (scope_actual == "global") {
                                 emit_main("    %" + variableName + " = alloca i1");
-                            else
+                                emit3AC_main(variableName + " = " + "alloca" + " i1");
+                            } else {
                                 emit_header("    %" + variableName + " = alloca i1");
+                                emit3AC_header(variableName + " = " + "alloca" + " i1");
+                            }
                             break;
                         case "char":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8", null, variableName));
-                            if (scope_actual == "global")
+                            if (scope_actual == "global") {
                                 emit_main("    %" + variableName + " = alloca i8");
-                            else
+                                emit3AC_main(variableName + " = " + "alloca" + " i8");
+                            } else {
                                 emit_header("    %" + variableName + " = alloca i8");
+                                emit3AC_header(variableName + " = " + "alloca" + " i8");
+                            }
                             break;
                         case "string":
                             threeAddressCodeList.add(new ThreeAddressCode("alloca", "i8*", null, variableName));
-                            if (scope_actual == "global")
+                            if (scope_actual == "global") {
                                 emit_main("    %" + variableName + " = alloca i8*");
-                            else
+                                emit3AC_main(variableName + " = " + "alloca" + " i8*");
+                            } else {
                                 emit_header("    %" + variableName + " = alloca i8*");
+                                emit3AC_header(variableName + " = " + "alloca" + " i8*");
+                            }
                             break;
                     }
 
@@ -996,9 +1023,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         switch (returnType.toLowerCase()) {
             case "integer":
                 definicionFuncion.append("define i32 @" + functionName + "(");
+                emit3AC_header(functionName + " = " + "define" + " i32");
                 break;
             case "boolean":
                 definicionFuncion.append("define i1 @" + functionName + "(");
+                emit3AC_header(functionName + " = " + "define" + " i1");
                 break;
             case "char":
                 break;
@@ -1009,24 +1038,28 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
                     definicionFuncion.append("i32 %cont_" + parametrosList.get(i).getVariable());
+                    emit3AC_header("%cont_" + parametrosList.get(i).getVariable() + " = param i32" );
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "boolean":
                     definicionFuncion.append("i1 %cont_" + parametrosList.get(i).getVariable());
+                    emit3AC_header("%cont_" + parametrosList.get(i).getVariable() + " = param i1" );
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "char":
                     definicionFuncion.append("i8 %cont_" + parametrosList.get(i).getVariable());
+                    emit3AC_header("%cont_" + parametrosList.get(i).getVariable() + " = param i8" );
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
                     break;
                 case "string":
                     definicionFuncion.append("i8* %cont_" + parametrosList.get(i).getVariable());
+                    emit3AC_header("%cont_" + parametrosList.get(i).getVariable() + " = param i8*" );
                     if (i < parametrosList.size() - 1) {
                         definicionFuncion.append(", ");
                     }
@@ -1041,8 +1074,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
+                    emit3AC_header("%" + parametrosList.get(i).getVariable() + " = alloca i32");
                     definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    emit3AC_header("%cont_" + parametrosList.get(i).getVariable() + " = " + "store" + " i32" + " %cont_" + parametrosList.get(i).getVariable());
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i32, i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    emit3AC_header("%" + parametrosList.get(i).getVariable() + "_val" + counter + " = " + "load" + " i32");
                     loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
                     counter++;
                     break;
@@ -1058,6 +1094,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
 //        llvmCode.insert(0, definicionFuncion.toString());
         emit_header(definicionFuncion.toString());
+
         int offset_funcion = definicionFuncion.toString().length();
 
         Binding functionBinding = new Binding(functionName, returnType, scope_actual, true);
@@ -1074,12 +1111,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 for (int j = 0; j < loads.size(); j++) {
                     if (loads.get(j).getVariable().equals(functionName)) {
                         emit_header("    ret i32 %" + loads.get(j).getVariable() + "_val" + loads.get(j).getCounter() + "\n}\n");
+                        emit3AC_header(loads.get(j).getVariable() + "_val" + loads.get(j).getCounter() + " = " + "ret" + " i32"); //juntar esta line en el merge
                     }
                 }
                 break;
             case "boolean":
                 Loads tempload = lastLoad(functionName);
                 emit_header("    ret i1 %" + functionName + "_val" + tempload.getCounter() + "\n}\n");
+                emit3AC_header(functionName + "_val" + tempload.getCounter() + " = " + "ret" + " i1");
                 break;
             case "char":
                 break;
@@ -1170,10 +1209,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 //                            threeAddressCodeList.add(new ThreeAddressCode("write", variable, null, null));
 
-                            if (scope_actual == "global")
+                            if (scope_actual == "global") {
                                 emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
-                            else
+                                emit3AC_header("call @write_string " + currentTempString);
+                            }else {
                                 emit_header("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                                emit3AC_main("call @write_string " + currentTempString);
+                            }
 //                            emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
 
                             Loads load = lastLoad(variable);
@@ -1183,28 +1225,35 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 }
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "integer", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global")
+                                if (scope_actual == "global") {
                                     emit_main("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
-                                else
+                                    emit3AC_main("call @write_int " + variable + "_val" + load.getCounter());
+                                }else {
                                     emit_header("    call void @write_int(i32 %" + variable + "_val" + load.getCounter() + ")");
-
+                                    emit3AC_header("call @write_int " + variable + "_val" + load.getCounter());
+                                }
 
                             } else if (tipoVariable.toLowerCase().equals("char")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "char", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global")
+                                if (scope_actual == "global") {
                                     emit_main("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
-                                else
+                                    emit3AC_main("call @write_char " + variable + "_val" + load.getCounter());
+                                }else {
                                     emit_header("    call void @write_char(i8 %" + variable + "_val" + load.getCounter() + ")");
-
+                                    emit3AC_header("call @write_char " + variable + "_val" + load.getCounter());
+                                }
 
                             } else if (tipoVariable.toLowerCase().equals("string")) {
                                 threeAddressCodeList.add(new ThreeAddressCode("write", "string", variable + "_val" + load.getCounter(), null));
 //                                emit_main("    call void @write_string(i8* %" + variable + "_val" + load.getCounter() + ")");
-                                if (scope_actual == "global")
+                                if (scope_actual == "global") {
                                     emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
-                                else
+                                    emit3AC_main("call @write_string " + variable + "_val" + load.getCounter());
+                                }else {
                                     emit_header("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                                    emit3AC_header("call @write_string " + variable + "_val" + load.getCounter());
+                                }
                             }
 
                         }
@@ -1234,6 +1283,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 
                 emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
+                emit3AC_main("call @write_string " + currentTempString);
 
             }
         } else {
@@ -1286,6 +1336,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     if (!scanfdeclared) {
 //                        llvmCode.insert(0, "\ndeclare i32 @scanf(i8*, ...)\n");
                         emit_header("declare i32 @scanf(i8*, ...)");
+                        emit3AC_header("declare @scanf i8*");
                         scanfdeclared = true;
 
                     }
@@ -1295,12 +1346,16 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (!intformatdeclared) {
 //                                llvmCode.insert(0, "@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros\n");
                                 emit_header("@int_format = private constant [3 x i8] c\"%d\\00\"       ; Formato para enteros");
+                                emit3AC_header("@int_format");
                                 intformatdeclared = true;
                             }
 
                             emit_main("    %int_ptr" + counter + " = bitcast i32* %" + variable + " to i8* ;");
+                            emit3AC_main("%int_ptr" + counter + " = " + variable + " to i8*");
                             emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @int_format to i8*), i8* %int_ptr" + counter + ")");
+                            emit3AC_main("call @scanf i8*");
                             emit_main("    %" + variable + "_val" + counter + " = load i32, i32* " + "%" + variable);
+                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i32");
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
@@ -1308,11 +1363,15 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                             if (!charformatdeclared) {
 //                                llvmCode.insert(0, "@char_format = private constant [3 x i8] c\"%c\\00\"      ; Formato para caracteres\n");
                                 emit_header("@char_format = private constant [4 x i8] c\" %c\\00\"      ; Formato para caracteres");
+                                emit3AC_header("@char_format");
                                 charformatdeclared = true;
                             }
                             emit_main("    %char_ptr" + counter + " = bitcast i8* %" + variable + " to i8* ;");
+                            emit3AC_main("%char_ptr" + counter + " = " + variable + " to i8*");
                             emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([4 x i8]* @char_format to i8*), i8* %char_ptr" + counter + ")");
+                            emit3AC_main("call @scanf i8*");
                             emit_main("    %" + variable + "_val" + counter + " = load i8, i8* " + "%" + variable);
+                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8");
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
@@ -1321,12 +1380,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                                llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
 //                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
                                 emit_header("@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas");
+                                emit3AC_header("@str_format");
                                 stringformatdeclared = true;
                             }
                             emit_main("    %str_ptr" + counter + " = getelementptr inbounds [256 x i8], [256 x i8]* @buffer, i32 0, i32 0");
+                            emit3AC_main("%str_ptr" + counter + " = @buffer");
                             emit_main("    call i32 (i8*, ...) @scanf(i8* bitcast ([3 x i8]* @str_format to i8*), i8* %str_ptr" + counter + ")");
+                            emit3AC_main("call @scanf i8*");
                             emit_main("    store i8* %str_ptr" + counter + ", i8** %" + variable);
+                            emit3AC_main("store i8* " + " %str_ptr" + counter + ", i8** " + variable);
                             emit_main("    %" + variable + "_val" + counter + " = load i8*, i8** %" + variable);
+                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " i8*");
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
                             break;
@@ -1439,6 +1503,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     try {
                         generateThreeAddressCode(ctx.expression().simpleExpression().getChild(0).getText(), "output3AC.txt", variable);
                         System.err.println(ThreeAddressCodeTemp);
+                        for (int i = 0; i < ThreeAddressCodeTemp.size(); i++) {
+                            emit3AC_main(ThreeAddressCodeTemp.get(i));
+                        }
                         generateLLVMFrom3AC(ThreeAddressCodeTemp);
                         ThreeAddressCodeTemp.clear();
                     } catch (IOException e) {
@@ -1451,11 +1518,17 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         String toinsert = "    store i32 " + expression + ", i32 %" + variable + "\n" +
                                 "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
                         emit_header(toinsert);
+                        emit3AC_header("store i32 " + expression + ", i32 %" + variable);
+                        emit3AC_header("%" + variable + "_val" + counter + " = " + "load" + " i32");
                         loads.add(new Loads(variable, counter, scope_actual));
                         counter++;
                     } else {
                         emit_main("    store i32 " + expression + ", i32 %" + variable);
+
                         emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+
+                        emit3AC_main("store i32 " + expression + " = i32 %" + variable);
+                        emit3AC_main("%" + variable + "_val" + counter + " = " + "load" + " i32");
                         loads.add(new Loads(variable, counter, scope_actual));
                         counter++;
                     }
@@ -1500,15 +1573,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 case "integer":
                     if (isNumeric(expression)) {
                         threeAddressCodeList.add(new ThreeAddressCode("store", expression, "integer", variable));
+                        emit3AC_main(variable + " = " + "store" + " integer" + expression);
                         threeAddressCodeList.add(new ThreeAddressCode("load", variable, "integer", variable + "_val" + counter));
+                        emit3AC_main(variable + "_val" + counter + " = " + "load" + " integer");
                         if (scope_actual != "global") {
                             //                        System.out.println(CYAN + "ENTRO AL IF" + RESET);
                             String toinsert = "    store i32 " + expression + ", i32* %" + variable + "\n" +
                                     "    %" + variable + "_val" + counter + " = load i32, i32* %" + variable + "\n";
                             emit_header(toinsert);
+                            emit3AC_header(variable + " = " + "store" + " integer" + expression);
+                            emit3AC_header(variable + "_val" + counter + " = " + "load" + " integer");
                         } else {
                             emit_main("    store i32 " + expression + ", i32* %" + variable);
+                            emit3AC_main(variable + " = " + "store" + " integer" + expression);
                             emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                            emit3AC_main(variable + "_val" + counter + " = " + "load" + " integer");
                         }
                         loads.add(new Loads(variable, counter, scope_actual));
                         System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
@@ -1532,6 +1611,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
                                 mensaje.delete(0, mensaje.length());
                                 mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+                                emit3AC_main(variable + "_val" + counter + " = " + "call" + nombre_funcion + "integer");
                                 loads.add(new Loads(variable, counter, scope_actual));
                                 counter++;
 
@@ -1547,7 +1627,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                             break;
                                         case "string":
                                             emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                                            emit3AC_header("@cadena = constant " + paramGroups[i].substring(1, paramGroups[i].length() - 1));
                                             emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                                            emit3AC_main("%ptr_cadena" + counter + " = " + "bitcast @cadena" + counter);
                                             mensaje.append("i8* " + "%ptr_cadena" + counter);
                                             counter++;
                                             break;
@@ -1573,14 +1655,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     switch (expression) {
                         case "true":
                             threeAddressCodeList.add(new ThreeAddressCode("store", "1", "boolean", variable));
+
                             threeAddressCodeList.add(new ThreeAddressCode("load", variable, "boolean", variable + "_val" + counter));
                             if (scope_actual != "global") {
                                 String toinsert = "    store i1 1, i1* %" + variable + "\n" +
                                         "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
                                 emit_header(toinsert);
+                                emit3AC_header(variable + " = " + "store" + " boolean" + "1");
+                                emit3AC_header(variable + "_val" + counter + " = " + "load" + " boolean");
                             } else {
                                 emit_main("    store i1 1, i1* %" + variable);
                                 emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                                emit3AC_main(variable + " = " + "store" + " boolean" + "1");
+                                emit3AC_main(variable + "_val" + counter + " = " + "load" + " boolean");
                             }
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
@@ -1592,9 +1679,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 String toinsert = "    store i1 0, i1* %" + variable + "\n" +
                                         "    %" + variable + "_val" + counter + " = load i1, i1* %" + variable + "\n";
                                 emit_header(toinsert);
+                                emit3AC_header(variable + " = " + "store" + " boolean" + "0");
+                                emit3AC_header(variable + "_val" + counter + " = " + "load" + " boolean");
                             } else {
                                 emit_main("    store i1 0, i1* %" + variable);
                                 emit_main("    %" + variable + "_val" + counter + " = load i1, i1* %" + variable);
+                                emit3AC_main(variable + " = " + "store" + " boolean" + "0");
+                                emit3AC_main(variable + "_val" + counter + " = " + "load" + " boolean");
                             }
                             loads.add(new Loads(variable, counter, scope_actual));
                             counter++;
