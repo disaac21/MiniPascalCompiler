@@ -1,9 +1,46 @@
-t8 = 3 * 90
-t9 = 8 * 9
-t10 = t8 + t9
-t11 = t10 - 9
-t12 = t11 + z_val7
-x = t12
-@.str1 = string  x --> 
-null = write @.str1
-null = integer write x_val13
+f = define i32
+%cont_num = param i32
+%cont_NUM2 = param i32
+%cont_caracter = param i8
+%cont_cadena = param i8*
+%cont_flag = param i1
+%num = alloca i32
+%cont_num = store i32 %cont_num
+%num_val1 = load i32
+%NUM2 = alloca i32
+%cont_NUM2 = store i32 %cont_NUM2
+%NUM2_val2 = load i32
+numero = alloca i32
+call @write_int num_val1
+call @write_char caracter_val3
+numero = store integer40
+numero_val5 = load integer
+f = store integer11
+f_val6 = load integer
+@cadena9 = constanthola 
+call @write_string @.str5
+x = alloca i8
+numero = alloca i32
+if then1 else else1 goto cond1
+br i1 %flag_val4, label %then1, label %else1
+then1:
+call @write_string @.str1
+merge1:
+call @write_string @.str2
+call @write_string @.str3
+call @write_string @.str4
+numero = store integer40
+numero_val5 = load integer
+f = store integer11
+f_val6 = load integer
+x = store char 83
+x_val7 = load char
+x = store char 83
+x_val7 = load char
+numero_val8 = call integer @f()
+3 = load i32, 3
+2 = load i32, 2
+x_val7 = load i8, x
+%ptr_cadena9 = 5
+true = load i1, 1
+call @write_int numero_val8
