@@ -8,26 +8,27 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str1 = private constant [5 x i8] c"hola\00"
+define void @f(i32 %cont_numero, i8* %cont_cadena, i8 %cont_caracter, i1 %cont_booleano) {
+entry:
+    %numero = alloca i32
+    store i32 %cont_numero, i32* %numero
+    %numero_val7 = load i32, i32* %numero
+    %caracter = alloca i8
+    store i8 %cont_caracter, i8* %caracter
+    %caracter_val8 = load i8, i8* %caracter
+    %booleano = alloca i1
+    store i1 %cont_booleano, i1* %booleano
+    %booleano_val9 = load i1, i1* %booleano
+
+    ret void
+}
+
+@cadena10 = private constant [10 x i8] c"chocolate\00"
 
 define i32 @main() {
     %x = alloca i32
-    %i = alloca i32
-    store i32 1, i32* %i
-    br label %for_condition1
-
-for_condition1:
-    %i_val1 = load i32, i32* %i
-    %cond1 = icmp slt i32 %i_val1, 10
-    br i1 %cond1, label %for_body1, label %for_end1
-
-for_body1:
-    call void @write_string(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str1, i32 0, i32 0))
-   %next_i_val1 = add i32 %i_val1, 1
-   store i32 %next_i_val1, i32* %i
-   br label %for_condition1
-
-for_end1:
+%ptr_cadena10 = bitcast [10 x i8]* @cadena10 to i8*
+    call void @f(i32 3, i8* %ptr_cadena10, i8 72, i1 1)
   ret i32 0
 }
 
