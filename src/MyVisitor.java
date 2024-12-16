@@ -1084,11 +1084,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
         switch (returnType.toLowerCase()) {
             case "integer":
-                for (int j = 0; j < loads.size(); j++) {
-                    if (loads.get(j).getVariable().equals(functionName)) {
-                        emit_header("    ret i32 %" + loads.get(j).getVariable() + "_val" + loads.get(j).getCounter() + "\n}\n");
-                    }
-                }
+//                for (int j = 0; j < loads.size(); j++) {
+//                    if (loads.get(j).getVariable().equals(functionName)) {
+//                        emit_header("    ret i32 %" + loads.get(j).getVariable() + "_val" + loads.get(j).getCounter() + "\n}\n");
+//                    }
+//                }
+                Loads tempload1 = lastLoad(functionName);
+                emit_header("    ret i32 %" + functionName + "_val" + tempload1.getCounter() + "\n}\n");
                 break;
             case "boolean":
                 Loads tempload = lastLoad(functionName);
@@ -1475,6 +1477,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 }
             }
 
+            // aca continua
             if (!encontrarVariable(variable)) {
                 System.err.println(" Error: La variable '" + variable + "' no está definida en el ámbito '" + scope_actual + "'.");
                 return null;
@@ -1507,7 +1510,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             //esto ya es generando el .ll
             // Generar código LLVM para la asignación
 
-
+            JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
             switch (tipoVariable.toLowerCase()) {
                 case "integer":
                     if (isNumeric(expression)) {
@@ -1526,6 +1529,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                         System.out.println(CYAN + "ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
                         counter++;
                     } else if (isFunction(expression)) {
+                        JOptionPane.showMessageDialog(null, "Es funcion");
                         System.out.println(CYAN + "IS FUNCTION" + RESET);
                         String nombre_funcion = expression.substring(0, expression.indexOf("("));
                         System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
