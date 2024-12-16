@@ -1,0 +1,19 @@
+program test;
+
+var x: char;
+var numero: integer;
+
+Function f( num, NUM2: integer; caracter: char; cadena: string): integer;
+var numero : INTEGER;
+    Begin
+	writeln('numero: ', num);
+	writeln('caracter: ', caracter);
+        numero := 40;
+	f := 11;
+    end;
+
+begin
+	x := 'S';
+	numero := f(3,2,x,'hola');
+	writeln('numero: ', numero);
+end.
