@@ -1,6 +1,9 @@
-t7 = 3 + z_val6
-t8 = t7 + 2
-x = t8
-@.str1 = string resultado: 
+t8 = 3 * 90
+t9 = 8 * 9
+t10 = t8 + t9
+t11 = t10 - 9
+t12 = t11 + z_val7
+x = t12
+@.str1 = string  x --> 
 null = write @.str1
-null = integer write x_val9
+null = integer write x_val13
