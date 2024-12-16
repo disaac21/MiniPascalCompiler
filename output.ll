@@ -8,10 +8,10 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str2 = private constant [11 x i8] c"caracter: \00"
-@.str1 = private constant [9 x i8] c"numero: \00"
-define void @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
+@.str1 = private constant [12 x i8] c"resultado: \00"
+define i32 @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
 entry:
+    %f = alloca i32
     %num = alloca i32
     store i32 %cont_num, i32* %num
     %num_val1 = load i32, i32* %num
@@ -23,24 +23,27 @@ entry:
     %caracter_val3 = load i8, i8* %caracter
 
     %numero = alloca i32
-    call void @write_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %num_val1)
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str2, i32 0, i32 0))
-    call void @write_char(i8 %caracter_val3)
     store i32 40, i32* %numero
     %numero_val4 = load i32, i32* %numero
 
-    ret void
+    store i32 1, i32* %f
+    %f_val5 = load i32, i32* %f
+
+    ret i32 %f_val5
 }
 
-@cadena6 = private constant [5 x i8] c"hola\00"
 
 define i32 @main() {
-    %x = alloca i8
-    store i8 83, i8* %x
-    %x_val5 = load i8, i8* %x
-%ptr_cadena6 = bitcast [5 x i8]* @cadena6 to i8*
-    call void @f(i32 3, i32 2, i8 %x_val5, i8* %ptr_cadena6)
+    %x = alloca i32
+    %z = alloca i32
+    store i32 3, i32* %z
+    %z_val6 = load i32, i32* %z
+%t7 = add i32 3, %z_val6
+%t8 = add i32 %t7, 2
+store i32 %t8, i32* %x
+    %x_val9 = load i32, i32* %x
+    call void @write_string(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str1, i32 0, i32 0))
+    call void @write_int(i32 %x_val9)
   ret i32 0
 }
 

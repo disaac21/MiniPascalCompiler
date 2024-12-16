@@ -1,12 +1,6 @@
-x = alloca i8
-numero = alloca i32
-@.str1 = string numero: 
+t7 = 3 + z_val6
+t8 = t7 + 2
+x = t8
+@.str1 = string resultado: 
 null = write @.str1
-null = integer write num_val1
-@.str2 = string caracter: 
-null = write @.str2
-null = char write caracter_val3
-numero = 40 store integer
-numero_val4 = numero load integer
-x = 83 store char
-x_val5 = x load char
+null = integer write x_val9
