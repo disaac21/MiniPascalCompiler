@@ -8,7 +8,6 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str2 = private constant [11 x i8] c"caracter: \00"
 @.str1 = private constant [22 x i8] c"hola desde la funcion\00"
 define void @f(i32 %cont_num, i32 %cont_NUM2, i8 %cont_caracter, i8* %cont_cadena) {
 entry:
@@ -26,14 +25,13 @@ entry:
     ret void
 }
 
+@cadena5 = private constant [5 x i8] c"hola\00"
 
 define i32 @main() {
     %x = alloca i8
     call void @write_string(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str1, i32 0, i32 0))
-    store i8 99, i8* %x
-    %x_val4 = load i8, i8* %x
-    call void @write_string(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str2, i32 0, i32 0))
-    call void @write_char(i8 %x_val4)
+%ptr_cadena5 = bitcast [5 x i8]* @cadena5 to i8*
+    call void @f(i32 3, i32 2, i8 99, i8* %ptr_cadena5)
   ret i32 0
 }
 

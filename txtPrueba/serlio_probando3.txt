@@ -2,16 +2,14 @@ program test;
 
 var x: char;
 
-Function f( num, NUM2: integer; caracter: char; cadena: string):char;
+Procedure f( num, NUM2: integer; caracter: char; cadena: string);
 var numero : INTEGER;
     Begin
 	writeln('hola desde la funcion');
         numero := 40;
-        f := 'c';
     end;
 
 begin
 	
-	x := f(3,2,'c','hola');
-    writeln('caracter: ', x);
+	f(3,2,'c','hola');
 end.

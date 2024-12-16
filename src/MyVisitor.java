@@ -71,6 +71,9 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             case "char":
                 mensaje.append("    %" + variable + "_val" + counter + " = call i8 @" + nombre_funcion + "(");
                 break;
+            case "void":
+                mensaje.append("    call void @" + nombre_funcion + "(");
+                break;
         }
 //        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
         loads.add(new Loads(variable, counter, scope_actual));
@@ -583,6 +586,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitIdentifier(MiniPascalGrammarParser.IdentifierContext ctx) {
+
         return visitChildren(ctx);
     }
 
@@ -1533,44 +1537,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             if (ctx.expression().simpleExpression().getChild(0).getChildCount() == 1) {
                 System.out.println(CYAN + "CHILD == 1" + RESET);
                 // Verificar si la variable está definida en el ámbito actual
-
-
-//                String statementText = "";
-//                for (int i = 0; i < ctx.expression().simpleExpression().getChildCount(); i++) {
-//                    statementText += ctx.expression().simpleExpression().getChild(i).getText() + " ";
-//                }
-//                String[] expresionSplit = statementText.split(" ");
-//
-//                if (expresionSplit.length == 3) {
-//                    String operador = expresionSplit[1];
-//                    String operando1 = expresionSplit[0];
-//                    String operando2 = expresionSplit[2];
-//
-//                    if (operador.equals("+")) {
-//
-//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-//
-//                            int resultado = Integer.parseInt(operando1) + Integer.parseInt(operando2);
-//
-//                        } else {
-//
-//                        }
-//                    } else if (operador.equals("-")) {
-//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-//                            int resultado = Integer.parseInt(operando1) - Integer.parseInt(operando2);
-//                        } else {
-//                        }
-//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-//                            int resultado = Integer.parseInt(operando1) * Integer.parseInt(operando2);
-//                        } else {
-//                        }
-//                    } else if (operador.equals("/")) {
-//                        if (operando1.matches("[0-9]+") && operando2.matches("[0-9]+")) {
-//                            int resultado = Integer.parseInt(operando1) / Integer.parseInt(operando2);
-//                        } else {
-//                        }
-//                    }
-//                }
             } else {
                 // DESGLOSAR OPERACION POR PARTES
                 String operacion = ctx.expression().simpleExpression().getChild(0).getText();
@@ -1942,9 +1908,21 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDesignator(MiniPascalGrammarParser.FunctionDesignatorContext ctx) {
+        String nombre_funcion = ctx.identifier().getText();
         if (ctx.parameterList() != null) {
             visit(ctx.parameterList());
         }
+        llamado_a_funcion(ctx.getText(), "");
+//        String parametros = ctx.parameterList().getText();
+//        String[] paramGroups = parametros.split(","); // sacando los parametros
+//        System.out.println("Llamado a la función '" + nombre_funcion + "' con los parámetros: " + parametros);
+//
+//        if (scope_actual.equals("global")) {
+//            emit_main("    call void @" + nombre_funcion + "(" + parametros + ")");
+//        } else {
+//            emit_header("    call void @" + nombre_funcion + "(" + parametros + ")");
+//        }
+
         System.out.println();
         return null;
     }
