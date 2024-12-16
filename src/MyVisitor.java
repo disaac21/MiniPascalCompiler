@@ -29,8 +29,8 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     private static StringBuilder header = new StringBuilder();
     static StringBuilder llvmCode = new StringBuilder();
 
-    private StringBuilder TACHeader = new StringBuilder();
-    StringBuilder TACCode = new StringBuilder();
+    public static StringBuilder TACHeader = new StringBuilder();
+    public static StringBuilder TACCode = new StringBuilder();
 
     public static String analyzeString(String input) {
         if (Character.isLetter(input.charAt(0))) {
@@ -74,15 +74,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         switch (tipo_funcion.toLowerCase()) {
             case "integer":
                 mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
+                emit3AC_main(variable + "_val" + counter + " = call integer @" + nombre_funcion + "()");
                 break;
             case "boolean":
                 mensaje.append("    %" + variable + "_val" + counter + " = call i1 @" + nombre_funcion + "(");
+                emit3AC_main(variable + "_val" + counter + " = call boolean @" + nombre_funcion + "()");
                 break;
             case "char":
                 mensaje.append("    %" + variable + "_val" + counter + " = call i8 @" + nombre_funcion + "(");
+                emit3AC_main(variable + "_val" + counter + " = call char @" + nombre_funcion + "()");
                 break;
             case "void":
                 mensaje.append("    call void @" + nombre_funcion + "(");
+                emit_main("call void @" + nombre_funcion + "()");
                 break;
         }
 //        mensaje.append("    %" + variable + "_val" + counter + " = call i32 @" + nombre_funcion + "(");
@@ -99,8 +103,10 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     if (Character.isLetter(paramGroups[i].charAt(0))) {
                         Loads tempLoad = lastLoad(paramGroups[i]);
                         mensaje.append("i32 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i32, " + tempLoad.getVariable());
                     } else {
                         mensaje.append("i32 " + paramGroups[i]);
+                        emit3AC_main(paramGroups[i] + " = " + "load" + " i32, " + paramGroups[i]);
                     }
 //                    mensaje.append("i32 " + paramGroups[i]);
                     break;
@@ -108,15 +114,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     if (Character.isLetter(paramGroups[i].charAt(0))) {
                         Loads tempLoad = lastLoad(paramGroups[i]);
                         mensaje.append("i8 " + "%" + tempLoad.getVariable() + "_val" + tempLoad.getCounter());
+                        emit3AC_main(tempLoad.getVariable() + "_val" + tempLoad.getCounter() + " = " + "load" + " i8, " + tempLoad.getVariable());
                     } else {
                         int caracterascii = paramGroups[i].charAt(1);
                         mensaje.append("i8 " + caracterascii);
+                        emit3AC_main(paramGroups[i] + " = " + "load" + " i8, " + caracterascii);
                     }
 //                    mensaje.append("i8 " + caracterascii);
                     break;
                 case "string":
                     emit_header("@cadena" + counter + " = private constant [" + (paramGroups[i].length() - 1) + " x i8] c\"" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + "\\00\"");
+                    emit3AC_header( "@cadena" + counter + " = constant" + paramGroups[i].substring(1, paramGroups[i].length() - 1) + " ");
                     emit_main("%ptr_cadena" + counter + " = bitcast [" + (paramGroups[i].length() - 1) + " x i8]* @cadena" + counter + " to i8*");
+                    emit3AC_main("%ptr_cadena" + counter + " = " + (paramGroups[i].length() - 1));
                     mensaje.append("i8* " + "%ptr_cadena" + counter);
                     counter++;
                     break;
@@ -464,11 +474,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         header.append(line).append("\n");
     }
 
-    private void emit3AC_main(String line) {
+    private static void emit3AC_main(String line) {
         TACCode.append(line).append("\n");
     }
 
-    private void emit3AC_header(String line) {
+    private static void emit3AC_header(String line) {
         TACHeader.append(line).append("\n");
     }
 
@@ -1494,6 +1504,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 threeAddressCodeList.add(new ThreeAddressCode("string", strValue, null, currentTempString));
                 threeAddressCodeList.add(new ThreeAddressCode("write", currentTempString, null, null));
 
+                emit_main("%casted_" + currentTempString + " = bitcast i8* " + currentTempString + " to i8*");
                 emit_main("    call void @write_string(i8* getelementptr inbounds ([" + stringLength + " x i8], [" + stringLength + " x i8]* " + currentTempString + ", i32 0, i32 0))");
                 emit3AC_main("call @write_string " + currentTempString);
 

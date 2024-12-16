@@ -1,7 +1,19 @@
-numero = alloca i32
-numero = store integer40
-numero_val3 = load integer
-x = alloca i8
+num = alloca i32
+letra = alloca i8
+prueba = alloca i32
+mensaje = alloca i8*
+esVerdadero = alloca i1
+num = store integer42
+num_val14 = load integer
+num = store integer42
+num_val14 = load integer
+letra = store char 65
+letra_val15 = load char
+letra = store char 65
+letra_val15 = load char
+esVerdadero = store boolean 0
+esVerdadero_val16 = load boolean
+esVerdadero = store boolean 0
+esVerdadero_val16 = load boolean
 call @write_string @.str1
-numero = store integer40
-numero_val3 = load integer
+call @write_string @.str2
