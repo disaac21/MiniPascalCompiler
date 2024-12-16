@@ -1178,11 +1178,95 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     public Object visitProcedureDeclaration(MiniPascalGrammarParser.ProcedureDeclarationContext ctx) {
         String previousScope = scope_actual;
         scope_actual = ctx.identifier().getText();
+        StringBuilder definicionFuncion = new StringBuilder();
+        definicionFuncion.append("define void @" + ctx.identifier().getText() + "(");
 
         if (ctx.formalParameterList() != null) {
             visit(ctx.formalParameterList());
         }
+
+        String parametros = ctx.formalParameterList().getText().substring(1, ctx.formalParameterList().getText().length() - 1);
+        ArrayList<Parametros> parametrosList = new ArrayList<>();
+        String[] paramGroups = parametros.split(";");
+
+        for (String group : paramGroups) {
+            String[] parts = group.split(":");
+            String[] variables = parts[0].split(",");
+            String tipo = parts[1].trim();
+
+            for (String variable : variables) {
+                parametrosList.add(new Parametros(variable.trim(), tipo));
+            }
+        }
+
+        for (int i = 0; i < parametrosList.size(); i++) {
+            System.out.println(CYAN + "  Parametro: " + parametrosList.get(i).getVariable() + " de tipo " + parametrosList.get(i).getTipo() + RESET);
+        }
+
+
+        for (int i = 0; i < parametrosList.size(); i++) {
+            switch (parametrosList.get(i).getTipo().toLowerCase()) {
+                case "integer":
+                    definicionFuncion.append("i32 %cont_" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "boolean":
+                    definicionFuncion.append("i1 %cont_" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "char":
+                    definicionFuncion.append("i8 %cont_" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+                case "string":
+                    definicionFuncion.append("i8* %cont_" + parametrosList.get(i).getVariable());
+                    if (i < parametrosList.size() - 1) {
+                        definicionFuncion.append(", ");
+                    }
+                    break;
+            }
+        }
+
+        definicionFuncion.append(") {\n" +
+                "entry:\n");
+
+        for (int i = 0; i < parametrosList.size(); i++) {
+            switch (parametrosList.get(i).getTipo().toLowerCase()) {
+                case "integer":
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
+                    definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i32, i32* %" + parametrosList.get(i).getVariable() + "\n");
+                    loads.add(new Loads(parametrosList.get(i).getVariable(), counter, scope_actual));
+                    counter++;
+                    break;
+                case "boolean":
+                    break;
+                case "char":
+                    break;
+                case "string":
+                    break;
+            }
+        }
+
+
+//        llvmCode.insert(0, definicionFuncion.toString());
+        emit_header(definicionFuncion.toString());
+        int offset_funcion = definicionFuncion.toString().length();
+
+        Binding functionBinding = new Binding(ctx.identifier().getText(), "void", scope_actual, true);
+        functionBinding.setOffset(offset_funcion);
+        TablaSimbolos.add(functionBinding);
+        imprimirTablaSimbolos();
+
         visit(ctx.block());
+
+        emit_header("    ret void\n}\n");
         System.out.println();
         scope_actual = previousScope;
         return null;
