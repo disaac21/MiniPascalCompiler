@@ -34,7 +34,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     public static String analyzeString(String input) {
         if(input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")){
-            JOptionPane.showMessageDialog(null, " ENTROOOOOOOOOOOO Es boolean");
+            //JOptionPane.showMessageDialog(null, " ENTROOOOOOOOOOOO Es boolean");
             return "boolean";
         }
         else if (Character.isLetter(input.charAt(0))) {
@@ -56,7 +56,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
     }
 
     public static void llamado_a_funcion(String expression, String variable) {
-        JOptionPane.showMessageDialog(null, "Es funcion");
+        //JOptionPane.showMessageDialog(null, "Es funcion");
         System.out.println(CYAN + "IS FUNCTION" + RESET);
         String nombre_funcion = expression.substring(0, expression.indexOf("("));
         System.out.println(CYAN + "NOMBRE DE LA FUNCION: " + nombre_funcion + RESET);
@@ -79,19 +79,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         imprimirTablaSimbolos();
         boolean flag = true;
         if(paramGroups.length != parametrosList.size()){
-            JOptionPane.showMessageDialog(null, "Error en la cantidad de parametros");
+            //JOptionPane.showMessageDialog(null, "Error en la cantidad de parametros");
         }else{
             for (int i = 0; i < paramGroups.length; i++) {
                 System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
                 System.out.println(CYAN + "PARAMETRO TIPO: " + parametrosList.get(i).getTipo() + RESET);
                 if (!verificarValor(paramGroups[i].toLowerCase(), parametrosList.get(i).getTipo().toLowerCase())) {
-                    JOptionPane.showMessageDialog(null, "Error en el tipo de parametro" + parametrosList.get(i).getTipo().toLowerCase());
+                    //JOptionPane.showMessageDialog(null, "Error en el tipo de parametro" + parametrosList.get(i).getTipo().toLowerCase());
                     flag = false;
                 }
             }
         }
         if (flag) {
-            JOptionPane.showMessageDialog(null, "Paso la flag");
+            //JOptionPane.showMessageDialog(null, "Paso la flag");
             StringBuilder mensaje = new StringBuilder();
 
             mensaje.delete(0, mensaje.length());
@@ -109,7 +109,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     emit3AC_main(variable + "_val" + counter + " = call char @" + nombre_funcion + "()");
                     break;
                 case "void":
-                    JOptionPane.showMessageDialog(null, "ENTRO");
+                    //JOptionPane.showMessageDialog(null, "ENTRO");
                     mensaje.append("    call void @" + nombre_funcion + "(");
                     emit3AC_main("call void @" + nombre_funcion + "()");
                     break;
@@ -121,13 +121,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 counter++;
             }
 
-                        JOptionPane.showMessageDialog(null, "ESTOY AQUIIIIIIIIII");
+                        //JOptionPane.showMessageDialog(null, "ESTOY AQUIIIIIIIIII");
             imprimirTablaSimbolos();
             for (int i = 0; i < paramGroups.length; i++) {
                 System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
-    //            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
-    //            JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
-                JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
+    //            //JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
+    //            //JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
+                //JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
                 switch (analyzeString(paramGroups[i]).toLowerCase()) {
                     case "integer":
                         if (Character.isLetter(paramGroups[i].charAt(0))) {
@@ -206,7 +206,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         // Convertir la expresión a notación postfija (RPN) respetando la precedencia
         String postfix = infixToPostfix(expression);
 
-//        JOptionPane.showMessageDialog(null, "Expresion: " + expression + "\nPostfix: " + postfix);
+//        //JOptionPane.showMessageDialog(null, "Expresion: " + expression + "\nPostfix: " + postfix);
         // Generar código de tres direcciones y escribirlo al archivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))) {
             generateCodeFromPostfix(postfix, writer, finalVarName);
@@ -1001,7 +1001,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                     imprimirTablaSimbolos();
                 } else {
                     System.out.println("\u001B[31mError: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'\u001B[0m");
-                    JOptionPane.showMessageDialog(null, "Error: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'");
+                    //JOptionPane.showMessageDialog(null, "Error: La variable \'" + binding.getNombre() + "\' ya ha sido declarada en el scope \'" + scope_actual + "\'");
 //                    System.exit(1);
                     //aca hay que hacer que el programa no siga
                 }
@@ -1382,7 +1382,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         for (int i = 0; i < parametrosList.size(); i++) {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
-                    JOptionPane.showMessageDialog(null, "aca estoy");
+                    //JOptionPane.showMessageDialog(null, "aca estoy");
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
                     definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i32, i32* %" + parametrosList.get(i).getVariable() + "\n");
@@ -1751,7 +1751,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) {
-        JOptionPane.showMessageDialog(null, "entro aqui");
+        //JOptionPane.showMessageDialog(null, "entro aqui");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
 
@@ -1843,13 +1843,13 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 System.out.println("eeeeeeeeeeeeeeeeeee " + expression);
                 if (!verificarValor(expression, tipoVariable)) { // Ahora se pasan dos parámetros
                     System.err.println(" Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
-                    JOptionPane.showMessageDialog(null, " Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
+                    //JOptionPane.showMessageDialog(null, " Error: El valor '" + expression + "' no es compatible con el tipo '" + tipoVariable + "' de la variable '" + variable + "'.");
                 } else {
                     System.out.println(CYAN + " paso el test ASIGNANDO EL DE LA VARIABLE: " + variable + " CON EL VALOR: " + expression + RESET);
                     //esto ya es generando el .ll
                     // Generar código LLVM para la asignación
 
-//                    JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
+//                    //JOptionPane.showMessageDialog(null, "LLEGA HASTA ACA" + 1);
                     switch (tipoVariable.toLowerCase()) {
                         case "integer":
                             if (isNumeric(expression)) {
@@ -1881,7 +1881,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 llamado_a_funcion(expression, variable);
 //                                loads.add(new Loads())
                             } else {
-                                JOptionPane.showMessageDialog(null, "variable como asignacion");
+                                //JOptionPane.showMessageDialog(null, "variable como asignacion");
                                     Loads tempload = lastLoad(expression);
                                 if (scope_actual.equals("global")) {
                                     emit_main("    store i32 %" + tempload.getVariable() + "_val" + tempload.getCounter() + ", i32* %" + variable);
