@@ -540,12 +540,6 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
             System.out.println(CYAN + "\n\n\n\n\n" + header.toString() + RESET);
             writer.write(header.toString());
             writer.write(llvmCode.toString());
-            loads.clear();
-            TablaSimbolos.clear();
-            threeAddressCodeList.clear();
-            ThreeAddressCodeTemp.clear();
-            header.delete(0, header.length());
-            llvmCode.delete(0, llvmCode.length());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -673,15 +667,12 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitProgram(MiniPascalGrammarParser.ProgramContext ctx) {
-//        try {
-//            generateThreeAddressCode("3 + funcion(variable1, variable2, variable3) - 9 + 10 * 4 / 7 + variable * 4", "output3AC.txt", "variable_final");
-//            for (int i = 0; i < ThreeAddressCodeTemp.size(); i++) {
-//                System.err.println(ThreeAddressCodeTemp.get(i));
-//            }
-//            ThreeAddressCodeTemp.clear();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        loads.clear();
+        TablaSimbolos.clear();
+        threeAddressCodeList.clear();
+        ThreeAddressCodeTemp.clear();
+        header.delete(0, header.length());
+        llvmCode.delete(0, llvmCode.length());
         visit(ctx.programHeading());
         emit_main("\ndefine i32 @main() {");
         visit(ctx.block());
@@ -1700,8 +1691,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 //                                llvmCode.insert(0, "@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
 //                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
 //                                emit_header("@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas");
-                                header.insert(0, "\n@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n" +
-                                        "@buffer = private global [256 x i8] zeroinitializer    ; Buffer para almacenar cadenas\n");
+                                header.insert(0, "\n@str_format = private constant [3 x i8] c\"%s\\00\"       ; Formato para cadenas\n");
                                 emit3AC_header("@str_format");
                                 stringformatdeclared = true;
                             }

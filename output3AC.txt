@@ -1,28 +1,402 @@
-y = alloca i32
-store i32 i_val1, i32* y
-call @write_int y_val2
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str3
+call @write_string @.str5
+call @write_string @.str8
+call @write_string @.str9
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str4
+call @write_string @.str7
+call @write_string @.str8
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str6
+call @write_string @.str9
+call @write_string @.str10
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str6
+call @write_string @.str9
+call @write_string @.str10
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str6
+call @write_string @.str9
+call @write_string @.str10
+call @write_string @.str11
+declare @scanf i8*
+@int_format
+call @write_string @.str1
+@char_format
+call @write_string @.str2
+@str_format
+call @write_string @.str6
+call @write_string @.str9
+call @write_string @.str10
+call @write_string @.str11
+x = alloca i32
+x2 = alloca i32
+i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr1 = num to i8*
+call @scanf i8*
+num_val1 = load i32
+call @write_int num_val1
+%char_ptr2 = car to i8*
+call @scanf i8*
+car_val2 = load i8
+call @write_char car_val2
+%str_ptr3 = @buffer
+call @scanf i8*
+store i8*  %str_ptr3, i8** cadena
+cadena_val3 = load i8*
+call @write_string cadena_val3
+j = alloca i32
+j = store 1
+for br = label for_condition4
+for_condition4:
+j_val4 = load j
+cond1 = j_val4 < 10
+for br = label for_body4 else label for_end4
+for_body4:
+call @write_string @.str4
+next_j_val4 = j_val4 + 1
+next_j_val4 = store j
+br = label for_condition4
+for_end4:
+call @write_int x2_val7
+cond3 = x2_val7 > 5
+if then1 else else1 goto cond3
+then1:
+call @write_string @.str6
+merge1:
+call @write_string @.str7
+i = store integer0
+i_val11 = load integer
+i = store integer0
+i_val11 = load integer
+call @write_int x_val10
  while br = label while_condition1
 while_condition1:
-y = load y_val2
+i = load i_val11
 while_condition1:
-cond1 = y_val2 < 5
-while br = do1 else else1 goto cond1
+cond5 = i_val11 < x_val10
+while br = do1 else else1 goto cond5
 while_body1:
-cond2 = y_val2 < 3
-if then1 else else1 goto cond2
-then1:
-call @write_int y_val2
-merge1:
-call @write_int y_val2
+call @write_int i_val11
 while br = label while_condition1
 while_end1:
-call @write_string @.str1
-call @write_string @.str2
-call @write_string @.str3
+x = alloca i32
+x2 = alloca i32
 i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr14 = num to i8*
+call @scanf i8*
+num_val14 = load i32
+call @write_int num_val14
+%char_ptr15 = car to i8*
+call @scanf i8*
+car_val15 = load i8
+call @write_char car_val15
+%str_ptr16 = @buffer
+call @scanf i8*
+store i8*  %str_ptr16, i8** cadena
+cadena_val16 = load i8*
+j = alloca i32
+j = store 1
+for br = label for_condition17
+for_condition17:
+j_val17 = load j
+cond1 = j_val17 < 10
+for br = label for_body17 else label for_end17
+for_body17:
+call @write_string @.str3
+next_j_val17 = j_val17 + 1
+next_j_val17 = store j
+br = label for_condition17
+for_end17:
+call @write_int x2_val20
+cond3 = x2_val20 > 5
+if then1 else else1 goto cond3
+then1:
+call @write_string @.str5
+merge1:
+call @write_string @.str6
 i = store integer0
-i_val5 = load integer
+i_val24 = load integer
 i = store integer0
-i_val5 = load integer
-call void @CheckAndIncrement()
-i_val5 = load i32, i
+i_val24 = load integer
+call @write_int x_val23
+ while br = label while_condition1
+while_condition1:
+i = load i_val24
+while_condition1:
+cond5 = i_val24 < x_val23
+while br = do1 else else1 goto cond5
+while_body1:
+call @write_int i_val24
+while br = label while_condition1
+while_end1:
+x = alloca i32
+x2 = alloca i32
+i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr27 = num to i8*
+call @scanf i8*
+num_val27 = load i32
+call @write_int num_val27
+%char_ptr28 = car to i8*
+call @scanf i8*
+car_val28 = load i8
+call @write_char car_val28
+%str_ptr29 = @buffer
+call @scanf i8*
+store i8*  %str_ptr29, i8** cadena
+cadena_val29 = load i8*
+if then1 else else1 goto cond1
+then1:
+call @write_string @.str3
+merge1:
+call @write_string @.str4
+j = alloca i32
+j = store 1
+for br = label for_condition30
+for_condition30:
+j_val30 = load j
+cond2 = j_val30 < 10
+for br = label for_body30 else label for_end30
+for_body30:
+call @write_string @.str5
+next_j_val30 = j_val30 + 1
+next_j_val30 = store j
+br = label for_condition30
+for_end30:
+call @write_int x2_val33
+cond4 = x2_val33 > 5
+if then2 else else2 goto cond4
+then2:
+call @write_string @.str7
+merge2:
+call @write_string @.str8
+i = store integer0
+i_val37 = load integer
+i = store integer0
+i_val37 = load integer
+call @write_int x_val36
+ while br = label while_condition1
+while_condition1:
+i = load i_val37
+while_condition1:
+cond6 = i_val37 < x_val36
+while br = do1 else else1 goto cond6
+while_body1:
+call @write_int i_val37
+while br = label while_condition1
+while_end1:
+x = alloca i32
+x2 = alloca i32
+i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr40 = num to i8*
+call @scanf i8*
+num_val40 = load i32
+call @write_int num_val40
+%char_ptr41 = car to i8*
+call @scanf i8*
+car_val41 = load i8
+call @write_char car_val41
+%str_ptr42 = @buffer
+call @scanf i8*
+store i8*  %str_ptr42, i8** cadena
+cadena_val42 = load i8*
+cond1 = num_val40 <= 3
+if then1 else else1 goto cond1
+then1:
+call @write_string @.str3
+merge1:
+call @write_string @.str4
+j = alloca i32
+j = store 1
+for br = label for_condition43
+for_condition43:
+j_val43 = load j
+cond2 = j_val43 < 10
+for br = label for_body43 else label for_end43
+for_body43:
+call @write_string @.str5
+next_j_val43 = j_val43 + 1
+next_j_val43 = store j
+br = label for_condition43
+for_end43:
+call @write_int x2_val46
+cond4 = x2_val46 > 5
+if then2 else else2 goto cond4
+then2:
+call @write_string @.str7
+merge2:
+call @write_string @.str8
+i = store integer0
+i_val50 = load integer
+i = store integer0
+i_val50 = load integer
+call @write_int x_val49
+ while br = label while_condition1
+while_condition1:
+i = load i_val50
+while_condition1:
+cond6 = i_val50 < x_val49
+while br = do1 else else1 goto cond6
+while_body1:
+call @write_int i_val50
+while br = label while_condition1
+while_end1:
+x = alloca i32
+x2 = alloca i32
+i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr53 = num to i8*
+call @scanf i8*
+num_val53 = load i32
+call @write_int num_val53
+%char_ptr54 = car to i8*
+call @scanf i8*
+car_val54 = load i8
+call @write_char car_val54
+%str_ptr55 = @buffer
+call @scanf i8*
+store i8*  %str_ptr55, i8** cadena
+cadena_val55 = load i8*
+cond1 = num_val53 <= 3
+if then1 else else1 goto cond1
+then1:
+call @write_string @.str3
+merge1:
+call @write_string @.str4
+j = alloca i32
+j = store 1
+for br = label for_condition56
+for_condition56:
+j_val56 = load j
+cond2 = j_val56 < 10
+for br = label for_body56 else label for_end56
+for_body56:
+call @write_string @.str5
+next_j_val56 = j_val56 + 1
+next_j_val56 = store j
+br = label for_condition56
+for_end56:
+call @write_int x2_val59
+cond4 = x2_val59 > 5
+if then2 else else2 goto cond4
+then2:
+call @write_string @.str7
+merge2:
+call @write_string @.str8
+call @write_int x2_val65
+i = store integer0
+i_val69 = load integer
+i = store integer0
+i_val69 = load integer
+call @write_int x_val68
+ while br = label while_condition1
+while_condition1:
+i = load i_val69
+while_condition1:
+cond7 = i_val69 < x_val68
+while br = do1 else else1 goto cond7
+while_body1:
+call @write_int i_val69
+while br = label while_condition1
+while_end1:
+x = alloca i32
+x2 = alloca i32
+x3 = alloca i32
+i = alloca i32
+num = alloca i32
+car = alloca i8
+cadena = alloca i8*
+%int_ptr72 = num to i8*
+call @scanf i8*
+num_val72 = load i32
+call @write_int num_val72
+%char_ptr73 = car to i8*
+call @scanf i8*
+car_val73 = load i8
+call @write_char car_val73
+%str_ptr74 = @buffer
+call @scanf i8*
+store i8*  %str_ptr74, i8** cadena
+cadena_val74 = load i8*
+cond1 = num_val72 <= 3
+if then1 else else1 goto cond1
+then1:
+call @write_string @.str3
+merge1:
+call @write_string @.str4
+j = alloca i32
+j = store 1
+for br = label for_condition75
+for_condition75:
+j_val75 = load j
+cond2 = j_val75 < 10
+for br = label for_body75 else label for_end75
+for_body75:
+call @write_string @.str5
+next_j_val75 = j_val75 + 1
+next_j_val75 = store j
+br = label for_condition75
+for_end75:
+call @write_int x2_val78
+cond4 = x2_val78 > 5
+if then2 else else2 goto cond4
+then2:
+call @write_string @.str7
+merge2:
+call @write_string @.str8
+call @write_int x3_val84
+i = store integer0
+i_val88 = load integer
+i = store integer0
+i_val88 = load integer
+call @write_int x_val87
+ while br = label while_condition1
+while_condition1:
+i = load i_val88
+while_condition1:
+cond7 = i_val88 < x_val87
+while br = do1 else else1 goto cond7
+while_body1:
+call @write_int i_val88
+while br = label while_condition1
+while_end1:

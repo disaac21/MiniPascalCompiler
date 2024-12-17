@@ -1,0 +1,42 @@
+program test;
+
+var x, x2,x3, i, num: INTEGER;
+var car: char;
+var cadena: string;
+
+Begin
+  read(num);
+  write('num leido: ', num);
+  read(car);
+  write('car leido: ',car);
+  read(cadena);
+
+  if num <= 3 then
+	write('entro al if')
+  else
+	write('no entro al if');
+  
+  for j := 1 to 10 do
+      writeln('hola');
+
+
+
+  x2 := 3 + 8 - 4;
+  writeln('x2: ', x2);
+  if x2 > 5 then
+	writeln('mayor a 5')
+  else
+	writeln('menor a 5');
+
+  x3 := 42 + 80 * 43 + 798 / 2 - 3;
+  writeln('x3: ', x3);
+
+  x := 1 + 2 * x2;
+  i := 0;
+  writeln('x: ', x);
+  while i < x do
+	begin
+		writeln('valor de i: ', i);
+		i := i + 1;
+	end;
+end.
