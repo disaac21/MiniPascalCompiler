@@ -8,36 +8,39 @@ target triple = "x86_64-pc-microsoft-msvc"
 @stdin = external global %struct._IO_FILE*
 @double_fmt = private unnamed_addr constant [4 x i8] c"%f\0A\00"
 @char_fmt = private unnamed_addr constant [4 x i8] c"%c\0A\00"
-@.str3 = private constant [54 x i8] c"i is greater than or equal to 3. Current value of i: \00"
-@.str2 = private constant [21 x i8] c"Current value of i: \00"
-@.str1 = private constant [4 x i8] c"i: \00"
+@.str3 = private constant [54 x i8] c"i is greater than or equal to 3. Current value of y: \00"
+@.str2 = private constant [21 x i8] c"Current value of y: \00"
+@.str1 = private constant [4 x i8] c"y: \00"
 define void @CheckAndIncrement(i32 %cont_i) {
 entry:
     %i = alloca i32
     store i32 %cont_i, i32* %i
     %i_val1 = load i32, i32* %i
 
+    %y = alloca i32
+    store i32 %i_val1, i32* %y
+    %y_val2 = load i32, i32* %y
     call void @write_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str1, i32 0, i32 0))
-    call void @write_int(i32 %i_val1)
+    call void @write_int(i32 %y_val2)
 br label %while_condition1
 while_condition1:
-    %cond1 = icmp slt i32 %i_val1, 5
+    %cond1 = icmp slt i32 %y_val2, 5
     br i1 %cond1, label %while_body1, label %while_end1
 while_body1:
-    %cond2 = icmp slt i32 %i_val1, 3
+    %cond2 = icmp slt i32 %y_val2, 3
     br i1 %cond2, label %then1, label %else1
 then1:
     call void @write_string(i8* getelementptr inbounds ([21 x i8], [21 x i8]* @.str2, i32 0, i32 0))
-    call void @write_int(i32 %i_val1)
+    call void @write_int(i32 %y_val2)
     br label %merge1
 else1:
     call void @write_string(i8* getelementptr inbounds ([54 x i8], [54 x i8]* @.str3, i32 0, i32 0))
-    call void @write_int(i32 %i_val1)
+    call void @write_int(i32 %y_val2)
     br label %merge1
 merge1:
-%t2 = add i32 %i_val1, 1
-store i32 %t2, i32* %i
-%i_val3 = load i32, i32* %i
+%t3 = add i32 %y_val2, 1
+store i32 %t3, i32* %y
+%y_val4 = load i32, i32* %y
     br label %while_condition1
 while_end1:
     ret void
@@ -47,8 +50,8 @@ while_end1:
 define i32 @main() {
     %i = alloca i32
     store i32 0, i32* %i
-    %i_val4 = load i32, i32* %i
-    call void @CheckAndIncrement(i32 %i_val4)
+    %i_val5 = load i32, i32* %i
+    call void @CheckAndIncrement(i32 %i_val5)
   ret i32 0
 }
 

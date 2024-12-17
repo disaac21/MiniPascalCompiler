@@ -1,0 +1,23 @@
+program IncrementI;
+
+procedure CheckAndIncrement(i: Integer);
+var y: integer;
+begin
+    y := i;
+    writeln('y: ', i);
+    while y < 5 do
+    begin
+        if y < 3 then
+            writeln('Current value of y: ', y)
+        else
+            writeln('i is greater than or equal to 3. Current value of y: ', y);
+        y := y + 1;  { Increment y by 1 }
+    end;
+end;
+
+var
+    i: Integer;
+begin
+    i := 0;  { Initialize i with 0 }
+    CheckAndIncrement(i);
+end.

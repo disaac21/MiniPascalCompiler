@@ -1891,7 +1891,19 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                                 llamado_a_funcion(expression, variable);
 //                                loads.add(new Loads())
                             } else {
-//                                JOptionPane.showMessageDialog(null, "Es expresion larga");
+                                JOptionPane.showMessageDialog(null, "variable como asignacion");
+                                    Loads tempload = lastLoad(expression);
+                                if (scope_actual.equals("global")) {
+                                    emit_main("    store i32 %" + tempload.getVariable() + "_val" + tempload.getCounter() + ", i32* %" + variable);
+                                    emit_main("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                                    emit3AC_main("store i32 " + tempload.getVariable() + "_val" + tempload.getCounter() + ", i32* " + variable);
+                                } else {
+                                    emit_header("    store i32 %" + tempload.getVariable() + "_val" + tempload.getCounter() + ", i32* %" + variable);
+                                    emit_header("    %" + variable + "_val" + counter + " = load i32, i32* %" + variable);
+                                    emit3AC_header("store i32 " + tempload.getVariable() + "_val" + tempload.getCounter() + ", i32* " + variable);
+                                }
+                                loads.add(new Loads(variable, counter, scope_actual));
+                                counter++;
                             }
                             break;
                         case "boolean":// aca tengo que trabajar
