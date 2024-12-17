@@ -121,11 +121,14 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
                 counter++;
             }
 
+                        JOptionPane.showMessageDialog(null, "ESTOY AQUIIIIIIIIII");
+            imprimirTablaSimbolos();
             for (int i = 0; i < paramGroups.length; i++) {
                 System.out.println(CYAN + "PARAMETRO: " + paramGroups[i] + RESET);
     //            JOptionPane.showMessageDialog(null, "PARAMETRO: " + paramGroups[i]);
     //            JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
-                switch (analyzeString(paramGroups[i])) {
+                JOptionPane.showMessageDialog(null, "ANALIZANDO: " + analyzeString(paramGroups[i]));
+                switch (analyzeString(paramGroups[i]).toLowerCase()) {
                     case "integer":
                         if (Character.isLetter(paramGroups[i].charAt(0))) {
                             Loads tempLoad = lastLoad(paramGroups[i]);
@@ -1244,6 +1247,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         for (int i = 0; i < parametrosList.size(); i++) {// aca tengo que trabajar
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
+
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
                     emit3AC_header("%" + parametrosList.get(i).getVariable() + " = alloca i32");
                     definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
@@ -1383,9 +1387,11 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
         definicionFuncion.append(") {\n" +
                 "entry:\n");
 
+
         for (int i = 0; i < parametrosList.size(); i++) {
             switch (parametrosList.get(i).getTipo().toLowerCase()) {
                 case "integer":
+                    JOptionPane.showMessageDialog(null, "aca estoy");
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + " = alloca i32\n");
                     definicionFuncion.append("    store i32 %cont_" + parametrosList.get(i).getVariable() + ", i32* %" + parametrosList.get(i).getVariable() + "\n");
                     definicionFuncion.append("    %" + parametrosList.get(i).getVariable() + "_val" + counter + " = load i32, i32* %" + parametrosList.get(i).getVariable() + "\n");
@@ -1755,6 +1761,7 @@ public class MyVisitor extends MiniPascalGrammarBaseVisitor<Object> {
 
     @Override
     public Object visitAssignmentStatement(MiniPascalGrammarParser.AssignmentStatementContext ctx) {
+        JOptionPane.showMessageDialog(null, "entro aqui");
         String variable = ctx.variable().getText();
         String expression = ctx.expression().getText();
 
